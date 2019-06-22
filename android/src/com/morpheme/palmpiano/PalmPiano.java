@@ -98,6 +98,10 @@ public class PalmPiano implements ApplicationListener {
 			bk.setTouchable(Touchable.enabled);
 			stage.addActor(bk);
 		}
+
+		System.out.println("Test sound player wrld!");
+		SoundPlayer player = SoundPlayer.getInstance();
+		player.playNote(SoundPlayer.Note.C4);
 	}
 
 	@Override
