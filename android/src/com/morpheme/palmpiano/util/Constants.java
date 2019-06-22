@@ -1,9 +1,10 @@
 package com.morpheme.palmpiano.util;
 
-public class Constants {
-    public final int BK_WIDTH = 90;
-    public final int BK_HEIGHT = 320;
+public final class Constants {
+    public static final int BK_WIDTH = 90;
+    public static final int BK_HEIGHT = 320;
 
-    public final int WK_WIDTH = 128;
-    public final int WK_HEIGHT = ;
+    public static final int WK_WIDTH = 128;
+    public static final int WK_HEIGHT = 512;
+    public static final int WK_GAP = 2;
 }

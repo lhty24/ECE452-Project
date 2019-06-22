@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.morpheme.palmpiano.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class PalmPiano implements ApplicationListener {
 
 		// White keys
 		for(int i = 0; i < 18; i++) {
-			PianoKey wk = new PianoKey(false, "w"+i, i*(130));
+			PianoKey wk = new PianoKey(false, "w"+i, i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			wks.add(wk);
 			wk.setTouchable(Touchable.enabled);
 			stage.addActor(wk);
@@ -96,15 +97,22 @@ public class PalmPiano implements ApplicationListener {
 		for(int i = 0; i < 18; i++) {
 			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
 				continue;
-			PianoKey bk = new PianoKey(true, "b"+i, 130-45 + i*130);
+			PianoKey bk = new PianoKey(true, "b"+i, (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			bks.add(bk);
 			bk.setTouchable(Touchable.enabled);
 			stage.addActor(bk);
 		}
 
+
+
 		System.out.println("Test sound player wrld!");
-//		SoundPlayer player = SoundPlayer.getInstance();
+		SoundPlayer player = SoundPlayer.getInstance();
+		EventBus bus = EventBus.getInstance();
+//		Event e1 = new Event(Event.EventType.PIANO_KEY_DOWN, bus);
+//		Event e2 = new Event(Event.EventType.PIANO_KEY_UP, bus);
+//		bus.dispatch(e1);
 //		player.playNote(SoundPlayer.Note.C4);
+//		bus.dispatch(e2);
 	}
 
 	@Override
