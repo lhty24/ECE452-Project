@@ -21,11 +21,11 @@ import java.util.List;
 public class PalmPiano implements ApplicationListener {
     private Stage stage;
     private EventBus eb;
-    private Context al;
+    private Context context;
 
-    public PalmPiano(Context al) {
+    public PalmPiano(Context context) {
     	super();
-		this.al = al;
+		this.context = context;
 	}
 
 	public class PianoKey extends Actor {
@@ -131,8 +131,8 @@ public class PalmPiano implements ApplicationListener {
 		}
 
 		System.out.println("Test sound player wrld!");
-		SoundPlayer player = SoundPlayer.getInstance();
-		EventBus bus = EventBus.getInstance();
+		SoundPlayer.initialize(context);
+//		EventBus bus = EventBus.getInstance();
 //		Event e1 = new Event(Event.EventType.PIANO_KEY_DOWN, bus);
 //		Event e2 = new Event(Event.EventType.PIANO_KEY_UP, bus);
 //		bus.dispatch(e1);
