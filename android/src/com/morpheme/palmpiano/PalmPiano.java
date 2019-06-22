@@ -1,5 +1,7 @@
 package com.morpheme.palmpiano;
 
+import android.content.Context;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,6 +21,12 @@ import java.util.List;
 public class PalmPiano implements ApplicationListener {
     private Stage stage;
     private EventBus eb;
+    private Context al;
+
+    public PalmPiano(Context al) {
+    	super();
+		this.al = al;
+	}
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
