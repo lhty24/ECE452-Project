@@ -36,7 +36,7 @@ public class PalmPiano implements ApplicationListener {
 		float actorX = 0, actorY = 0;
 		boolean pressed;
 
-		public PianoKey(boolean bk, final String note, float x){
+		public PianoKey(boolean bk, final SoundPlayer.Note note, float x){
 			String file = "wk.png";
 			this.bk = bk;
 			if (bk) {
@@ -45,7 +45,7 @@ public class PalmPiano implements ApplicationListener {
 			}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
-			this.note = SoundPlayer.Note.valueOf(note);
+			this.note = note;
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
@@ -53,7 +53,7 @@ public class PalmPiano implements ApplicationListener {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
 					System.out.println(note);
-					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, "note"));
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, note));
 					return true;
 				}
 
@@ -104,7 +104,7 @@ public class PalmPiano implements ApplicationListener {
 				keyIndex = 0;
 				octave++;
 			}
-			PianoKey wk = new PianoKey(false, notes[keyIndex]+octave, i*(Constants.WK_WIDTH + Constants.WK_GAP));
+			PianoKey wk = new PianoKey(false, SoundPlayer.Note.valueOf(notes[keyIndex]+octave), i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			wks.add(wk);
 			wk.setTouchable(Touchable.enabled);
 			stage.addActor(wk);
@@ -124,13 +124,11 @@ public class PalmPiano implements ApplicationListener {
 			}
 			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
 				continue;
-			PianoKey bk = new PianoKey(true, notesSharp[keyIndex]+octave, (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
+			PianoKey bk = new PianoKey(true, SoundPlayer.Note.valueOf(notesSharp[keyIndex]+octave), (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			bks.add(bk);
 			bk.setTouchable(Touchable.enabled);
 			stage.addActor(bk);
 		}
-
-
 
 		System.out.println("Test sound player wrld!");
 		SoundPlayer player = SoundPlayer.getInstance();
