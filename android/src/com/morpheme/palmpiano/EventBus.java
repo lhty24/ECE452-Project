@@ -24,7 +24,9 @@ public class EventBus {
 
     public void dispatch(Event<?> event) {
         for(EventListener subscriber : subscribers) {
-            if (subscriber.getMonitoredEvents().contains(event)) {
+//            System.out.println("subscriber found");
+            if (subscriber.getMonitoredEvents().contains(event.getEventType())) {
+//                System.out.println("subscriber handling");
                 subscriber.handleEvent(event);
             }
         }

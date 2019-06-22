@@ -26,4 +26,9 @@ public class Event <D> {
     public D getData() {
         return data;
     }
+
+    @Override
+    public String toString() {
+        return timestamp + " - eventType: " + eventType.toString() + " - data: " + data.toString();
+    }
 }
