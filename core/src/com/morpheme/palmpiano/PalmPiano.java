@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -21,7 +22,9 @@ public class PalmPiano implements ApplicationListener {
 		boolean bk = false;
 		String note;
 		Texture texture;
+		Sprite sprite;
 		float actorX = 0, actorY = 0;
+		boolean pressed;
 
 		public PianoKey(boolean bk, final String note, float x){
 			String file = "wk.png";
@@ -31,15 +34,20 @@ public class PalmPiano implements ApplicationListener {
 				file = "bk.png";
 			}
 			texture = new Texture(Gdx.files.internal(file));
+			sprite = new Sprite(texture);
 			this.note = note;
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
+//					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
+					pressed = true;
 					System.out.println(note);
-					stage.
 					return true;
+				}
+
+				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+					pressed = false;
 				}
 			});
 		}
@@ -47,7 +55,13 @@ public class PalmPiano implements ApplicationListener {
 
 		@Override
 		public void draw(Batch batch, float alpha){
+			// Visual feedback that key is pressed
+			if (this.pressed)
+				batch.setColor(1,1,1, 0.5f);
+			else
+				batch.setColor(1,1,1, 1);
 			batch.draw(texture,actorX,actorY);
+			batch.setColor(1,1,1,1);
 		}
 
 		@Override
