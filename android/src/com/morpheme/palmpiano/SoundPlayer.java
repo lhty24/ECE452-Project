@@ -24,7 +24,8 @@ public class SoundPlayer implements EventListener {
         return monitoredEvents;
     }
 
-    public enum Note {C4, D4, E4, F4, G4, A4, B4};
+    public enum Note {F3, G3, A3 ,B3, C4, D4, E4, F4, G4, A4, B4, C5, D5, E5, F5, G5, A5, B5, C6, D6, E6,
+        FS3, GS3, AS3 ,BS3, CS4, DS4, ES4, FS4, GS4, AS4, BS4, CS5, DS5, ES5, FS5, GS5, AS5, BS5, CS6, DS6, ES6};
 
     /* Constructor stuff */
     private SoundPlayer() {

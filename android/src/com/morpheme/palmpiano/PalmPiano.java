@@ -30,7 +30,7 @@ public class PalmPiano implements ApplicationListener {
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
-		String note;
+		SoundPlayer.Note note;
 		Texture texture;
 		Sprite sprite;
 		float actorX = 0, actorY = 0;
@@ -45,7 +45,7 @@ public class PalmPiano implements ApplicationListener {
 			}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
-			this.note = note;
+			this.note = SoundPlayer.Note.valueOf(note);
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
@@ -93,8 +93,18 @@ public class PalmPiano implements ApplicationListener {
 //		PianoKey myActor = new PianoKey();
 
 		// White keys
+		// Index starts from C, D, E, F, G, A, B
+		String[] notes = {"C", "D", "E", "F", "G", "A", "B"};
+		int keyIndex = 2;
+		int octave = 3;
+
 		for(int i = 0; i < 18; i++) {
-			PianoKey wk = new PianoKey(false, "w"+i, i*(Constants.WK_WIDTH + Constants.WK_GAP));
+			keyIndex++;
+			if (keyIndex % 7 == 0) {
+				keyIndex = 0;
+				octave++;
+			}
+			PianoKey wk = new PianoKey(false, notes[keyIndex]+octave, i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			wks.add(wk);
 			wk.setTouchable(Touchable.enabled);
 			stage.addActor(wk);
@@ -102,10 +112,19 @@ public class PalmPiano implements ApplicationListener {
 
 		// Black keys
 		// Refactor checking into exclusion set
+		// Note ES and BS are never used, refactor later
+		String[] notesSharp = {"CS", "DS", "ES", "FS", "GS", "AS", "BS"};
+		keyIndex = 2;
+		octave = 3;
 		for(int i = 0; i < 18; i++) {
+			keyIndex++;
+			if (keyIndex % 7 == 0) {
+				keyIndex = 0;
+				octave++;
+			}
 			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
 				continue;
-			PianoKey bk = new PianoKey(true, "b"+i, (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
+			PianoKey bk = new PianoKey(true, notesSharp[keyIndex]+octave, (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
 			bks.add(bk);
 			bk.setTouchable(Touchable.enabled);
 			stage.addActor(bk);
