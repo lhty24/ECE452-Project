@@ -17,6 +17,7 @@ import java.util.List;
 
 public class PalmPiano implements ApplicationListener {
     private Stage stage;
+    private EventBus eb;
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
@@ -43,6 +44,7 @@ public class PalmPiano implements ApplicationListener {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
 					System.out.println(note);
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, "note"));
 					return true;
 				}
 
@@ -72,11 +74,12 @@ public class PalmPiano implements ApplicationListener {
 
 	@Override
 	public void create() {
+		eb = EventBus.getInstance();
 		stage = new Stage();
 		Gdx.input.setInputProcessor(stage);
 
-		List<PianoKey> wks = new ArrayList<PianoKey>();
-		List<PianoKey> bks = new ArrayList<PianoKey>();
+		List<PianoKey> wks = new ArrayList<>();
+		List<PianoKey> bks = new ArrayList<>();
 
 //		PianoKey myActor = new PianoKey();
 
@@ -100,8 +103,8 @@ public class PalmPiano implements ApplicationListener {
 		}
 
 		System.out.println("Test sound player wrld!");
-		SoundPlayer player = SoundPlayer.getInstance();
-		player.playNote(SoundPlayer.Note.C4);
+//		SoundPlayer player = SoundPlayer.getInstance();
+//		player.playNote(SoundPlayer.Note.C4);
 	}
 
 	@Override
