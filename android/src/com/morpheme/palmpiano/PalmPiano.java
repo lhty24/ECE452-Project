@@ -99,9 +99,16 @@ public class PalmPiano implements ApplicationListener {
 			stage.addActor(bk);
 		}
 
+
+
 		System.out.println("Test sound player wrld!");
-		SoundPlayer player = SoundPlayer.getInstance();
-		player.playNote(SoundPlayer.Note.C4);
+//		SoundPlayer player = SoundPlayer.getInstance();
+//		EventBus bus = EventBus.getInstance();
+//		Event e1 = new Event(Event.EventType.PIANO_KEY_DOWN, bus);
+//		Event e2 = new Event(Event.EventType.PIANO_KEY_UP, bus);
+//		bus.dispatch(e1);
+//		player.playNote(SoundPlayer.Note.C4);
+//		bus.dispatch(e2);
 	}
 
 	@Override
