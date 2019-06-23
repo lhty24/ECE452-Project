@@ -53,14 +53,14 @@ public class PalmPiano implements ApplicationListener {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
 					System.out.println(midiNote);
-//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
 					return true;
 				}
 
 				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 					pressed = false;
 					System.out.println(midiNote);
-//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
 				}
 			});
 		}
@@ -127,26 +127,6 @@ public class PalmPiano implements ApplicationListener {
 		for (PianoKey bk : bks) {
 			stage.addActor(bk);
 		}
-
-//		// Black keys
-//		// Refactor checking into exclusion set
-//		// Note ES and BS are never used, refactor later
-//		String[] notesSharp = {"CS", "DS", "ES", "FS", "GS", "AS", "BS"};
-//		keyIndex = 2;
-//		octave = 3;
-//		for(int i = 0; i < 18; i++) {
-//			keyIndex++;
-//			if (keyIndex % 7 == 0) {
-//				keyIndex = 0;
-//				octave++;
-//			}
-//			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
-//				continue;
-//			PianoKey bk = new PianoKey(true, SoundPlayer.Note.valueOf(notesSharp[keyIndex]+octave), (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
-//			bks.add(bk);
-//			bk.setTouchable(Touchable.enabled);
-//			stage.addActor(bk);
-//		}
 
 		SoundPlayer.initialize(context);
 	}

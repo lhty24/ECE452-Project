@@ -1,16 +1,11 @@
 package com.morpheme.palmpiano;
 //import javax.sound.midi.*;
 import android.content.Context;
-import android.media.MediaPlayer;
-import android.net.Uri;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.billthefarmer.mididriver.MidiDriver;
-
-import static com.morpheme.palmpiano.Event.EventType.PIANO_KEY_DOWN;
 
 public class SoundPlayer implements EventListener {
     public enum Note {F3, G3, A3 ,B3, C4, D4, E4, F4, G4, A4, B4, C5, D5, E5, F5, G5, A5, B5, C6, D6, E6,
@@ -19,8 +14,6 @@ public class SoundPlayer implements EventListener {
     private static SoundPlayer soundPlayer = null;
 
     private Context context = null;
-//    private Synthesizer synth = null;
-    private MediaPlayer mediaPlayer = null;
     private HashSet<Event.EventType> monitoredEvents;
     private MidiDriver midi = null;
 
@@ -28,8 +21,9 @@ public class SoundPlayer implements EventListener {
     private SoundPlayer() {
         super();
         this.monitoredEvents = new HashSet<>();
-        monitoredEvents.add(PIANO_KEY_DOWN);
+        monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
+        monitoredEvents.add(Event.EventType.MIDI_DATA);
         EventBus.getInstance().register(this);
 
         midi = new MidiDriver();
@@ -64,10 +58,13 @@ public class SoundPlayer implements EventListener {
         System.out.println("SoundPlayer received event: " + event.toString());
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
-                this.playNote((Note) event.getData());
+                this.playNote(((Byte) event.getData()).byteValue());
                 break;
             case PIANO_KEY_UP:
-                this.stopNote((Note) event.getData());
+                this.stopNote(((Byte) event.getData()).byteValue());
+                break;
+            case MIDI_DATA:
+                this.playMidi((byte[]) event.getData());
                 break;
             default:
                 break;
@@ -79,25 +76,33 @@ public class SoundPlayer implements EventListener {
         return monitoredEvents;
     }
 
-    private void playNote(Note note) {
-        // m=action, n=note, v=volume
-        // 0x90 = channel 1 note on, 60 = C4, 64 = mezzo-forte
-        sendMidi(0x90, 60, 64);
+    private void playNote(byte note) {
+        // note 60 = C4 (Middle C), volume 64 = mezzo-forte
+        sendMidiNote(true, 1, note + 48, 64);
     }
 
-    private void stopNote(Note note) {
-        // 0x80 = channel 1 note off
-        sendMidi(0x80, 60, 64);
+    private void stopNote(byte note) {
+        // note 60 = C4 (Middle C), volume = standard (64)
+        sendMidiNote(false, 1, note + 48, 64);
     }
 
-    protected void sendMidi(int m, int n, int v)
+    private void sendMidiNote(boolean noteOn, int channel, int note, int volume)
     {
-        byte msg[] = new byte[3];
+        byte message[] = new byte[3];
 
-        msg[0] = (byte) m;
-        msg[1] = (byte) n;
-        msg[2] = (byte) v;
+        byte midiMessage = (byte) (0x80 | channel);
+        if (noteOn) {
+            midiMessage |= (byte) 0x10;
+        }
 
-        midi.write(msg);
+        message[0] = midiMessage;
+        message[1] = (byte) note;
+        message[2] = (byte) volume;
+
+        midi.write(message);
+    }
+
+    private void playMidi(byte[] midiMessage) {
+        midi.write(midiMessage);
     }
 }
