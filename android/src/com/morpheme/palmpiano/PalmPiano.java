@@ -30,35 +30,37 @@ public class PalmPiano implements ApplicationListener {
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
-		SoundPlayer.Note note;
+		Byte midiNote = 0x0b;
 		Texture texture;
 		Sprite sprite;
 		float actorX = 0, actorY = 0;
 		boolean pressed;
 
-		public PianoKey(boolean bk, final SoundPlayer.Note note, float x){
+		public PianoKey(boolean bk, final Byte midiNote, float x){
 			String file = "wk.png";
 			this.bk = bk;
 			if (bk) {
-				this.actorY = 192;
+				this.actorY = Constants.WK_HEIGHT-Constants.BK_HEIGHT;
 				file = "bk.png";
 			}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
-			this.note = note;
+			this.midiNote = midiNote;
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
-//					System.out.println(note);
-					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, note));
+					System.out.println(midiNote);
+//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
 					return true;
 				}
 
 				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 					pressed = false;
+					System.out.println(midiNote);
+//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
 				}
 			});
 		}
@@ -94,41 +96,57 @@ public class PalmPiano implements ApplicationListener {
 
 		// White keys
 		// Index starts from C, D, E, F, G, A, B
-		String[] notes = {"C", "D", "E", "F", "G", "A", "B"};
-		int keyIndex = 2;
-		int octave = 3;
+		String[] notes = {"C", "CS", "D", "DS", "E", "F", "FS", "G", "GS", "A", "AS", "B"};
+//		int keyIndex = 2;
 
-		for(int i = 0; i < 18; i++) {
-			keyIndex++;
-			if (keyIndex % 7 == 0) {
-				keyIndex = 0;
-				octave++;
+		for (int oc = 0; oc < 7; oc++) {
+			int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+			boolean bk;
+			for (int i = 0; i < notes.length; i++) {
+				if ( (i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0) ) {
+					bk = true;
+				} else {
+					bk = false;
+				}
+				PianoKey k = new PianoKey(bk, (byte) (i + oc*12),  bk ? offset - Constants.BK_WIDTH/2 : offset);
+				k.setTouchable(Touchable.enabled);
+				if (bk) {
+					bks.add(k);
+					continue;
+				} else {
+					wks.add(k);
+				}
+				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
-			PianoKey wk = new PianoKey(false, SoundPlayer.Note.valueOf(notes[keyIndex]+octave), i*(Constants.WK_WIDTH + Constants.WK_GAP));
-			wks.add(wk);
-			wk.setTouchable(Touchable.enabled);
+		}
+
+		for (PianoKey wk : wks) {
 			stage.addActor(wk);
 		}
 
-		// Black keys
-		// Refactor checking into exclusion set
-		// Note ES and BS are never used, refactor later
-		String[] notesSharp = {"CS", "DS", "ES", "FS", "GS", "AS", "BS"};
-		keyIndex = 2;
-		octave = 3;
-		for(int i = 0; i < 18; i++) {
-			keyIndex++;
-			if (keyIndex % 7 == 0) {
-				keyIndex = 0;
-				octave++;
-			}
-			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
-				continue;
-			PianoKey bk = new PianoKey(true, SoundPlayer.Note.valueOf(notesSharp[keyIndex]+octave), (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
-			bks.add(bk);
-			bk.setTouchable(Touchable.enabled);
+		for (PianoKey bk : bks) {
 			stage.addActor(bk);
 		}
+
+//		// Black keys
+//		// Refactor checking into exclusion set
+//		// Note ES and BS are never used, refactor later
+//		String[] notesSharp = {"CS", "DS", "ES", "FS", "GS", "AS", "BS"};
+//		keyIndex = 2;
+//		octave = 3;
+//		for(int i = 0; i < 18; i++) {
+//			keyIndex++;
+//			if (keyIndex % 7 == 0) {
+//				keyIndex = 0;
+//				octave++;
+//			}
+//			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
+//				continue;
+//			PianoKey bk = new PianoKey(true, SoundPlayer.Note.valueOf(notesSharp[keyIndex]+octave), (Constants.WK_WIDTH + Constants.WK_GAP)-Constants.BK_WIDTH/2 + i*(Constants.WK_WIDTH + Constants.WK_GAP));
+//			bks.add(bk);
+//			bk.setTouchable(Touchable.enabled);
+//			stage.addActor(bk);
+//		}
 
 		SoundPlayer.initialize(context);
 	}
