@@ -78,12 +78,12 @@ public class SoundPlayer implements EventListener {
 
     private void playNote(byte note) {
         // note 60 = C4 (Middle C), volume 64 = mezzo-forte
-        sendMidiNote(true, 1, note + 48, 64);
+        sendMidiNote(true, 1, note, 64);
     }
 
     private void stopNote(byte note) {
         // note 60 = C4 (Middle C), volume = standard (64)
-        sendMidiNote(false, 1, note + 48, 64);
+        sendMidiNote(false, 1, note, 64);
     }
 
     private void sendMidiNote(boolean noteOn, int channel, int note, int volume)

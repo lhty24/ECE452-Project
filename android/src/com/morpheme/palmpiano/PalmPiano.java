@@ -5,21 +5,23 @@ import android.content.Context;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.morpheme.palmpiano.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PalmPiano implements ApplicationListener {
-    private Stage stage;
+    private PianoStage stage;
     private EventBus eb;
     private Context context;
 
@@ -86,29 +88,25 @@ public class PalmPiano implements ApplicationListener {
 	@Override
 	public void create() {
 		eb = EventBus.getInstance();
-		stage = new Stage();
+		stage = new PianoStage();
 		Gdx.input.setInputProcessor(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
 
-//		PianoKey myActor = new PianoKey();
-
-		// White keys
-		// Index starts from C, D, E, F, G, A, B
-		String[] notes = {"C", "CS", "D", "DS", "E", "F", "FS", "G", "GS", "A", "AS", "B"};
-//		int keyIndex = 2;
+		// Order of notes in octave
+		String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
 
 		for (int oc = 0; oc < 7; oc++) {
-			int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
-				if ( (i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0) ) {
+				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
 					bk = true;
 				} else {
 					bk = false;
 				}
-				PianoKey k = new PianoKey(bk, (byte) (i + oc*12),  bk ? offset - Constants.BK_WIDTH/2 : offset);
+				PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  bk ? offset - Constants.BK_WIDTH/2 : offset);
 				k.setTouchable(Touchable.enabled);
 				if (bk) {
 					bks.add(k);
