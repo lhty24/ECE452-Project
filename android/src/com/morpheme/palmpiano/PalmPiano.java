@@ -36,7 +36,7 @@ public class PalmPiano implements ApplicationListener {
 			4 * wkInterval - Constants.BK_WIDTH / 2,
 			4 * wkInterval,
 			5 * wkInterval,
-			5 * wkInterval - Constants.BK_WIDTH / 2,
+			6 * wkInterval - Constants.BK_WIDTH / 2,
 			6 * wkInterval,
 			7 * wkInterval - Constants.BK_WIDTH / 2
 	};
@@ -69,6 +69,7 @@ public class PalmPiano implements ApplicationListener {
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
+					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
