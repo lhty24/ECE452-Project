@@ -52,7 +52,7 @@ public class PalmPiano implements ApplicationListener {
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
-					System.out.println(note);
+//					System.out.println(note);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, note));
 					return true;
 				}
@@ -130,14 +130,7 @@ public class PalmPiano implements ApplicationListener {
 			stage.addActor(bk);
 		}
 
-		System.out.println("Test sound player wrld!");
 		SoundPlayer.initialize(context);
-//		EventBus bus = EventBus.getInstance();
-//		Event e1 = new Event(Event.EventType.PIANO_KEY_DOWN, bus);
-//		Event e2 = new Event(Event.EventType.PIANO_KEY_UP, bus);
-//		bus.dispatch(e1);
-//		player.playNote(SoundPlayer.Note.C4);
-//		bus.dispatch(e2);
 	}
 
 	@Override

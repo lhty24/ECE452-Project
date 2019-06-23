@@ -8,8 +8,9 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.billthefarmer.mididriver.MidiDriver;
+
 import static com.morpheme.palmpiano.Event.EventType.PIANO_KEY_DOWN;
-//import static com.morpheme.palmpiano.Event.EventType.PIANO_KEY_UP;
 
 public class SoundPlayer implements EventListener {
     public enum Note {F3, G3, A3 ,B3, C4, D4, E4, F4, G4, A4, B4, C5, D5, E5, F5, G5, A5, B5, C6, D6, E6,
@@ -19,33 +20,31 @@ public class SoundPlayer implements EventListener {
 
     private Context context = null;
 //    private Synthesizer synth = null;
-    private MediaPlayer mplayer = null;
+    private MediaPlayer mediaPlayer = null;
     private HashSet<Event.EventType> monitoredEvents;
+    private MidiDriver midi = null;
 
     /* Constructor stuff */
     private SoundPlayer() {
-//        System.out.println("test 1");
-//        try {
-//            System.out.println("test 2");
-//            synth = MidiSystem.getSynthesizer();
-//            synth.open();
-//            System.out.println("test 3");
-//        } catch (MidiUnavailableException e) {
-//            System.err.println(e.toString());
-//            synth = null;
-//        } catch (Exception e) {
-//            System.err.println("Unexpected: " + e.toString());
-//        }
-//        System.out.println("test 4");
         super();
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(PIANO_KEY_DOWN);
         monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
         EventBus.getInstance().register(this);
+
+        midi = new MidiDriver();
+        midi.start();
+
+        byte msg[] = new byte[2];
+        // Change MIDI instrument (1 = acoustic grand piano)
+        msg[0] = (byte) 0xc0;
+        msg[1] = (byte) 1;
+        midi.write(msg);
     }
 
     private SoundPlayer(Context context) {
         this();
+        // Used for MediaPlayer (MIDI file playback)
         this.context = context;
     }
 
@@ -81,13 +80,24 @@ public class SoundPlayer implements EventListener {
     }
 
     private void playNote(Note note) {
-        System.out.println("Currently playing note " + note.toString());
-//        System.out.println("Instruments: " + synth.getAvailableInstruments());
-//        mplayer = MediaPlayer.create(, Uri.fromFile(new File("Piano.mid")));
-//        mplayer.start();
+        // m=action, n=note, v=volume
+        // 0x90 = channel 1 note on, 60 = C4, 64 = mezzo-forte
+        sendMidi(0x90, 60, 64);
     }
 
     private void stopNote(Note note) {
-        System.out.println("Stopping currently played note " + note.toString());
+        // 0x80 = channel 1 note off
+        sendMidi(0x80, 60, 64);
+    }
+
+    protected void sendMidi(int m, int n, int v)
+    {
+        byte msg[] = new byte[3];
+
+        msg[0] = (byte) m;
+        msg[1] = (byte) n;
+        msg[2] = (byte) v;
+
+        midi.write(msg);
     }
 }
