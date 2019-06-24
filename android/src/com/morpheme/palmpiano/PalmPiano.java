@@ -80,14 +80,6 @@ public class PalmPiano implements ApplicationListener {
 			});
 		}
 
-		private void createTexture() {
-			Pixmap pixmap = new Pixmap(110, 110, Pixmap.Format.RGBA8888);
-			pixmap.setColor(12.0f, 56.0f, 34.0f, 1.0f);
-			pixmap.fillRectangle(0, 0, 110, 110);
-			tex = new Texture(pixmap);
-			pixmap.dispose();
-		}
-
 		@Override
 		public void draw(Batch batch, float alpha){
 			batch.setColor(1,1,1, 1);

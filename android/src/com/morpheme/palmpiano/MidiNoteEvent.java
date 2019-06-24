@@ -29,6 +29,6 @@ public class MidiNoteEvent {
     }
 
     public long getTimestamp() {
-        return timeStamp;
+        return timestamp;
     }
 }
