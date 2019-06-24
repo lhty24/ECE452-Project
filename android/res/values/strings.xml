@@ -2,5 +2,7 @@
 <resources>
 
     <string name="app_name">Palm Piano</string>
+    <string name="composition_mode">Composition Mode</string>
+    <string name="game_mode">Game Mode</string>
 
 </resources>
