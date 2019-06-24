@@ -1,7 +1,7 @@
 package com.morpheme.palmpiano;
 
 public class Event <D> {
-    public enum EventType {PIANO_KEY_DOWN, PIANO_KEY_UP, MIDI_DATA}
+    public enum EventType {PIANO_KEY_DOWN, PIANO_KEY_UP, MIDI_DATA, MODE_COMPOSITION, MODE_GAME}
 
     private long timestamp;
     private EventType eventType;
