@@ -22,7 +22,7 @@ public class SoundPlayer implements EventListener {
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
-        monitoredEvents.add(Event.EventType.MIDI_DATA);
+        monitoredEvents.add(Event.EventType.MIDI_DATA_AUDIO);
         EventBus.getInstance().register(this);
 
         midi = new MidiDriver();
@@ -62,7 +62,7 @@ public class SoundPlayer implements EventListener {
             case PIANO_KEY_UP:
                 this.stopNote(((Byte) event.getData()).byteValue());
                 break;
-            case MIDI_DATA:
+            case MIDI_DATA_AUDIO:
                 this.playMidi((byte[]) event.getData());
                 break;
             default:

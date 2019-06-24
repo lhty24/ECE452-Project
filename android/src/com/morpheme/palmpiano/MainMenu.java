@@ -40,6 +40,7 @@ public class MainMenu extends AppCompatActivity {
     }
 
     private void launchPalmPiano(PalmPiano.PianoMode mode) {
+        System.out.println("Launching PalmPiano activity");
         startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
         Bundle bundle = new Bundle();
         bundle.putSerializable("pianoMode", mode);

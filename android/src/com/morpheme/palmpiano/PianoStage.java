@@ -35,7 +35,7 @@ public class PianoStage extends Stage {
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
-                eb.dispatch(isPlaying() ? new Event(Event.EventType.MIDI_FILE_PAUSE, null) : new Event(Event.EventType.MIDI_FILE_PLAY, null));
+                eb.dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
                 setPlaying(!isPlaying());
                 return true;
             }

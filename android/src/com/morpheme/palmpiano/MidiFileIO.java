@@ -24,8 +24,11 @@ public class MidiFileIO implements EventListener, Runnable {
 
     private boolean isPlaying;
     private HashSet<Event.EventType> monitoredEvents;
+    private PalmPiano.PianoMode pianoMode;
 
-    public MidiFileIO() {}
+    public MidiFileIO(PalmPiano.PianoMode mode) {
+        this.pianoMode = mode;
+    }
 
     public MidiFile getMidiFile(String filename) {
         try {
@@ -139,7 +142,11 @@ public class MidiFileIO implements EventListener, Runnable {
                 prev = newNow;
             }
 
-            EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA, noteEvent));
+            if (pianoMode == PalmPiano.PianoMode.MODE_COMPOSITION) {
+                EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_AUDIO, noteEvent));
+            } else if (pianoMode == PalmPiano.PianoMode.MODE_GAME) {
+                EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_GAMEPLAY, noteEvent));
+            }
         }
     }
 

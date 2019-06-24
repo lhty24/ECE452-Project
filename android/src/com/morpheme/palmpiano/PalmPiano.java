@@ -152,23 +152,27 @@ public class PalmPiano implements ApplicationListener {
 
 		Intent intent = ((Activity) context).getIntent();
 		Bundle bundle = intent.getExtras();
-		this.mode = (PianoMode) bundle.getSerializable("pianoMode");
+		if (bundle != null) {
+			this.mode = (PianoMode) bundle.getSerializable("pianoMode");
 
-		// TODO: Implement actual logic for composition/game mode-specific actions
-		switch (mode) {
-			case MODE_COMPOSITION:
-				System.out.println("Detected composition mode");
-				break;
-			case MODE_GAME:
-				System.out.println("Detected game mode");
-				break;
-			default:
-				break;
+			// TODO: Implement actual logic for composition/game mode-specific actions
+			switch (mode) {
+				case MODE_COMPOSITION:
+					System.out.println("Detected composition mode");
+					break;
+				case MODE_GAME:
+					System.out.println("Detected game mode");
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.mode = null;
 		}
 
 		SoundPlayer.initialize(context);
 
-		MidiFileIO midi = new MidiFileIO();
+		MidiFileIO midi = new MidiFileIO(mode);
 		Thread midiThread = new Thread(midi);
 		midiThread.start();
 	}
