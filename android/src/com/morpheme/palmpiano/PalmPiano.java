@@ -10,26 +10,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
     private EventBus eb;
     private Context context;
     private TextButton buttonBack;
+	private TextButton playPauseButton;
     private PianoMode mode;
 
 	// Order of notes in octave
@@ -80,11 +78,11 @@ public class PalmPiano implements ApplicationListener {
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
 					return true;
 				}
 
@@ -92,6 +90,7 @@ public class PalmPiano implements ApplicationListener {
 					pressed = false;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PAUSE, null));
 				}
 			});
 		}
@@ -114,17 +113,17 @@ public class PalmPiano implements ApplicationListener {
 		}
 	}
 
+
 	@Override
 	public void create() {
 		eb = EventBus.getInstance();
-		stage = new PianoStage();
+		stage = new PianoStage(eb);
 		Gdx.input.setInputProcessor(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
 
 		for (int oc = 0; oc < 7; oc++) {
-//			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
 				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
@@ -140,7 +139,6 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					wks.add(k);
 				}
-//				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
 		}
 
@@ -152,35 +150,31 @@ public class PalmPiano implements ApplicationListener {
 			stage.addActor(bk);
 		}
 
-//		TextButton.TextButtonStyle buttonBackStyle = new TextButton.TextButtonStyle();
-//		buttonBackStyle.font = new BitmapFont();
-//		TextureAtlas buttonBackAtlas = new TextureAtlas(Gdx.files.internal("buttons/buttons.pack"));
-//		Skin skin = new Skin();
-//		skin.addRegions(buttonBackAtlas);
-//		buttonBackStyle.font = new BitmapFont();
-//		buttonBackStyle.up = skin.getDrawable("up-button");
-//		buttonBackStyle.down = skin.getDrawable("down-button");
-//		buttonBackStyle.checked = skin.getDrawable("checked-button");
-//		buttonBack = new TextButton("Go Back", buttonBackStyle);
-//		stage.addActor(buttonBack);
-
 		Intent intent = ((Activity) context).getIntent();
 		Bundle bundle = intent.getExtras();
-		this.mode = (PianoMode) bundle.getSerializable("pianoMode");
+		if (bundle != null) {
+			this.mode = (PianoMode) bundle.getSerializable("pianoMode");
 
-		// TODO: Implement actual logic for composition/game mode-specific actions
-		switch (mode) {
-			case MODE_COMPOSITION:
-				System.out.println("Detected composition mode");
-				break;
-			case MODE_GAME:
-				System.out.println("Detected game mode");
-				break;
-			default:
-				break;
+			// TODO: Implement actual logic for composition/game mode-specific actions
+			switch (mode) {
+				case MODE_COMPOSITION:
+					System.out.println("Detected composition mode");
+					break;
+				case MODE_GAME:
+					System.out.println("Detected game mode");
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.mode = null;
 		}
 
 		SoundPlayer.initialize(context);
+
+		MidiFileIO midi = new MidiFileIO(mode);
+		Thread midiThread = new Thread(midi);
+		midiThread.start();
 	}
 
 	@Override
