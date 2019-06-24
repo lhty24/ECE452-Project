@@ -22,8 +22,34 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+//public class GamingMidi implements EventListener {
+//	private HashSet<Event.EventType> monitoredEvents;
+//
+//	private GamingMidi() {
+//		this.monitoredEvents = new HashSet<>();
+//		monitoredEvents.add(Event.EventType.MIDI_DATA);
+//		EventBus.getInstance().register(this);
+//	}
+//
+//	@Override
+//	public Set<Event.EventType> getMonitoredEvents() {
+//		return monitoredEvents;
+//	}
+//
+//	@Override
+//	public void handleEvent(Event event) {
+//		System.out.println("SoundPlayer received event: " + event.toString());
+//		switch (event.getEventType()) {
+//			case MIDI_DATA:
+//			default:
+//				break;
+//		}
+//	}
+//}
 
 public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
@@ -302,6 +328,7 @@ public class PalmPiano implements ApplicationListener {
 				break;
 			case MODE_GAME:
 				System.out.println("Detected game mode");
+
 				for (int oc = 0; oc < 7; oc++) {
 					//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 					boolean bk;
@@ -312,19 +339,9 @@ public class PalmPiano implements ApplicationListener {
 							bk = false;
 						}
 
-						//RhythmBox box = new RhythmBox(bk, bk ? offset - Constants.BK_WIDTH/2 : offset);
-						//RhythmBox box = new RhythmBox(true, bk? i*(130)+30-45 : i*(130)+30);
-						//RhythmBox box = new RhythmBox(true, bk ? i*(130) : i*(130) - 45 );
 						RhythmBox box = new RhythmBox(true, i * (130));
 						box.setTouchable(Touchable.enabled);
 						boxes.add(box);
-//				if (bk) {
-//					boxes_bk.add(box);
-//					continue;
-//				} else {
-//					boxes_wk.add(box);
-//				}
-						//offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 						stage.addActor(box);
 					}
 				}
