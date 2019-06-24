@@ -54,6 +54,7 @@ public class PalmPiano implements ApplicationListener {
 					pressed = true;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
 					return true;
 				}
 
@@ -61,6 +62,7 @@ public class PalmPiano implements ApplicationListener {
 					pressed = false;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PAUSE, null));
 				}
 			});
 		}
@@ -127,9 +129,8 @@ public class PalmPiano implements ApplicationListener {
 		SoundPlayer.initialize(context);
 
 		MidiFileIO midi = new MidiFileIO();
-		MidiFile midiFile = midi.getMidiFile("Mario.mid");
-		List<MidiNoteEvent> midiEvents = midi.getMidiEvents(midiFile);
-		midi.playbackMidi(midiEvents);
+		Thread midiThread = new Thread(midi);
+		midiThread.start();
 	}
 
 	@Override

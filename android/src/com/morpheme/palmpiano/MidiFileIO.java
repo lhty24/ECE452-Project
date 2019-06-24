@@ -15,10 +15,15 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-public class MidiFileIO {
+public class MidiFileIO implements EventListener, Runnable {
+
+    private boolean isPlaying;
+    private HashSet<Event.EventType> monitoredEvents;
 
     public MidiFileIO() {}
 
@@ -37,6 +42,13 @@ public class MidiFileIO {
             OutputStream fos = new FileOutputStream(mid);
             fos.write(midiBytes);
             fos.close();
+
+            isPlaying = false;
+
+            this.monitoredEvents = new HashSet<>();
+            monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
+            monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
+            EventBus.getInstance().register(this);
 
             // Create midi file.
             return new MidiFile(mid);
@@ -95,7 +107,9 @@ public class MidiFileIO {
     }
 
     public void playbackMidi(List<MidiNoteEvent> midiNoteEvents) {
-        long now = System.nanoTime();
+        long newNow = 0;
+        long prev = System.nanoTime();
+        long dt = 0;
 
         for(MidiNoteEvent event : midiNoteEvents) {
             MidiEvent e = event.getMidiEvent();
@@ -103,20 +117,55 @@ public class MidiFileIO {
 
             byte[] noteEvent = new byte[3];
 
-            if(e instanceof NoteOn) {
-                NoteOn note = (NoteOn)e;
-                noteEvent[0] = note.getVelocity() > 0 ? (byte)0x91 : (byte)0x81;
-                noteEvent[1] = (byte)note.getNoteValue();
-                noteEvent[2] = (byte)note.getVelocity();
-            } else if(e instanceof NoteOff) {
-                NoteOff note = (NoteOff)e;
-                noteEvent[0] = (byte)0x81;
-                noteEvent[1] = (byte)note.getNoteValue();
-                noteEvent[2] = (byte)note.getVelocity();
+            if (e instanceof NoteOn) {
+                NoteOn note = (NoteOn) e;
+                noteEvent[0] = note.getVelocity() > 0 ? (byte) 0x91 : (byte) 0x81;
+                noteEvent[1] = (byte) note.getNoteValue();
+                noteEvent[2] = (byte) note.getVelocity();
+            } else if (e instanceof NoteOff) {
+                NoteOff note = (NoteOff) e;
+                noteEvent[0] = (byte) 0x81;
+                noteEvent[1] = (byte) note.getNoteValue();
+                noteEvent[2] = (byte) note.getVelocity();
             }
 
-            while(System.nanoTime() - now < timestamp) {}
+            while (dt <= timestamp) {
+                newNow = System.nanoTime();
+                while (!isPlaying) {
+                    newNow = System.nanoTime();
+                    prev = newNow;
+                }
+                dt += (newNow - prev);
+                prev = newNow;
+            }
+
             EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA, noteEvent));
         }
+    }
+
+    @Override
+    public void run() {
+        MidiFile midiFile = getMidiFile("Mario.mid");
+        List<MidiNoteEvent> midiEvents = getMidiEvents(midiFile);
+        playbackMidi(midiEvents);
+    }
+
+    @Override
+    public void handleEvent(Event<?> event) {
+        switch (event.getEventType()) {
+            case MIDI_FILE_PLAY:
+                this.isPlaying = true;
+                break;
+            case MIDI_FILE_PAUSE:
+                this.isPlaying = false;
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public Set<Event.EventType> getMonitoredEvents() {
+        return monitoredEvents;
     }
 }
