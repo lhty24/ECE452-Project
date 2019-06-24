@@ -170,26 +170,23 @@ public class PalmPiano implements ApplicationListener {
 	@Override
 	public void create() {
 		eb = EventBus.getInstance();
-		stage = new Stage();
+		stage = new PianoStage();
 		Gdx.input.setInputProcessor(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
 		List<RhythmBox> boxes = new ArrayList<>();
-		//List<RhythmBox> boxes_wk = new ArrayList<>();
-
 
 		for (int oc = 0; oc < 7; oc++) {
+//			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
-				if ( (i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0) ) {
+				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
 					bk = true;
 				} else {
 					bk = false;
 				}
-
 				PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  offsetMap[i] + oc* (7* wkInterval));
-
 				k.setTouchable(Touchable.enabled);
 				if (bk) {
 					bks.add(k);
@@ -197,6 +194,7 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					wks.add(k);
 				}
+//				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
 		}
 
@@ -207,6 +205,8 @@ public class PalmPiano implements ApplicationListener {
 		for (PianoKey bk : bks) {
 			stage.addActor(bk);
 		}
+
+//		SoundPlayer.initialize(context);
 
 		//Rhythm Boxes
 		for (int oc = 0; oc < 7; oc++) {
