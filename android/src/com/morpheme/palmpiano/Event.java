@@ -1,7 +1,7 @@
 package com.morpheme.palmpiano;
 
 public class Event <D> {
-    public enum EventType {PIANO_KEY_DOWN, PIANO_KEY_UP};
+    public enum EventType {PIANO_KEY_DOWN, PIANO_KEY_UP, MIDI_DATA}
 
     private long timestamp;
     private EventType eventType;
@@ -25,5 +25,14 @@ public class Event <D> {
 
     public D getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        if (data != null) {
+            return timestamp + " - eventType: " + eventType.toString() + " - data: " + data.toString();
+        } else {
+            return timestamp + " - eventType: " + eventType.toString() + " - data: null";
+        }
     }
 }

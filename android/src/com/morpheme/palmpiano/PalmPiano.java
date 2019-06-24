@@ -1,5 +1,7 @@
 package com.morpheme.palmpiano;
 
+import android.content.Context;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -9,45 +11,55 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.morpheme.palmpiano.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PalmPiano implements ApplicationListener {
-    private Stage stage;
+    private PianoStage stage;
+    private EventBus eb;
+    private Context context;
+
+    public PalmPiano(Context context) {
+    	super();
+		this.context = context;
+	}
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
-		String note;
+		Byte midiNote = 0x0b;
 		Texture texture;
 		Sprite sprite;
 		float actorX = 0, actorY = 0;
 		boolean pressed;
 
-		public PianoKey(boolean bk, final String note, float x){
+		public PianoKey(boolean bk, final Byte midiNote, float x){
 			String file = "wk.png";
 			this.bk = bk;
 			if (bk) {
-				this.actorY = 192;
+				this.actorY = Constants.WK_HEIGHT-Constants.BK_HEIGHT;
 				file = "bk.png";
 			}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
-			this.note = note;
+			this.midiNote = midiNote;
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					pressed = true;
-					System.out.println(note);
+					System.out.println(midiNote);
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
 					return true;
 				}
 
 				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 					pressed = false;
+					System.out.println(midiNote);
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
 				}
 			});
 		}
@@ -72,36 +84,46 @@ public class PalmPiano implements ApplicationListener {
 
 	@Override
 	public void create() {
-		stage = new Stage();
+		eb = EventBus.getInstance();
+		stage = new PianoStage();
 		Gdx.input.setInputProcessor(stage);
 
-		List<PianoKey> wks = new ArrayList<PianoKey>();
-		List<PianoKey> bks = new ArrayList<PianoKey>();
+		List<PianoKey> wks = new ArrayList<>();
+		List<PianoKey> bks = new ArrayList<>();
 
-//		PianoKey myActor = new PianoKey();
+		// Order of notes in octave
+		String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
 
-		// White keys
-		for(int i = 0; i < 18; i++) {
-			PianoKey wk = new PianoKey(false, "w"+i, i*(130));
-			wks.add(wk);
-			wk.setTouchable(Touchable.enabled);
+		for (int oc = 0; oc < 7; oc++) {
+			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+			boolean bk;
+			for (int i = 0; i < notes.length; i++) {
+				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
+					bk = true;
+				} else {
+					bk = false;
+				}
+				PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  bk ? offset - Constants.BK_WIDTH/2 : offset);
+				k.setTouchable(Touchable.enabled);
+				if (bk) {
+					bks.add(k);
+					continue;
+				} else {
+					wks.add(k);
+				}
+				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
+			}
+		}
+
+		for (PianoKey wk : wks) {
 			stage.addActor(wk);
 		}
 
-		// Black keys
-		// Refactor checking into exclusion set
-		for(int i = 0; i < 18; i++) {
-			if ( i == 3 || i == 6 || i == 10 || i == 13 || i == 17 )
-				continue;
-			PianoKey bk = new PianoKey(true, "b"+i, 130-45 + i*130);
-			bks.add(bk);
-			bk.setTouchable(Touchable.enabled);
+		for (PianoKey bk : bks) {
 			stage.addActor(bk);
 		}
 
-		System.out.println("Test sound player wrld!");
-		SoundPlayer player = SoundPlayer.getInstance();
-		player.playNote(SoundPlayer.Note.C4);
+		SoundPlayer.initialize(context);
 	}
 
 	@Override

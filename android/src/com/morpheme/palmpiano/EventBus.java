@@ -23,8 +23,9 @@ public class EventBus {
     }
 
     public void dispatch(Event<?> event) {
+//        System.out.println("Received " + event.getData());
         for(EventListener subscriber : subscribers) {
-            if (subscriber.getMonitoredEvents().contains(event)) {
+            if (subscriber.getMonitoredEvents().contains(event.getEventType())) {
                 subscriber.handleEvent(event);
             }
         }
