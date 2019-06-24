@@ -25,9 +25,11 @@ public class MidiFileIO implements EventListener, Runnable {
     private boolean isPlaying;
     private HashSet<Event.EventType> monitoredEvents;
     private PalmPiano.PianoMode pianoMode;
+    private String filename;
 
-    public MidiFileIO(PalmPiano.PianoMode mode) {
+    public MidiFileIO(PalmPiano.PianoMode mode, String filename) {
         this.pianoMode = mode;
+        this.filename = filename;
     }
 
     public MidiFile getMidiFile(String filename) {
@@ -152,7 +154,7 @@ public class MidiFileIO implements EventListener, Runnable {
 
     @Override
     public void run() {
-        MidiFile midiFile = getMidiFile("mozart_eine_kleine_easy.mid");
+        MidiFile midiFile = getMidiFile(filename);
         List<MidiNoteEvent> midiEvents = getMidiEvents(midiFile);
         playbackMidi(midiEvents);
     }

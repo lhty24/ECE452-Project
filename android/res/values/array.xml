@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="trackListDisplay">
+        <item>Happy Birthday</item>
+        <item>London Bridge</item>
+        <item>Mario</item>
+        <item>Mozart</item>
+        <item>Pokemon</item>
+        <item>This Game</item>
+        <item>Twinkle Twinkle Little Star</item>
+    </string-array>
+
+    <string-array name="trackListFileName">
+        <item>happy_birthday.mid</item>
+        <item>london_bridge.mid</item>
+        <item>Mario.mid</item>
+        <item>mozart_eine_kleine_easy.mid</item>
+        <item>Pokemon.mid</item>
+        <item>Piano.mid</item>
+        <item>twinkle_twinkle.mid</item>
+    </string-array>
+</resources>
