@@ -23,8 +23,7 @@ public class MainMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("Going to composition mode");
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.MODE_COMPOSITION, null));
-                startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
+                launchPalmPiano(PalmPiano.PianoMode.MODE_COMPOSITION);
             }
         });
     }
@@ -35,9 +34,17 @@ public class MainMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("Going to game mode");
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.MODE_GAME, null));
-                startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
+                launchPalmPiano(PalmPiano.PianoMode.MODE_GAME);
             }
         });
+    }
+
+    private void launchPalmPiano(PalmPiano.PianoMode mode) {
+        startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("pianoMode", mode);
+        Intent intent = new Intent(MainMenu.this, AndroidLauncher.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 }
