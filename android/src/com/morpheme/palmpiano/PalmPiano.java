@@ -57,13 +57,16 @@ public class PalmPiano implements ApplicationListener {
 		public static Texture textureWk;
 		public static Texture textureBk;
 
+		private long duration;
+
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
-		public RhythmBox(boolean bk, int midi_note){
+		public RhythmBox(boolean bk, int midi_note, long duration){
 			this.bk = bk;
 			int notePosition = getNotePosition((byte) midi_note);
 			this.actorX = notePosition;
+			this.duration = duration;
 			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
 			this.actorY = 1300;
 
@@ -83,10 +86,11 @@ public class PalmPiano implements ApplicationListener {
 		@Override
 		public void draw(Batch batch, float alpha){
 			batch.setColor(1,1,1, 1);
+//			System.out.println("Size: >>>>>>>>>>>>>>" + duration + " " + (int)(duration / 10000000l));
 			if (bk)
-				batch.draw(textureBk,actorX,actorY);
+				batch.draw(textureBk,actorX,actorY,textureBk.getWidth(), (int)(duration / 5000000l));
 			else
-				batch.draw(textureWk,actorX,actorY);
+				batch.draw(textureWk,actorX,actorY,textureWk.getWidth(), (int)(duration / 5000000l));
 			batch.setColor(1,1,1,1);
 		}
 
@@ -302,7 +306,7 @@ public class PalmPiano implements ApplicationListener {
 //						}
 
 						//RhythmBox box = new RhythmBox(true, getNotePosition((byte) 80));
-						RhythmBox box = new RhythmBox(false, 21);
+						RhythmBox box = new RhythmBox(false, 21, 1);
 						//System.out.println("NotePosition>>>>>>>>>>>>>>>>: " + getNotePosition((byte) 21));
 						box.setTouchable(Touchable.enabled);
 						boxes.add(box);

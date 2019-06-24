@@ -12,6 +12,7 @@ import com.pdrogfer.mididroid.event.meta.Tempo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -153,18 +154,28 @@ public class MidiFileIO implements EventListener, Runnable {
             MidiEvent e = event.getMidiEvent();
             long timestamp = event.getTimestamp();
 
-            byte[] noteEvent = new byte[3];
+            ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+            buffer.putLong(event.getLength());
+            byte[] len = buffer.array();
+
+            byte[] noteEvent = new byte[3 + len.length];
 
             if (e instanceof NoteOn) {
                 NoteOn note = (NoteOn) e;
                 noteEvent[0] = note.getVelocity() > 0 ? (byte) 0x91 : (byte) 0x81;
                 noteEvent[1] = (byte) note.getNoteValue();
                 noteEvent[2] = (byte) note.getVelocity();
+                for(int i = 3; i < 3 + len.length; i++) {
+                    noteEvent[i] = len[i - 3];
+                }
             } else if (e instanceof NoteOff) {
                 NoteOff note = (NoteOff) e;
                 noteEvent[0] = (byte) 0x81;
                 noteEvent[1] = (byte) note.getNoteValue();
                 noteEvent[2] = (byte) note.getVelocity();
+                for(int i = 3; i < 3 + len.length; i++) {
+                    noteEvent[i] = len[i - 3];
+                }
             }
 
             while (dt <= timestamp) {
