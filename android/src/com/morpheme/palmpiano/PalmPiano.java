@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.morpheme.palmpiano.util.Constants;
+import com.pdrogfer.mididroid.MidiFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +125,14 @@ public class PalmPiano implements ApplicationListener {
 		}
 
 		SoundPlayer.initialize(context);
+
+		System.out.println("Test sound player wrld!");
+
+		MidiFileIO midi = new MidiFileIO();
+
+		MidiFile midiFile = midi.getMidiFile("Piano.mid");
+
+		midi.getMidiEvents(midiFile);
 	}
 
 	@Override
