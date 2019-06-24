@@ -10,25 +10,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
     private EventBus eb;
     private Context context;
     private TextButton buttonBack;
+	private TextButton playPauseButton;
     private PianoMode mode;
 
 	// Order of notes in octave
@@ -79,7 +78,6 @@ public class PalmPiano implements ApplicationListener {
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
@@ -114,6 +112,7 @@ public class PalmPiano implements ApplicationListener {
 
 		}
 	}
+
 
 	@Override
 	public void create() {
@@ -150,18 +149,6 @@ public class PalmPiano implements ApplicationListener {
 		for (PianoKey bk : bks) {
 			stage.addActor(bk);
 		}
-
-//		TextButton.TextButtonStyle buttonBackStyle = new TextButton.TextButtonStyle();
-//		buttonBackStyle.font = new BitmapFont();
-//		TextureAtlas buttonBackAtlas = new TextureAtlas(Gdx.files.internal("buttons/buttons.pack"));
-//		Skin skin = new Skin();
-//		skin.addRegions(buttonBackAtlas);
-//		buttonBackStyle.font = new BitmapFont();
-//		buttonBackStyle.up = skin.getDrawable("up-button");
-//		buttonBackStyle.down = skin.getDrawable("down-button");
-//		buttonBackStyle.checked = skin.getDrawable("checked-button");
-//		buttonBack = new TextButton("Go Back", buttonBackStyle);
-//		stage.addActor(buttonBack);
 
 		Intent intent = ((Activity) context).getIntent();
 		Bundle bundle = intent.getExtras();
