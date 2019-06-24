@@ -90,19 +90,23 @@ public class PalmPiano implements ApplicationListener {
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
-		public RhythmBox(boolean bk, float x){
+		public RhythmBox(boolean bk, int midi_note){
 			//String file = "box_gr.png";
 			String file = "t1.png";
 			this.bk = bk;
 			//if (bk) {
+			int notePosition = getNotePosition((byte) midi_note);
+			this.actorX = notePosition;
+			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
 			this.actorY = 1000;
+
 //				file = "box_gr.png";
 			file = "t1.png";
 			//}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
 			//this.note = note;
-			this.actorX = x;
+			//this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 //			addListener(new InputListener(){
 //				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -332,18 +336,25 @@ public class PalmPiano implements ApplicationListener {
 					for (int oc = 0; oc < 7; oc++) {
 						//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 						boolean bk;
-						for (int i = 0; i < notes.length; i++) {
-							if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
-								bk = true;
-							} else {
-								bk = false;
-							}
+//						for (int i = 0; i < notes.length; i++) {
+//							if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
+//								bk = true;
+//							} else {
+//								bk = false;
+//							}
+//
+//							RhythmBox box = new RhythmBox(true, i * (130));
+//							box.setTouchable(Touchable.enabled);
+//							boxes.add(box);
+//							stage.addActor(box);
+//						}
 
-							RhythmBox box = new RhythmBox(true, i * (130));
-							box.setTouchable(Touchable.enabled);
-							boxes.add(box);
-							stage.addActor(box);
-						}
+						//RhythmBox box = new RhythmBox(true, getNotePosition((byte) 80));
+						RhythmBox box = new RhythmBox(true, 21);
+						//System.out.println("NotePosition>>>>>>>>>>>>>>>>: " + getNotePosition((byte) 21));
+						box.setTouchable(Touchable.enabled);
+						boxes.add(box);
+						stage.addActor(box);
 					}
 					break;
 				default:
@@ -389,7 +400,8 @@ public class PalmPiano implements ApplicationListener {
     	int octave = shifted/12;
     	int keyIndex = shifted % 12;
 
-    	return ((7 * octave) * wkInterval + offsetMap[keyIndex]);
+		//System.out.println("KeyIndex value>>>>>>>>>>>>>>>>>>>>>>>: " + keyIndex);
+    	return ((7 * octave) * wkInterval + offsetMap[keyIndex]) + 20; //hardcoded
 
 	}
 }
