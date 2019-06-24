@@ -152,7 +152,7 @@ public class MidiFileIO implements EventListener, Runnable {
 
     @Override
     public void run() {
-        MidiFile midiFile = getMidiFile("Mario.mid");
+        MidiFile midiFile = getMidiFile("mozart_eine_kleine_easy.mid");
         List<MidiNoteEvent> midiEvents = getMidiEvents(midiFile);
         playbackMidi(midiEvents);
     }
