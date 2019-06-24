@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.morpheme.palmpiano.util.Constants;
+import com.pdrogfer.mididroid.MidiFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,14 +138,20 @@ public class PalmPiano implements ApplicationListener {
 					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
-//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
+
 					return true;
 				}
 
 				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
 					pressed = false;
 					System.out.println(midiNote);
-//					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+
+					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PAUSE, null));
+
 				}
 			});
 		}
@@ -265,6 +272,10 @@ public class PalmPiano implements ApplicationListener {
 //		}
 
 		SoundPlayer.initialize(context);
+
+		MidiFileIO midi = new MidiFileIO();
+		Thread midiThread = new Thread(midi);
+		midiThread.start();
 	}
 
 	@Override
