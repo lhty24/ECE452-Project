@@ -1,29 +1,36 @@
 package com.morpheme.palmpiano;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
-import com.pdrogfer.mididroid.MidiFile;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PalmPiano implements ApplicationListener {
-	private Stage stage;
-	private EventBus eb;
-	private Context context;
-
+    private PianoStage stage;
+    private EventBus eb;
+    private Context context;
+    private TextButton buttonBack;
+    private PianoMode mode;
 
 	// Order of notes in octave
 	public String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
@@ -112,6 +119,8 @@ public class PalmPiano implements ApplicationListener {
 		}
 	}
 
+	public enum PianoMode {MODE_COMPOSITION, MODE_GAME}
+
 	public class PianoKey extends Actor {
 		boolean bk = false;
 		Byte midiNote = 0x0b;
@@ -185,7 +194,6 @@ public class PalmPiano implements ApplicationListener {
 		List<RhythmBox> boxes = new ArrayList<>();
 
 		for (int oc = 0; oc < 7; oc++) {
-//			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
 				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
@@ -201,7 +209,6 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					wks.add(k);
 				}
-//				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
 		}
 
@@ -216,33 +223,34 @@ public class PalmPiano implements ApplicationListener {
 //		SoundPlayer.initialize(context);
 
 		//Rhythm Boxes
-		for (int oc = 0; oc < 7; oc++) {
-			//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
-			boolean bk;
-			for (int i = 0; i < notes.length; i++) {
-				if ( (i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0) ) {
-					bk = true;
-				} else {
-					bk = false;
-				}
-
-				//RhythmBox box = new RhythmBox(bk, bk ? offset - Constants.BK_WIDTH/2 : offset);
-				//RhythmBox box = new RhythmBox(true, bk? i*(130)+30-45 : i*(130)+30);
-				//RhythmBox box = new RhythmBox(true, bk ? i*(130) : i*(130) - 45 );
-				RhythmBox box = new RhythmBox(true, i*(130));
-				box.setTouchable(Touchable.enabled);
-				boxes.add(box);
-//				if (bk) {
-//					boxes_bk.add(box);
-//					continue;
-//				} else {
-//					boxes_wk.add(box);
+		//if (this.mode == PianoMode.MODE_GAME) {
+//			for (int oc = 0; oc < 7; oc++) {
+//				//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+//				boolean bk;
+//				for (int i = 0; i < notes.length; i++) {
+//					if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
+//						bk = true;
+//					} else {
+//						bk = false;
+//					}
+//
+//					//RhythmBox box = new RhythmBox(bk, bk ? offset - Constants.BK_WIDTH/2 : offset);
+//					//RhythmBox box = new RhythmBox(true, bk? i*(130)+30-45 : i*(130)+30);
+//					//RhythmBox box = new RhythmBox(true, bk ? i*(130) : i*(130) - 45 );
+//					RhythmBox box = new RhythmBox(true, i * (130));
+//					box.setTouchable(Touchable.enabled);
+//					boxes.add(box);
+////				if (bk) {
+////					boxes_bk.add(box);
+////					continue;
+////				} else {
+////					boxes_wk.add(box);
+////				}
+//					//offset += (Constants.WK_WIDTH + Constants.WK_GAP);
+//					stage.addActor(box);
 //				}
-				//offset += (Constants.WK_WIDTH + Constants.WK_GAP);
-				stage.addActor(box);
-			}
-		}
-
+//			}
+		//}
 
 //		for(int i = 0; i < 18; i++) {
 //			RhythmBox box = new RhythmBox(true,i*(130));
@@ -270,6 +278,60 @@ public class PalmPiano implements ApplicationListener {
 //			bk.setTouchable(Touchable.enabled);
 //			stage.addActor(bk);
 //		}
+
+//		TextButton.TextButtonStyle buttonBackStyle = new TextButton.TextButtonStyle();
+//		buttonBackStyle.font = new BitmapFont();
+//		TextureAtlas buttonBackAtlas = new TextureAtlas(Gdx.files.internal("buttons/buttons.pack"));
+//		Skin skin = new Skin();
+//		skin.addRegions(buttonBackAtlas);
+//		buttonBackStyle.font = new BitmapFont();
+//		buttonBackStyle.up = skin.getDrawable("up-button");
+//		buttonBackStyle.down = skin.getDrawable("down-button");
+//		buttonBackStyle.checked = skin.getDrawable("checked-button");
+//		buttonBack = new TextButton("Go Back", buttonBackStyle);
+//		stage.addActor(buttonBack);
+
+		Intent intent = ((Activity) context).getIntent();
+		Bundle bundle = intent.getExtras();
+		this.mode = (PianoMode) bundle.getSerializable("pianoMode");
+
+		// TODO: Implement actual logic for composition/game mode-specific actions
+		switch (mode) {
+			case MODE_COMPOSITION:
+				System.out.println("Detected composition mode");
+				break;
+			case MODE_GAME:
+				System.out.println("Detected game mode");
+				for (int oc = 0; oc < 7; oc++) {
+					//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+					boolean bk;
+					for (int i = 0; i < notes.length; i++) {
+						if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
+							bk = true;
+						} else {
+							bk = false;
+						}
+
+						//RhythmBox box = new RhythmBox(bk, bk ? offset - Constants.BK_WIDTH/2 : offset);
+						//RhythmBox box = new RhythmBox(true, bk? i*(130)+30-45 : i*(130)+30);
+						//RhythmBox box = new RhythmBox(true, bk ? i*(130) : i*(130) - 45 );
+						RhythmBox box = new RhythmBox(true, i * (130));
+						box.setTouchable(Touchable.enabled);
+						boxes.add(box);
+//				if (bk) {
+//					boxes_bk.add(box);
+//					continue;
+//				} else {
+//					boxes_wk.add(box);
+//				}
+						//offset += (Constants.WK_WIDTH + Constants.WK_GAP);
+						stage.addActor(box);
+					}
+				}
+				break;
+			default:
+				break;
+		}
 
 		SoundPlayer.initialize(context);
 
