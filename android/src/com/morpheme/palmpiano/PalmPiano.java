@@ -13,8 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.morpheme.palmpiano.util.Constants;
-import com.pdrogfer.mididroid.MidiFile;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,7 +113,6 @@ public class PalmPiano implements ApplicationListener {
 		List<PianoKey> bks = new ArrayList<>();
 
 		for (int oc = 0; oc < 7; oc++) {
-//			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
 				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
@@ -131,7 +128,6 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					wks.add(k);
 				}
-//				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
 		}
 
