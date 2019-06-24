@@ -23,6 +23,25 @@ public class PalmPiano implements ApplicationListener {
     private EventBus eb;
     private Context context;
 
+	// Order of notes in octave
+	public String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
+
+	public int wkInterval = Constants.WK_WIDTH + Constants.WK_GAP;
+	public int[] offsetMap = {
+			0,
+			wkInterval - Constants.BK_WIDTH / 2,
+			wkInterval,
+			2 * wkInterval,
+			3 * wkInterval - Constants.BK_WIDTH / 2,
+			3 * wkInterval,
+			4 * wkInterval - Constants.BK_WIDTH / 2,
+			4 * wkInterval,
+			5 * wkInterval,
+			6 * wkInterval - Constants.BK_WIDTH / 2,
+			6 * wkInterval,
+			7 * wkInterval - Constants.BK_WIDTH / 2
+	};
+
     public PalmPiano(Context context) {
     	super();
 		this.context = context;
@@ -51,6 +70,7 @@ public class PalmPiano implements ApplicationListener {
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 //					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
+					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
 					eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
@@ -94,11 +114,8 @@ public class PalmPiano implements ApplicationListener {
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
 
-		// Order of notes in octave
-		String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
-
 		for (int oc = 0; oc < 7; oc++) {
-			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+//			int offset = oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
 			boolean bk;
 			for (int i = 0; i < notes.length; i++) {
 				if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
@@ -106,7 +123,7 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					bk = false;
 				}
-				PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  bk ? offset - Constants.BK_WIDTH/2 : offset);
+				PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  offsetMap[i] + oc* (7* wkInterval));
 				k.setTouchable(Touchable.enabled);
 				if (bk) {
 					bks.add(k);
@@ -114,7 +131,7 @@ public class PalmPiano implements ApplicationListener {
 				} else {
 					wks.add(k);
 				}
-				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
+//				offset += (Constants.WK_WIDTH + Constants.WK_GAP);
 			}
 		}
 
@@ -154,5 +171,15 @@ public class PalmPiano implements ApplicationListener {
 
 	@Override
 	public void resume() {
+	}
+
+	// Given a midi byte, return the corresponding x position of the key in the game engine
+	public int getNotePosition(Byte midiByte) {
+    	int shifted = midiByte.intValue() - Constants.MIDI_OFFSET;
+    	int octave = shifted/12;
+    	int keyIndex = shifted % 12;
+
+    	return ((7 * octave) * wkInterval + offsetMap[keyIndex]);
+
 	}
 }
