@@ -126,13 +126,10 @@ public class PalmPiano implements ApplicationListener {
 
 		SoundPlayer.initialize(context);
 
-		System.out.println("Test sound player wrld!");
-
 		MidiFileIO midi = new MidiFileIO();
-
-		MidiFile midiFile = midi.getMidiFile("Piano.mid");
-
-		midi.getMidiEvents(midiFile);
+		MidiFile midiFile = midi.getMidiFile("Mario.mid");
+		List<MidiNoteEvent> midiEvents = midi.getMidiEvents(midiFile);
+		midi.playbackMidi(midiEvents);
 	}
 
 	@Override

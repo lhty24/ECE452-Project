@@ -11,8 +11,6 @@ import com.pdrogfer.mididroid.event.meta.Tempo;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,14 +20,11 @@ import java.util.List;
 
 public class MidiFileIO {
 
-    public MidiFileIO() {
-
-    }
+    public MidiFileIO() {}
 
     public MidiFile getMidiFile(String filename) {
         try {
             // Internal storage is read only so read it and write to local storage file.
-
             // Get byte array of pre selected midi file.
             FileHandle handle = Gdx.files.internal(filename);
             byte[] midiBytes = handle.readBytes();
@@ -51,40 +46,55 @@ public class MidiFileIO {
         }
     }
 
-    public void getMidiEvents(MidiFile midiFile) {
+    public List<MidiNoteEvent> getMidiEvents(MidiFile midiFile) {
         int PPQ = midiFile.getResolution();
 
-        if((PPQ & 0x0000) != 0) {
-            System.out.println("easy");
+        if ((PPQ & 0x0000) != 0) {
+            System.out.println("TODO");
         }
 
         List<MidiNoteEvent> midiNoteEvents = new ArrayList<MidiNoteEvent>();
 
-        for(MidiTrack track : midiFile.getTracks()) {
+        // Midi Default BPM.
+        int BPM = 120;
+
+        for (MidiTrack track : midiFile.getTracks()) {
             List<MidiEvent> midiEvents = new ArrayList<MidiEvent>();
             Iterator<MidiEvent> it = track.getEvents().iterator();
 
-            int BPM = 200;
+            // If type is 1, all tracks use the same BPM?
+            BPM = midiFile.getType() == 1 ? BPM : 120;
 
-            while(it.hasNext()) {
+            while (it.hasNext()) {
                 MidiEvent event = it.next();
 
-                if(event instanceof NoteOn || event instanceof NoteOff) {
+                if (event instanceof NoteOn || event instanceof NoteOff) {
                     midiEvents.add(event);
-                } else if(event instanceof Tempo) {
-                    BPM = (int)((Tempo) event).getBpm();
+                } else if (event instanceof Tempo) {
+                    BPM = (int) ((Tempo) event).getBpm();
                 }
             }
 
             long nsPerTick = 60000000000l / (PPQ * BPM);
 
-            for(MidiEvent event : midiEvents) {
-                midiNoteEvents.add(new MidiNoteEvent(event, nsPerTick));
+            for (MidiEvent event : midiEvents) {
+                midiNoteEvents.add(new MidiNoteEvent(event, event.getTick() * nsPerTick));
             }
         }
 
-        Collections.sort(midiNoteEvents, new SortMidi());
+        Collections.sort(midiNoteEvents, new Comparator<MidiNoteEvent>() {
+            @Override
+            public int compare(MidiNoteEvent o1, MidiNoteEvent o2) {
+                if (o1.getTimestamp() > o2.getTimestamp()) return 1;
+                if (o1.getTimestamp() < o2.getTimestamp()) return -1;
+                return 0;
+            }
+        });
 
+        return midiNoteEvents;
+    }
+
+    public void playbackMidi(List<MidiNoteEvent> midiNoteEvents) {
         long now = System.nanoTime();
 
         for(MidiNoteEvent event : midiNoteEvents) {
@@ -106,22 +116,7 @@ public class MidiFileIO {
             }
 
             while(System.nanoTime() - now < timestamp) {}
-
-            System.out.println(timestamp
-                    + (noteEvent[0] == (byte)0x91 ? " ON  " : " OFF ")
-                    + " Note: " + (int)noteEvent[1]
-                    + " Velocity: " + (int)noteEvent[2]
-            );
+            EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA, noteEvent));
         }
-    }
-
-
-}
-
-class SortMidi implements Comparator<MidiNoteEvent> {
-
-    @Override
-    public int compare(MidiNoteEvent o1, MidiNoteEvent o2) {
-        return (int)(o1.getTimestamp() - o2.getTimestamp());
     }
 }
