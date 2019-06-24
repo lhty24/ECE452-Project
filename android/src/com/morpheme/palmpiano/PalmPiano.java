@@ -368,7 +368,7 @@ public class PalmPiano implements ApplicationListener {
 
 		SoundPlayer.initialize(context);
 
-		MidiFileIO midi = new MidiFileIO(mode);
+		MidiFileIO midi = new MidiFileIO(mode, (String) bundle.getSerializable("midiFile"));
 		Thread midiThread = new Thread(midi);
 		midiThread.start();
 	}
