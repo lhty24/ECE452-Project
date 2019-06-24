@@ -29,25 +29,25 @@ public class PalmPiano implements ApplicationListener {
 	}
 
 	public class RhythmBox extends Actor {
-		boolean gr = false;
-		String note;
+		boolean bk = true;
+		//String note;
 		Texture texture;
 		Sprite sprite;
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
-		public RhythmBox(boolean gr, final String note, float x){
+		public RhythmBox(boolean bk, float x){
 			//String file = "box_gr.png";
 			String file = "t1.png";
-			this.gr = gr;
-			if (gr) {
-				this.actorY = 1000;
+			this.bk = bk;
+			//if (bk) {
+			this.actorY = 1000;
 //				file = "box_gr.png";
-				file = "t1.png";
-			}
+			file = "t1.png";
+			//}
 			texture = new Texture(Gdx.files.internal(file));
 			sprite = new Sprite(texture);
-			this.note = note;
+			//this.note = note;
 			this.actorX = x;
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 //			addListener(new InputListener(){
@@ -153,7 +153,8 @@ public class PalmPiano implements ApplicationListener {
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
-		List<RhythmBox> boxes = new ArrayList<RhythmBox>();
+		List<RhythmBox> boxes = new ArrayList<>();
+		//List<RhythmBox> boxes_wk = new ArrayList<>();
 
 //		PianoKey myActor = new PianoKey();
 
@@ -191,13 +192,41 @@ public class PalmPiano implements ApplicationListener {
 			stage.addActor(bk);
 		}
 
-		// Rhythm Boxes
-		for(int i = 0; i < 18; i++) {
-			RhythmBox box = new RhythmBox(true, "w"+i, i*(130));
-			boxes.add(box);
-			box.setTouchable(Touchable.enabled);
-			stage.addActor(box);
+		//Rhythm Boxes
+		for (int oc = 0; oc < 7; oc++) {
+			//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+			boolean bk;
+			for (int i = 0; i < notes.length; i++) {
+				if ( (i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0) ) {
+					bk = true;
+				} else {
+					bk = false;
+				}
+
+				//RhythmBox box = new RhythmBox(bk, bk ? offset - Constants.BK_WIDTH/2 : offset);
+				//RhythmBox box = new RhythmBox(true, bk? i*(130)+30-45 : i*(130)+30);
+				//RhythmBox box = new RhythmBox(true, bk ? i*(130) : i*(130) - 45 );
+				RhythmBox box = new RhythmBox(true, i*(130));
+				box.setTouchable(Touchable.enabled);
+				boxes.add(box);
+//				if (bk) {
+//					boxes_bk.add(box);
+//					continue;
+//				} else {
+//					boxes_wk.add(box);
+//				}
+				//offset += (Constants.WK_WIDTH + Constants.WK_GAP);
+				stage.addActor(box);
+			}
 		}
+
+
+//		for(int i = 0; i < 18; i++) {
+//			RhythmBox box = new RhythmBox(true,i*(130));
+//			boxes_bk.add(box);
+//			box.setTouchable(Touchable.enabled);
+//			stage.addActor(box);
+//		}
 
 //		// Black keys
 //		// Refactor checking into exclusion set
