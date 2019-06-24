@@ -60,8 +60,8 @@ public class PalmPiano implements ApplicationListener {
 	// Order of notes in octave
 	public String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
 
-	public int wkInterval = Constants.WK_WIDTH + Constants.WK_GAP;
-	public int[] offsetMap = {
+	public static final int wkInterval = Constants.WK_WIDTH + Constants.WK_GAP;
+	public static final int[] offsetMap = {
 			0,
 			wkInterval - Constants.BK_WIDTH / 2,
 			wkInterval,
@@ -82,7 +82,7 @@ public class PalmPiano implements ApplicationListener {
 		this.context = context;
 	}
 
-	public class RhythmBox extends Actor {
+	public static class RhythmBox extends Actor {
 		boolean bk = true;
 		//String note;
 		Texture texture;
@@ -98,7 +98,7 @@ public class PalmPiano implements ApplicationListener {
 			int notePosition = getNotePosition((byte) midi_note);
 			this.actorX = notePosition;
 			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
-			this.actorY = 1000;
+			this.actorY = 1300;
 
 //				file = "box_gr.png";
 			file = "t1.png";
@@ -364,6 +364,8 @@ public class PalmPiano implements ApplicationListener {
 			this.mode = null;
 		}
 
+		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(this.stage);
+
 		SoundPlayer.initialize(context);
 
 		MidiFileIO midi = new MidiFileIO(mode);
@@ -395,7 +397,7 @@ public class PalmPiano implements ApplicationListener {
 	}
 
 	// Given a midi byte, return the corresponding x position of the key in the game engine
-	public int getNotePosition(Byte midiByte) {
+	public static int getNotePosition(Byte midiByte) {
     	int shifted = midiByte.intValue() - Constants.MIDI_OFFSET;
     	int octave = shifted/12;
     	int keyIndex = shifted % 12;
