@@ -12,7 +12,7 @@ public class RhythmBoxListener implements EventListener {
 
     private RhythmBoxListener() {
         this.monitoredEvents = new HashSet<>();
-        monitoredEvents.add(Event.EventType.MIDI_DATA);
+        monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
         EventBus.getInstance().register(this);
     }
 
@@ -25,7 +25,7 @@ public class RhythmBoxListener implements EventListener {
     public void handleEvent(Event event) {
         System.out.println("SoundPlayer received event: " + event.toString());
         switch (event.getEventType()) {
-            case MIDI_DATA:
+            case MIDI_DATA_GAMEPLAY:
 
             default:
                 break;

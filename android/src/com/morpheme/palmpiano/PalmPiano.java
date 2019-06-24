@@ -10,21 +10,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 //public class GamingMidi implements EventListener {
 //	private HashSet<Event.EventType> monitoredEvents;
@@ -56,6 +54,7 @@ public class PalmPiano implements ApplicationListener {
     private EventBus eb;
     private Context context;
     private TextButton buttonBack;
+	private TextButton playPauseButton;
     private PianoMode mode;
 
 	// Order of notes in octave
@@ -169,7 +168,6 @@ public class PalmPiano implements ApplicationListener {
 			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-//					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
 					System.out.println(midiNote.toString());
 					pressed = true;
 					System.out.println(midiNote);
@@ -209,10 +207,11 @@ public class PalmPiano implements ApplicationListener {
 		}
 	}
 
+
 	@Override
 	public void create() {
 		eb = EventBus.getInstance();
-		stage = new PianoStage();
+		stage = new PianoStage(eb);
 		Gdx.input.setInputProcessor(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
@@ -319,40 +318,44 @@ public class PalmPiano implements ApplicationListener {
 
 		Intent intent = ((Activity) context).getIntent();
 		Bundle bundle = intent.getExtras();
-		this.mode = (PianoMode) bundle.getSerializable("pianoMode");
+		if (bundle != null) {
+			this.mode = (PianoMode) bundle.getSerializable("pianoMode");
 
-		// TODO: Implement actual logic for composition/game mode-specific actions
-		switch (mode) {
-			case MODE_COMPOSITION:
-				System.out.println("Detected composition mode");
-				break;
-			case MODE_GAME:
-				System.out.println("Detected game mode");
+			// TODO: Implement actual logic for composition/game mode-specific actions
+			switch (mode) {
+				case MODE_COMPOSITION:
+					System.out.println("Detected composition mode");
+					break;
+				case MODE_GAME:
+					System.out.println("Detected game mode");
 
-				for (int oc = 0; oc < 7; oc++) {
-					//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
-					boolean bk;
-					for (int i = 0; i < notes.length; i++) {
-						if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
-							bk = true;
-						} else {
-							bk = false;
+					for (int oc = 0; oc < 7; oc++) {
+						//int offset = 0 + oc * (7 * (Constants.WK_WIDTH + Constants.WK_GAP));
+						boolean bk;
+						for (int i = 0; i < notes.length; i++) {
+							if ((i < 5 && i % 2 == 1) || (i >= 5 && i % 2 == 0)) {
+								bk = true;
+							} else {
+								bk = false;
+							}
+
+							RhythmBox box = new RhythmBox(true, i * (130));
+							box.setTouchable(Touchable.enabled);
+							boxes.add(box);
+							stage.addActor(box);
 						}
-
-						RhythmBox box = new RhythmBox(true, i * (130));
-						box.setTouchable(Touchable.enabled);
-						boxes.add(box);
-						stage.addActor(box);
 					}
-				}
-				break;
-			default:
-				break;
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.mode = null;
 		}
 
 		SoundPlayer.initialize(context);
 
-		MidiFileIO midi = new MidiFileIO();
+		MidiFileIO midi = new MidiFileIO(mode);
 		Thread midiThread = new Thread(midi);
 		midiThread.start();
 	}
