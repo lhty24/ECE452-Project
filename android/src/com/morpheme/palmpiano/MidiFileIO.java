@@ -109,6 +109,38 @@ public class MidiFileIO implements EventListener, Runnable {
             }
         });
 
+        // Calculate length of note.
+        for(int i = 0; i < midiNoteEvents.size(); i++) {
+            MidiEvent event = midiNoteEvents.get(i).getMidiEvent();
+
+            if(event instanceof NoteOff || (event instanceof NoteOn && ((NoteOn)event).getVelocity() == 0)) {
+                continue;
+            }
+
+            NoteOn on = (NoteOn)event;
+
+            for(int j = i + 1; j < midiNoteEvents.size(); j++) {
+                MidiEvent event2 = midiNoteEvents.get(j).getMidiEvent();
+
+                if(event2 instanceof NoteOn) {
+                    NoteOn off = (NoteOn)event2;
+                    if(off.getVelocity() != 0 || (off.getNoteValue() != on.getNoteValue())) {
+                        continue;
+                    } else {
+                        midiNoteEvents.get(i).setLength(event2.getTick() - event.getTick());
+                        break;
+                    }
+                }
+
+                NoteOff off = (NoteOff)event2;
+
+                if(off.getNoteValue() != on.getNoteValue()) continue;
+
+                midiNoteEvents.get(i).setLength(event2.getTick() - event.getTick());
+                break;
+            }
+        }
+
         return midiNoteEvents;
     }
 

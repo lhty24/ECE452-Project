@@ -7,7 +7,9 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -54,6 +56,7 @@ public class PalmPiano implements ApplicationListener {
 		//String note;
 		public static Texture textureWk;
 		public static Texture textureBk;
+
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
@@ -64,7 +67,6 @@ public class PalmPiano implements ApplicationListener {
 			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
 			this.actorY = 1300;
 
-			//
 			if (textureWk == null || textureBk == null) {
 				textureWk = new Texture(Gdx.files.internal("t1.png"));
 				textureBk = new Texture(Gdx.files.internal("t2.png"));
@@ -78,6 +80,13 @@ public class PalmPiano implements ApplicationListener {
 			});
 		}
 
+		private void createTexture() {
+			Pixmap pixmap = new Pixmap(110, 110, Pixmap.Format.RGBA8888);
+			pixmap.setColor(12.0f, 56.0f, 34.0f, 1.0f);
+			pixmap.fillRectangle(0, 0, 110, 110);
+			tex = new Texture(pixmap);
+			pixmap.dispose();
+		}
 
 		@Override
 		public void draw(Batch batch, float alpha){
@@ -166,6 +175,8 @@ public class PalmPiano implements ApplicationListener {
 		eb = EventBus.getInstance();
 		stage = new PianoStage(eb);
 		Gdx.input.setInputProcessor(stage);
+
+		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
@@ -312,8 +323,6 @@ public class PalmPiano implements ApplicationListener {
 		} else {
 			this.mode = null;
 		}
-
-		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(this.stage);
 
 		SoundPlayer.initialize(context);
 

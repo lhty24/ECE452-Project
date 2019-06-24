@@ -28,7 +28,7 @@ public class PianoStage extends Stage {
         super();
         this.eb = eb;
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
-        playPauseBtn = new TextButton("Text Button",uiSkin,"default");
+        playPauseBtn = new TextButton("Start",uiSkin,"default");
         playPauseBtn.setSize(100*4,200);
         playPauseBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
         playPauseBtn.addListener(new InputListener(){
