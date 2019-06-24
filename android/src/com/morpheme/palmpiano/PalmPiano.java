@@ -117,7 +117,7 @@ public class PalmPiano implements ApplicationListener {
 	@Override
 	public void create() {
 		eb = EventBus.getInstance();
-		stage = new PianoStage();
+		stage = new PianoStage(eb);
 		Gdx.input.setInputProcessor(stage);
 
 		List<PianoKey> wks = new ArrayList<>();

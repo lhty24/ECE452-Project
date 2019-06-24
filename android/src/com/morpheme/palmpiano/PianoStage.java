@@ -12,22 +12,36 @@ import com.morpheme.palmpiano.util.Constants;
 
 public class PianoStage extends Stage {
     public Button playPauseBtn;
+    public EventBus eb;
 
-    public PianoStage() {
+    public boolean isPlaying() {
+        return playing;
+    }
+
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+    }
+
+    public boolean playing = false;
+
+    public PianoStage(final EventBus eb) {
         super();
+        this.eb = eb;
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
         playPauseBtn = new TextButton("Text Button",uiSkin,"default");
         playPauseBtn.setSize(100*4,200);
         playPauseBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
         playPauseBtn.addListener(new InputListener(){
             @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                ((TextButton) playPauseBtn).getLabel().setText("Play/ pause");
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
+                eb.dispatch(isPlaying() ? new Event(Event.EventType.MIDI_FILE_PAUSE, null) : new Event(Event.EventType.MIDI_FILE_PLAY, null));
+                setPlaying(!isPlaying());
+                return true;
             }
             @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                ((TextButton) playPauseBtn).getLabel().setText("Pressed");
-                return true;
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Playing" : "Paused");
             }
         });
         this.addActor(playPauseBtn);
