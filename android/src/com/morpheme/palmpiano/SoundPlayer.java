@@ -2,15 +2,14 @@ package com.morpheme.palmpiano;
 //import javax.sound.midi.*;
 import android.content.Context;
 
+import com.morpheme.palmpiano.util.Constants;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import org.billthefarmer.mididriver.MidiDriver;
 
 public class SoundPlayer implements EventListener {
-    public enum Note {F3, G3, A3 ,B3, C4, D4, E4, F4, G4, A4, B4, C5, D5, E5, F5, G5, A5, B5, C6, D6, E6,
-        FS3, GS3, AS3 ,BS3, CS4, DS4, ES4, FS4, GS4, AS4, BS4, CS5, DS5, ES5, FS5, GS5, AS5, BS5, CS6, DS6, ES6};
-
     private static SoundPlayer soundPlayer = null;
 
     private Context context = null;
@@ -78,21 +77,21 @@ public class SoundPlayer implements EventListener {
 
     private void playNote(byte note) {
         // note 60 = C4 (Middle C), volume 64 = mezzo-forte
-        sendMidiNote(true, 1, note, 64);
+        sendMidiNote(true, 1, note, Constants.MIDI_PIANO_MEZZO_FORTE);
     }
 
     private void stopNote(byte note) {
         // note 60 = C4 (Middle C), volume = standard (64)
-        sendMidiNote(false, 1, note, 64);
+        sendMidiNote(false, 1, note, Constants.MIDI_PIANO_MEZZO_FORTE);
     }
 
     private void sendMidiNote(boolean noteOn, int channel, int note, int volume)
     {
         byte message[] = new byte[3];
 
-        byte midiMessage = (byte) (0x80 | channel);
+        byte midiMessage = (byte) (Constants.MIDI_NOTE_OFF | channel);
         if (noteOn) {
-            midiMessage |= (byte) 0x10;
+            midiMessage |= Constants.MIDI_NOTE_ON;
         }
 
         message[0] = midiMessage;
