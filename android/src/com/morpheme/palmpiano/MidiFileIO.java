@@ -87,6 +87,7 @@ public class MidiFileIO implements EventListener, Runnable {
 
                 if (event instanceof NoteOn || event instanceof NoteOff) {
                     midiEvents.add(event);
+                    System.out.println(event.getTick() + "  " + event.getDelta());
                 } else if (event instanceof Tempo) {
                     BPM = (int) ((Tempo) event).getBpm();
                 }
@@ -95,7 +96,7 @@ public class MidiFileIO implements EventListener, Runnable {
             long nsPerTick = 60000000000l / (PPQ * BPM);
 
             for (MidiEvent event : midiEvents) {
-                midiNoteEvents.add(new MidiNoteEvent(event, event.getTick() * nsPerTick));
+                midiNoteEvents.add(new MidiNoteEvent(event, nsPerTick));
             }
         }
 

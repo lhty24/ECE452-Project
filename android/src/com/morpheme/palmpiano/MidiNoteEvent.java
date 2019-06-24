@@ -5,11 +5,13 @@ import com.pdrogfer.mididroid.event.MidiEvent;
 public class MidiNoteEvent {
 
     private MidiEvent midiEvent;
-    private long timestamp;
+    private long nsPerTick;
+    private long timeStamp;
 
-    public MidiNoteEvent(MidiEvent event, long timestamp) {
+    public MidiNoteEvent(MidiEvent event, long nsPerTick) {
         this.midiEvent = event;
-        this.timestamp = timestamp;
+        this.nsPerTick = nsPerTick;
+        this.timeStamp = event.getTick() * nsPerTick;
     }
 
     public MidiEvent getMidiEvent() {
@@ -17,6 +19,6 @@ public class MidiNoteEvent {
     }
 
     public long getTimestamp() {
-        return timestamp;
+        return timeStamp;
     }
 }

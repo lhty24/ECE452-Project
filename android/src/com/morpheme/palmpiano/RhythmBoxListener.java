@@ -41,7 +41,7 @@ public class RhythmBoxListener implements EventListener {
     }
 
     private void createRhythmBox(byte note) {
-        PalmPiano.RhythmBox rhythmBox = new PalmPiano.RhythmBox(true, note);
+        PalmPiano.RhythmBox rhythmBox = new PalmPiano.RhythmBox(PalmPiano.getNoteBk(note), note);
         stage.addActor(rhythmBox);
     }
 }

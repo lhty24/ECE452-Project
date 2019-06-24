@@ -14,47 +14,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-
-//public class GamingMidi implements EventListener {
-//	private HashSet<Event.EventType> monitoredEvents;
-//
-//	private GamingMidi() {
-//		this.monitoredEvents = new HashSet<>();
-//		monitoredEvents.add(Event.EventType.MIDI_DATA);
-//		EventBus.getInstance().register(this);
-//	}
-//
-//	@Override
-//	public Set<Event.EventType> getMonitoredEvents() {
-//		return monitoredEvents;
-//	}
-//
-//	@Override
-//	public void handleEvent(Event event) {
-//		System.out.println("SoundPlayer received event: " + event.toString());
-//		switch (event.getEventType()) {
-//			case MIDI_DATA:
-//			default:
-//				break;
-//		}
-//	}
-//}
 
 public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
     private EventBus eb;
     private Context context;
-    private TextButton buttonBack;
-	private TextButton playPauseButton;
     private PianoMode mode;
 
 	// Order of notes in octave
@@ -78,48 +46,30 @@ public class PalmPiano implements ApplicationListener {
 
     public PalmPiano(Context context) {
     	super();
-
 		this.context = context;
 	}
 
 	public static class RhythmBox extends Actor {
 		boolean bk = true;
 		//String note;
-		Texture texture;
-		Sprite sprite;
+		public static Texture textureWk;
+		public static Texture textureBk;
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
 		public RhythmBox(boolean bk, int midi_note){
-			//String file = "box_gr.png";
-			String file = "t1.png";
 			this.bk = bk;
-			//if (bk) {
 			int notePosition = getNotePosition((byte) midi_note);
 			this.actorX = notePosition;
 			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
 			this.actorY = 1300;
 
-//				file = "box_gr.png";
-			file = "t1.png";
-			//}
-			texture = new Texture(Gdx.files.internal(file));
-			sprite = new Sprite(texture);
-			//this.note = note;
-			//this.actorX = x;
-			setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
-//			addListener(new InputListener(){
-//				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-////					setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
-//					pressed = true;
-//					System.out.println(note);
-//					return true;
-//				}
-//
-//				public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-//					pressed = false;
-//				}
-//			});
+			//
+			if (textureWk == null || textureBk == null) {
+				textureWk = new Texture(Gdx.files.internal("t1.png"));
+				textureBk = new Texture(Gdx.files.internal("t2.png"));
+			}
+//			setBounds(actorX,actorY,text.getWidth(),texture.getHeight());
 			addListener(new InputListener(){
 				public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 					((RhythmBox)event.getTarget()).started = true;
@@ -131,12 +81,11 @@ public class PalmPiano implements ApplicationListener {
 
 		@Override
 		public void draw(Batch batch, float alpha){
-			// Visual feedback that key is pressed
-			if (this.started)
-				batch.setColor(1,1,1, 0.5f);
+			batch.setColor(1,1,1, 1);
+			if (bk)
+				batch.draw(textureBk,actorX,actorY);
 			else
-				batch.setColor(1,1,1, 1);
-			batch.draw(texture,actorX,actorY);
+				batch.draw(textureWk,actorX,actorY);
 			batch.setColor(1,1,1,1);
 		}
 
@@ -201,7 +150,7 @@ public class PalmPiano implements ApplicationListener {
 				batch.setColor(1,1,1, 0.5f);
 			else
 				batch.setColor(1,1,1, 1);
-			batch.draw(texture,actorX,actorY);
+			batch.draw(sprite,actorX,actorY);
 			batch.setColor(1,1,1,1);
 		}
 
@@ -350,7 +299,7 @@ public class PalmPiano implements ApplicationListener {
 //						}
 
 						//RhythmBox box = new RhythmBox(true, getNotePosition((byte) 80));
-						RhythmBox box = new RhythmBox(true, 21);
+						RhythmBox box = new RhythmBox(false, 21);
 						//System.out.println("NotePosition>>>>>>>>>>>>>>>>: " + getNotePosition((byte) 21));
 						box.setTouchable(Touchable.enabled);
 						boxes.add(box);
@@ -403,7 +352,16 @@ public class PalmPiano implements ApplicationListener {
     	int keyIndex = shifted % 12;
 
 		//System.out.println("KeyIndex value>>>>>>>>>>>>>>>>>>>>>>>: " + keyIndex);
-    	return ((7 * octave) * wkInterval + offsetMap[keyIndex]) + 20; //hardcoded
+    	return ((7 * octave) * wkInterval + offsetMap[keyIndex]); //hardcoded
+
+	}
+
+	public static boolean getNoteBk(Byte midiByte) {
+		int shifted = midiByte.intValue() - Constants.MIDI_OFFSET;
+		int i = shifted % 12;
+
+		//System.out.println("KeyIndex value>>>>>>>>>>>>>>>>>>>>>>>: " + keyIndex);
+		return ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ); //hardcoded
 
 	}
 }
