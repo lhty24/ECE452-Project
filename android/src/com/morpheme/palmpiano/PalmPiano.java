@@ -7,7 +7,9 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -54,17 +56,20 @@ public class PalmPiano implements ApplicationListener {
 		//String note;
 		public static Texture textureWk;
 		public static Texture textureBk;
+
+		private long duration;
+
 		float actorX = 0, actorY = 0;
 		boolean started = true;
 
-		public RhythmBox(boolean bk, int midi_note){
+		public RhythmBox(boolean bk, int midi_note, long duration){
 			this.bk = bk;
 			int notePosition = getNotePosition((byte) midi_note);
 			this.actorX = notePosition;
+			this.duration = duration;
 			System.out.println("actorX value>>>>>>>>>>>>>>>>>>>>>>>: " + actorX);
 			this.actorY = 1300;
 
-			//
 			if (textureWk == null || textureBk == null) {
 				textureWk = new Texture(Gdx.files.internal("t1.png"));
 				textureBk = new Texture(Gdx.files.internal("t2.png"));
@@ -78,14 +83,14 @@ public class PalmPiano implements ApplicationListener {
 			});
 		}
 
-
 		@Override
 		public void draw(Batch batch, float alpha){
 			batch.setColor(1,1,1, 1);
+//			System.out.println("Size: >>>>>>>>>>>>>>" + duration + " " + (int)(duration / 10000000l));
 			if (bk)
-				batch.draw(textureBk,actorX,actorY);
+				batch.draw(textureBk,actorX,actorY,textureBk.getWidth(), (int)(duration / 5000000l));
 			else
-				batch.draw(textureWk,actorX,actorY);
+				batch.draw(textureWk,actorX,actorY,textureWk.getWidth(), (int)(duration / 5000000l));
 			batch.setColor(1,1,1,1);
 		}
 
@@ -166,6 +171,8 @@ public class PalmPiano implements ApplicationListener {
 		eb = EventBus.getInstance();
 		stage = new PianoStage(eb);
 		Gdx.input.setInputProcessor(stage);
+
+		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(stage);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
@@ -299,7 +306,7 @@ public class PalmPiano implements ApplicationListener {
 //						}
 
 						//RhythmBox box = new RhythmBox(true, getNotePosition((byte) 80));
-						RhythmBox box = new RhythmBox(false, 21);
+						RhythmBox box = new RhythmBox(false, 21, 1);
 						//System.out.println("NotePosition>>>>>>>>>>>>>>>>: " + getNotePosition((byte) 21));
 						box.setTouchable(Touchable.enabled);
 						boxes.add(box);
@@ -312,8 +319,6 @@ public class PalmPiano implements ApplicationListener {
 		} else {
 			this.mode = null;
 		}
-
-		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(this.stage);
 
 		SoundPlayer.initialize(context);
 

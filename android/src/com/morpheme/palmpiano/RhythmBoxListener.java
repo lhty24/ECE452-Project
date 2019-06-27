@@ -6,6 +6,7 @@ import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.EventListener;
 import com.morpheme.palmpiano.util.Constants;
 
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,19 +30,28 @@ public class RhythmBoxListener implements EventListener {
     public void handleEvent(Event event) {
         System.out.println("RhythmBoxListener received event: " + event.toString());
         byte[] data;
+        long len;
         switch (event.getEventType()) {
             case MIDI_DATA_GAMEPLAY:
                 data = (byte[]) event.getData();
                 if ((((int) data[0]) & ((int) Constants.MIDI_NOTE_ON )) != 0 && data[2] != 0) {
-                    createRhythmBox(data[1]);
+                    byte[] lengthBytes = new byte[data.length - 3];
+                    for(int i = 3; i < data.length; i++) {
+                        lengthBytes[i - 3] = data[i];
+                    }
+                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                    buffer.put(lengthBytes);
+                    buffer.flip();
+
+                    createRhythmBox(data[1], buffer.getLong());
                 }
             default:
                 break;
         }
     }
 
-    private void createRhythmBox(byte note) {
-        PalmPiano.RhythmBox rhythmBox = new PalmPiano.RhythmBox(PalmPiano.getNoteBk(note), note);
+    private void createRhythmBox(byte note, long len) {
+        PalmPiano.RhythmBox rhythmBox = new PalmPiano.RhythmBox(PalmPiano.getNoteBk(note), note, len);
         stage.addActor(rhythmBox);
     }
 }
