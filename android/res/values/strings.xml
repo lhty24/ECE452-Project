@@ -5,5 +5,6 @@
     <string name="composition_mode">Composition Mode</string>
     <string name="start">Start</string>
     <string name="game_mode">Game Mode</string>
+    <string name="sheet_music">Sheet Music Mode</string>
 
 </resources>

@@ -22,4 +22,12 @@
         android:layout_gravity="center"
         android:text="@string/game_mode" />
 
+    <Button
+        android:id="@+id/buttonSheetMusic"
+        android:layout_width="0dp"
+        android:layout_height="136dp"
+        android:layout_weight="1"
+        android:layout_gravity="center"
+        android:text="@string/sheet_music" />
+
 </LinearLayout>

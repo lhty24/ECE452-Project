@@ -102,7 +102,7 @@ public class PalmPiano implements ApplicationListener {
 		}
 	}
 
-	public enum PianoMode {MODE_COMPOSITION, MODE_GAME}
+	public enum PianoMode {MODE_COMPOSITION, MODE_GAME, MODE_SHEET_MUSIC}
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
