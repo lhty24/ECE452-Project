@@ -16,6 +16,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.webkit.WebView;
 
+import com.morpheme.palmpiano.R;
+
 /** @class HelpActivity
  *  The HelpActivity displays the help.html file in the assets directory.
  */

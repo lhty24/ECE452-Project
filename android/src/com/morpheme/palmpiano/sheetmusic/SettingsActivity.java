@@ -13,15 +13,23 @@
 
 package com.morpheme.palmpiano.sheetmusic;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreferenceCompat;
+
+import com.morpheme.palmpiano.R;
 
 /**
  * This activity is created by the "Settings" menu option.

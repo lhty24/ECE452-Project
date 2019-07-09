@@ -18,9 +18,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-import com.midisheetmusic.KeySignature;
-import com.midisheetmusic.MidiOptions;
-import com.midisheetmusic.SheetMusic;
+import com.morpheme.palmpiano.sheetmusic.KeySignature;
+import com.morpheme.palmpiano.sheetmusic.MidiOptions;
+import com.morpheme.palmpiano.sheetmusic.SheetMusic;
 
 import java.util.ArrayList;
 

@@ -20,7 +20,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-import com.midisheetmusic.sheets.MusicSymbol;
+import com.morpheme.palmpiano.R;
+import com.morpheme.palmpiano.sheetmusic.sheets.MusicSymbol;
 
 
 /** @class TimeSigSymbol

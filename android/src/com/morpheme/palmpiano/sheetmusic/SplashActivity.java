@@ -11,7 +11,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.midisheetmusic.sheets.ClefSymbol;
+import com.morpheme.palmpiano.R;
+import com.morpheme.palmpiano.sheetmusic.sheets.ClefSymbol;
 
 /**
  * An activity to be shown when starting the app.

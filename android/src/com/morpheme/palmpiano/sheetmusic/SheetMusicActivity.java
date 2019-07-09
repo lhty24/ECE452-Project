@@ -32,11 +32,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-//import androidx.annotation.NonNull;
-//import androidx.drawerlayout.widget.DrawerLayout;
-//
-//import com.google.android.material.navigation.NavigationView;
-//import com.midisheetmusic.sheets.ClefSymbol;
+import androidx.annotation.NonNull;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.navigation.NavigationView;
+import com.morpheme.palmpiano.R;
+import com.morpheme.palmpiano.sheetmusic.sheets.ClefSymbol;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;

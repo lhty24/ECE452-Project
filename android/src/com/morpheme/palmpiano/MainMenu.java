@@ -1,7 +1,7 @@
 package com.morpheme.palmpiano;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity ;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -88,8 +88,8 @@ public class MainMenu extends AppCompatActivity {
         if (mode == PalmPiano.PianoMode.MODE_SHEET_MUSIC) {
             Intent intent = new Intent(MainMenu.this, SheetMusicActivity.class);
             // FIXME: include appropriate input data (MIDI file?)
-            intent.putExtras();
-            startActionMode(intent);
+//            intent.putExtras();
+//            startActionMode(intent);
         }
         else {
             startActivity(new Intent(MainMenu.this, AndroidLauncher.class));

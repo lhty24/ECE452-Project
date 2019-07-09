@@ -13,10 +13,10 @@
 package com.morpheme.palmpiano.sheetmusic;
 
 
-import com.midisheetmusic.sheets.Accid;
-import com.midisheetmusic.sheets.AccidSymbol;
-import com.midisheetmusic.sheets.Clef;
-import com.midisheetmusic.sheets.WhiteNote;
+import com.morpheme.palmpiano.sheetmusic.sheets.Accid;
+import com.morpheme.palmpiano.sheetmusic.sheets.AccidSymbol;
+import com.morpheme.palmpiano.sheetmusic.sheets.Clef;
+import com.morpheme.palmpiano.sheetmusic.sheets.WhiteNote;
 
 /** @class KeySignature
  * The KeySignature class represents a key signature, like G Major

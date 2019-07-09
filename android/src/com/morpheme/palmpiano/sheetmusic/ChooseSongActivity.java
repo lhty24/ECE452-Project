@@ -24,6 +24,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.widget.TabHost;
 
+import com.morpheme.palmpiano.R;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 

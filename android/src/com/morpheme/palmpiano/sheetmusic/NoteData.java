@@ -13,8 +13,8 @@
 package com.morpheme.palmpiano.sheetmusic;
 
 
-import com.midisheetmusic.sheets.Accid;
-import com.midisheetmusic.sheets.WhiteNote;
+import com.morpheme.palmpiano.sheetmusic.sheets.Accid;
+import com.morpheme.palmpiano.sheetmusic.sheets.WhiteNote;
 
 /** @class NoteData
  *  Contains fields for displaying a single note in a chord.

@@ -2,11 +2,12 @@ package com.morpheme.palmpiano.sheetmusic;
 
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
-import android.support.annotation.NonNull;
 import android.widget.Button;
 import android.widget.Toast;
 
 //import androidx.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.morpheme.palmpiano.R;
 

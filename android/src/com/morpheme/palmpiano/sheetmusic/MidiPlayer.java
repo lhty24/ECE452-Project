@@ -33,8 +33,9 @@ import android.widget.Toast;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.midisheetmusic.sheets.ChordSymbol;
-import com.midisheetmusic.sheets.MusicSymbol;
+import com.morpheme.palmpiano.R;
+import com.morpheme.palmpiano.sheetmusic.sheets.ChordSymbol;
+import com.morpheme.palmpiano.sheetmusic.sheets.MusicSymbol;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

@@ -15,13 +15,18 @@ package com.morpheme.palmpiano.sheetmusic;
 import android.content.Context;
 import android.view.View;
 
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
+
+import com.morpheme.palmpiano.R;
+
 /**
  *  Used in a PreferenceScreen to let
  *  the user choose a color for an option.
  *  <p/>
  *  This Preference displays text, plus an additional color box
  */
-public class ColorPreference extends Preference 
+public class ColorPreference extends Preference
         implements ColorChangedListener {
 
     private View colorview;    /* The view displaying the selected color */
@@ -31,7 +36,7 @@ public class ColorPreference extends Preference
     public ColorPreference(Context ctx) {
         super(ctx);
         context = ctx;
-        setWidgetLayoutResource(R.layout.color_preference);
+//        setWidgetLayoutResource(R.layout.color_preference);
     }
 
     public void setColor(int value) { 
@@ -45,7 +50,7 @@ public class ColorPreference extends Preference
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
-        colorview = holder.findViewById(R.id.color_preference_widget);
+//        colorview = holder.findViewById(R.id.color_preference_widget);
         if (color != 0) {
             colorview.setBackgroundColor(color);
         }
