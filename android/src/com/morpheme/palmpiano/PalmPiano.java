@@ -7,9 +7,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -17,7 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.morpheme.palmpiano.midi.MidiFileIO;
+import com.morpheme.palmpiano.midi.MidiFileParser;
+import com.morpheme.palmpiano.midi.MidiPlayback;
+import com.morpheme.palmpiano.midi.Note;
 import com.morpheme.palmpiano.util.Constants;
+import com.pdrogfer.mididroid.MidiFile;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -322,8 +326,11 @@ public class PalmPiano implements ApplicationListener {
 
 		SoundPlayer.initialize(context);
 
-		MidiFileIO midi = new MidiFileIO(mode, (String) bundle.getSerializable("midiFile"));
-		Thread midiThread = new Thread(midi);
+		MidiFile midiFile = MidiFileIO.getMidiFile((String) bundle.getSerializable("midiFile"));
+		List<Note> midiNotes = MidiFileParser.getMidiEvents(midiFile);
+		MidiPlayback playback = new MidiPlayback(mode, midiNotes, MidiPlayback.BOTH_HANDS);
+
+		Thread midiThread = new Thread(playback);
 		midiThread.start();
 	}
 
