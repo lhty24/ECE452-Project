@@ -51,34 +51,25 @@ public class MidiPlayback implements EventListener, Runnable {
         long prev = System.nanoTime();
         long dt = 0;
 
-        for(Note event : midiNoteEvents) {
-            if (hand != BOTH_HANDS && event.getTrackNumber() != hand) continue;
+        for(Note note : midiNoteEvents) {
+            if (hand != BOTH_HANDS && note.getTrackNumber() != hand) continue;
 
-            MidiEvent e = event.getMidiEvent();
-            long timestamp = event.getTimestamp();
+            long timestamp = note.getTimestamp();
 
             ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-            buffer.putLong(event.getLengthNs());
-            byte[] len = buffer.array();
+            buffer.putLong(note.getLengthNs());
 
+            byte[] len = buffer.array();
             byte[] noteEvent = new byte[3 + len.length];
 
-            if (e instanceof NoteOn) {
-                NoteOn note = (NoteOn) e;
-                noteEvent[0] = note.getVelocity() > 0 ? (byte) 0x91 : (byte) 0x81;
-                noteEvent[1] = (byte) note.getNoteValue();
-                noteEvent[2] = (byte) note.getVelocity();
-                for(int i = 3; i < 3 + len.length; i++) {
-                    noteEvent[i] = len[i - 3];
-                }
-            } else if (e instanceof NoteOff) {
-                NoteOff note = (NoteOff) e;
-                noteEvent[0] = (byte) 0x81;
-                noteEvent[1] = (byte) note.getNoteValue();
-                noteEvent[2] = (byte) note.getVelocity();
-                for(int i = 3; i < 3 + len.length; i++) {
-                    noteEvent[i] = len[i - 3];
-                }
+            if (note.getNoteType() == Note.NOTE_ON) noteEvent[0] = (byte) 0x91;
+            if (note.getNoteType() == Note.NOTE_OFF) noteEvent[0] = (byte) 0x81;
+
+            noteEvent[1] = (byte) note.getNoteValue();
+            noteEvent[2] = (byte) note.getVelocity();
+
+            for(int i = 3; i < 3 + len.length; i++) {
+                noteEvent[i] = len[i - 3];
             }
 
             while (dt <= timestamp) {
