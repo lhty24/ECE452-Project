@@ -17,11 +17,11 @@ public final class MidiFileParser {
     public static List<Note> getMidiEvents(MidiFile midiFile) {
         int PPQ = midiFile.getResolution();
 
-        if ((PPQ & 0x0000) != 0) {
-            System.out.println("TODO");
+        if ((PPQ & 0x8000) != 0) {
+            System.out.println("TODO: Time-Code based time.");
         }
 
-        List<Note> midiNoteEvents = new ArrayList<Note>();
+        List<Note> midiNoteEvents = new ArrayList<>();
 
         // Midi Default BPM
         int BPM = 120;
@@ -30,7 +30,7 @@ public final class MidiFileParser {
 
         for (MidiTrack track : midiFile.getTracks()) {
             System.out.println("TRACK");
-            List<MidiEvent> midiEvents = new ArrayList<MidiEvent>();
+            List<MidiEvent> midiEvents = new ArrayList<>();
             Iterator<MidiEvent> it = track.getEvents().iterator();
 
             // If type is 1, all tracks use the same BPM

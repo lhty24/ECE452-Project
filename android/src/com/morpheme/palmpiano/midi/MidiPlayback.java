@@ -4,9 +4,6 @@ import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.EventListener;
 import com.morpheme.palmpiano.PalmPiano;
-import com.pdrogfer.mididroid.event.MidiEvent;
-import com.pdrogfer.mididroid.event.NoteOff;
-import com.pdrogfer.mididroid.event.NoteOn;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
@@ -46,7 +43,7 @@ public class MidiPlayback implements EventListener, Runnable {
         hand = BOTH_HANDS;
     }
 
-    public void playbackMidi(List<Note> midiNoteEvents) {
+    private void playbackMidi(List<Note> midiNoteEvents) {
         long newNow;
         long prev = System.nanoTime();
         long dt = 0;
@@ -82,7 +79,7 @@ public class MidiPlayback implements EventListener, Runnable {
                 prev = newNow;
             }
 
-            if (pianoMode == PalmPiano.PianoMode.MODE_COMPOSITION) {
+            if (pianoMode == PalmPiano.PianoMode.MODE_PLAYBACK) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_AUDIO, noteEvent));
             } else if (pianoMode == PalmPiano.PianoMode.MODE_GAME) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_GAMEPLAY, noteEvent));
