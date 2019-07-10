@@ -2,12 +2,15 @@ package com.morpheme.palmpiano;
 
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity ;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.morpheme.palmpiano.sheetmusic.FileUri;
 import com.morpheme.palmpiano.sheetmusic.SheetMusicActivity;
 
 public class MainMenu extends AppCompatActivity {
@@ -52,8 +55,8 @@ public class MainMenu extends AppCompatActivity {
     }
 
     private void configureButtonSheetMusic() {
-        Button buttonComposition = (Button) findViewById(R.id.buttonComposition);
-        buttonComposition.setOnClickListener(new View.OnClickListener() {
+        Button buttonSheetMusic = (Button) findViewById(R.id.buttonSheetMusic);
+        buttonSheetMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
@@ -86,10 +89,12 @@ public class MainMenu extends AppCompatActivity {
         System.out.println("Launching PalmPiano activity");
 
         if (mode == PalmPiano.PianoMode.MODE_SHEET_MUSIC) {
-            Intent intent = new Intent(MainMenu.this, SheetMusicActivity.class);
-            // FIXME: include appropriate input data (MIDI file?)
-//            intent.putExtras();
-//            startActionMode(intent);
+            Uri uri = Uri.parse("file:///android_asset/" + midiFileName);
+            FileUri file = new FileUri(uri, midiFileName);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, file.getUri(), this, SheetMusicActivity.class);
+            intent.putExtra(SheetMusicActivity.MidiTitleID, file.toString());
+            startActivity(intent);
         }
         else {
             startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
