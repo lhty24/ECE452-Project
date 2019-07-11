@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.morpheme.palmpiano.midi.MidiComposer;
 import com.morpheme.palmpiano.midi.MidiFileIO;
 import com.morpheme.palmpiano.midi.MidiFileParser;
 import com.morpheme.palmpiano.midi.MidiPlayback;
@@ -106,7 +107,7 @@ public class PalmPiano implements ApplicationListener {
 		}
 	}
 
-	public enum PianoMode {MODE_COMPOSITION, MODE_GAME}
+	public enum PianoMode {MODE_COMPOSITION, MODE_PLAYBACK, MODE_GAME}
 
 	public class PianoKey extends Actor {
 		boolean bk = false;
@@ -287,7 +288,7 @@ public class PalmPiano implements ApplicationListener {
 
 			// TODO: Implement actual logic for composition/game mode-specific actions
 			switch (mode) {
-				case MODE_COMPOSITION:
+				case MODE_PLAYBACK:
 					System.out.println("Detected composition mode");
 					break;
 				case MODE_GAME:
@@ -326,12 +327,21 @@ public class PalmPiano implements ApplicationListener {
 
 		SoundPlayer.initialize(context);
 
-		MidiFile midiFile = MidiFileIO.getMidiFile((String) bundle.getSerializable("midiFile"));
-		List<Note> midiNotes = MidiFileParser.getMidiEvents(midiFile);
-		MidiPlayback playback = new MidiPlayback(mode, midiNotes, MidiPlayback.BOTH_HANDS);
-
-		Thread midiThread = new Thread(playback);
-		midiThread.start();
+		switch (mode) {
+			case MODE_COMPOSITION:
+				MidiComposer c = new MidiComposer(context);
+				break;
+			case MODE_GAME:
+			case MODE_PLAYBACK:
+				MidiFile midiFile = MidiFileIO.getMidiFile(context, (String) bundle.getSerializable("midiFile"));
+				List<Note> midiNotes = MidiFileParser.getMidiEvents(midiFile);
+				MidiPlayback playback = new MidiPlayback(mode, midiNotes, MidiPlayback.BOTH_HANDS);
+				Thread midiThread = new Thread(playback);
+				midiThread.start();
+				break;
+			default:
+				break;
+		}
 	}
 
 	@Override

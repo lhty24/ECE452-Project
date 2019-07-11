@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
@@ -15,8 +14,8 @@ public class MainMenu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
         configureButtonComposition();
+        configureButtonPlayback();
         configureButtonGame();
     }
 
@@ -25,11 +24,23 @@ public class MainMenu extends AppCompatActivity {
         buttonComposition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("Going to composition mode");
+                mode = PalmPiano.PianoMode.MODE_COMPOSITION;
+                launchPalmPiano(mode, "");
+            }
+        });
+    }
+
+    private void configureButtonPlayback() {
+        Button buttonPlayback = (Button) findViewById(R.id.buttonPlayback);
+        buttonPlayback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
                 configureTrackList();
-                System.out.println("Going to composition mode");
-                mode = PalmPiano.PianoMode.MODE_COMPOSITION;
+                System.out.println("Going to playback mode");
+                mode = PalmPiano.PianoMode.MODE_PLAYBACK;
             }
         });
     }

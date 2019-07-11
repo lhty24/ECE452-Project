@@ -21,12 +21,20 @@ public class Note {
     private int note;
     private long tick;
 
+    public Note(int track, int note, int velocity, long tick, long lengthNs) {
+        this.track = track;
+        this.note = note;
+        this.velocity = velocity;
+        this.tick = tick;
+        this.lengthNs = lengthNs;
+    }
+
     public Note(MidiEvent event, int track, int BPM, int PPQ) {
         this.midiEvent = event;
         this.track = track;
         this.BPM = BPM;
         this.PPQ = PPQ;
-        this.nsPerTick = 60000000000l / (this.PPQ * this.BPM);
+        this.nsPerTick = 60000000000L / (this.PPQ * this.BPM);
         this.timestamp = event.getTick() * nsPerTick;
         this.lengthTicks = 0;
         this.lengthNs = 0;

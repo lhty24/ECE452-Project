@@ -3,6 +3,7 @@
 
     <string name="app_name">Palm Piano</string>
     <string name="composition_mode">Composition Mode</string>
+    <string name="playback_mode">Playback Mode</string>
     <string name="start">Start</string>
     <string name="game_mode">Game Mode</string>
 
