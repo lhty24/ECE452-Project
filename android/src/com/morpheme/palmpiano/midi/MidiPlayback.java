@@ -1,16 +1,18 @@
 package com.morpheme.palmpiano.midi;
 
+import android.content.Context;
+
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
-import com.morpheme.palmpiano.EventListener;
 import com.morpheme.palmpiano.PalmPiano;
+import com.pdrogfer.mididroid.MidiFile;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MidiPlayback implements EventListener, Runnable {
+public class MidiPlayback implements MidiNotePlayback {
     public static final int BOTH_HANDS = 0;
     public static final int RIGHT_HAND = 1;
     public static final int LEFT_HAND = 2;
@@ -21,7 +23,19 @@ public class MidiPlayback implements EventListener, Runnable {
     private List<Note> notes;
     private int hand;
 
-    public MidiPlayback(PalmPiano.PianoMode mode, List<Note> midiNotes, int hand) {
+    public MidiPlayback(PalmPiano.PianoMode mode, int hand, Context context, String midiFileName) {
+        this.pianoMode = mode;
+        MidiFile midiFile = MidiFileIO.getMidiFile(context, midiFileName);
+        this.notes = MidiFileParser.getMidiEvents(midiFile);
+        this.hand = hand;
+        this.isPlaying = false;
+        this.monitoredEvents = new HashSet<>();
+        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
+        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
+        checkHands();
+    }
+
+    public MidiPlayback(PalmPiano.PianoMode mode, int hand, List<Note> midiNotes) {
         this.pianoMode = mode;
         this.notes = midiNotes;
         this.hand = hand;
@@ -29,7 +43,6 @@ public class MidiPlayback implements EventListener, Runnable {
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
-        EventBus.getInstance().register(this);
         checkHands();
     }
 
@@ -43,12 +56,13 @@ public class MidiPlayback implements EventListener, Runnable {
         hand = BOTH_HANDS;
     }
 
-    private void playbackMidi(List<Note> midiNoteEvents) {
+    @Override
+    public void playbackMidi() {
         long newNow;
         long prev = System.nanoTime();
         long dt = 0;
 
-        for(Note note : midiNoteEvents) {
+        for(Note note : notes) {
             if (hand != BOTH_HANDS && note.getTrackNumber() != hand) continue;
 
             long timestamp = note.getTimestamp();
@@ -88,6 +102,11 @@ public class MidiPlayback implements EventListener, Runnable {
     }
 
     @Override
+    public void setMidiNotes(List<Note> midiNoteEvents) {
+        notes = midiNoteEvents;
+    }
+
+    @Override
     public void handleEvent(Event<?> event) {
         switch (event.getEventType()) {
             case MIDI_FILE_PLAY:
@@ -108,6 +127,6 @@ public class MidiPlayback implements EventListener, Runnable {
 
     @Override
     public void run() {
-        playbackMidi(notes);
+        playbackMidi();
     }
 }

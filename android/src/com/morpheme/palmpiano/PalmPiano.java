@@ -18,7 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.morpheme.palmpiano.midi.MidiComposer;
 import com.morpheme.palmpiano.midi.MidiFileIO;
 import com.morpheme.palmpiano.midi.MidiFileParser;
+import com.morpheme.palmpiano.midi.MidiNotePlayback;
 import com.morpheme.palmpiano.midi.MidiPlayback;
+import com.morpheme.palmpiano.midi.MidiPlaybackProxy;
 import com.morpheme.palmpiano.midi.Note;
 import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
@@ -333,9 +335,8 @@ public class PalmPiano implements ApplicationListener {
 				break;
 			case MODE_GAME:
 			case MODE_PLAYBACK:
-				MidiFile midiFile = MidiFileIO.getMidiFile(context, (String) bundle.getSerializable("midiFile"));
-				List<Note> midiNotes = MidiFileParser.getMidiEvents(midiFile);
-				MidiPlayback playback = new MidiPlayback(mode, midiNotes, MidiPlayback.BOTH_HANDS);
+				MidiNotePlayback playback = new MidiPlaybackProxy(mode, MidiPlayback.BOTH_HANDS, context, (String) bundle.getSerializable("midiFile"));
+				EventBus.getInstance().register(playback);
 				Thread midiThread = new Thread(playback);
 				midiThread.start();
 				break;
