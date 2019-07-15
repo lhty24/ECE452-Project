@@ -52,12 +52,9 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
             actualPlayback.playbackMidi();
         }
         else {
-            System.out.println("Proxy playbackMidi");
             // Virtual proxy behaviour; only instantiate and run upon beginning to play
             while (!this.isPlaying) {}
-            System.out.println("Proxy continuing playback");
             if (notes == null) {
-                System.out.println("Proxy actual init: " + mode + ", " + hand + ", " + context + ", " + midiFileName);
                 actualPlayback = new MidiPlayback(mode, hand, context, midiFileName);
             } else {
                 actualPlayback = new MidiPlayback(mode, hand, notes);
@@ -79,7 +76,6 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
 
     @Override
     public void handleEvent(Event<?> event) {
-        System.out.println("Proxy handleEvent: " + event.toString());
         if (actualPlayback != null) {
             actualPlayback.handleEvent(event);
         }
@@ -87,11 +83,9 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
             switch (event.getEventType()) {
                 case MIDI_FILE_PLAY:
                     this.isPlaying = true;
-                    System.out.println("Proxy isPlaying=true");
                     break;
                 case MIDI_FILE_PAUSE:
                     this.isPlaying = false;
-                    System.out.println("Proxy isPlaying=false");
                     break;
                 default:
                     break;
@@ -113,7 +107,6 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
             actualPlayback.run();
         }
         else {
-            System.out.println("Proxy running...");
             playbackMidi();
         }
     }
