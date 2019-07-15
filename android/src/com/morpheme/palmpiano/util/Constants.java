@@ -12,4 +12,10 @@ public final class Constants {
     public static final byte MIDI_NOTE_ON           = (byte) 0x90;
     public static final byte MIDI_OFFSET            = (byte) 21;
     public static final byte MIDI_PIANO_MEZZO_FORTE = (byte) 64;
+
+    public enum PianoMode {
+        MODE_COMPOSITION,
+        MODE_PLAYBACK,
+        MODE_GAME
+    }
 }

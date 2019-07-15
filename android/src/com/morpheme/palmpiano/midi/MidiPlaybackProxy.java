@@ -3,8 +3,7 @@ package com.morpheme.palmpiano.midi;
 import android.content.Context;
 
 import com.morpheme.palmpiano.Event;
-import com.morpheme.palmpiano.EventBus;
-import com.morpheme.palmpiano.PalmPiano;
+import com.morpheme.palmpiano.util.Constants;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     private MidiNotePlayback actualPlayback;
 
     private HashSet<Event.EventType> monitoredEvents;
-    private PalmPiano.PianoMode mode;
+    private Constants.PianoMode mode;
     private int hand;
     private List<Note> notes;
     private boolean isPlaying;
@@ -22,13 +21,13 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     private Context context;
     private String midiFileName;
 
-    public MidiPlaybackProxy(PalmPiano.PianoMode mode, int hand, Context context, String midiFileName) {
+    public MidiPlaybackProxy(Constants.PianoMode mode, int hand, Context context, String midiFileName) {
         this(mode, hand, null);
         this.context = context;
         this.midiFileName = midiFileName;
     }
 
-    public MidiPlaybackProxy(PalmPiano.PianoMode mode, int hand, List<Note> midiNotes) {
+    public MidiPlaybackProxy(Constants.PianoMode mode, int hand, List<Note> midiNotes) {
         // Data to store when actual object is needed
         this.mode = mode;
         this.hand = hand;

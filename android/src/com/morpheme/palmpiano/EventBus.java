@@ -1,4 +1,5 @@
 package com.morpheme.palmpiano;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +8,11 @@ public class EventBus {
     private List<EventListener> subscribers;
 
     private EventBus() {
-        // initialize
-        this.subscribers = new ArrayList<EventListener>();
+        this.subscribers = new ArrayList<>();
     }
 
     public static EventBus getInstance() {
-        if (instance == null) {
-            instance = new EventBus();
-        }
+        if (instance == null) instance = new EventBus();
         return instance;
     }
 
@@ -23,7 +21,6 @@ public class EventBus {
     }
 
     public void dispatch(Event<?> event) {
-//        System.out.println("Received " + event.getData());
         for(EventListener subscriber : subscribers) {
             if (subscriber.getMonitoredEvents().contains(event.getEventType())) {
                 subscriber.handleEvent(event);

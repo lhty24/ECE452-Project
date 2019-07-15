@@ -3,7 +3,6 @@ package com.morpheme.palmpiano.midi;
 import android.content.Context;
 
 import com.morpheme.palmpiano.Event;
-import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.EventListener;
 import com.pdrogfer.mididroid.MidiFile;
 import com.pdrogfer.mididroid.MidiTrack;
@@ -19,7 +18,7 @@ import java.util.Set;
 public class MidiComposer implements EventListener {
     private final int PPQ = 480;
     private final int BPM = 120;
-    private final int VELOCITY = 100;
+    private final int VELOCITY = 60;
 
     private Context context;
     private MidiFile midi;
@@ -39,13 +38,12 @@ public class MidiComposer implements EventListener {
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
-        EventBus.getInstance().register(this);
         this.nsPerTick = 60000000000L / (PPQ * BPM);
         this.start = false;
     }
 
-    private void start() {
-        this.startTime = System.nanoTime();
+    private void start(long timestamp) {
+        this.startTime = timestamp;
         this.duration = 0;
         this.track = new MidiTrack();
         this.tempoTrack = new MidiTrack();
@@ -66,16 +64,13 @@ public class MidiComposer implements EventListener {
         this.start = false;
     }
 
-    private void saveNote(int state, byte note) {
+    private void saveNote(int state, byte note, long timestamp) {
         if (!start) return;
 
         int value = (int) note;
 
-        long now = System.nanoTime();
-        long dt = now - startTime;
-
-        duration += dt;
-        startTime = now;
+        duration += timestamp - startTime;
+        startTime = timestamp;
 
         long tick = duration / nsPerTick;
 
@@ -92,19 +87,21 @@ public class MidiComposer implements EventListener {
 
     @Override
     public void handleEvent(Event<?> event) {
+        long timestamp = event.getTimestamp();
+
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
-                this.saveNote(Note.NOTE_ON, ((Byte) event.getData()).byteValue());
+                this.saveNote(Note.NOTE_ON, ((Byte) event.getData()).byteValue(), timestamp);
                 break;
             case PIANO_KEY_UP:
-                this.saveNote(Note.NOTE_OFF, ((Byte) event.getData()).byteValue());
+                this.saveNote(Note.NOTE_OFF, ((Byte) event.getData()).byteValue(), timestamp);
                 break;
             case MIDI_FILE_PLAY:
-                this.start();
+                this.start(timestamp);
                 break;
             case MIDI_FILE_PAUSE:
                 this.stop();
-                // Test line
+                // FIXME Test line
                 MidiFileIO.writeMidiFile(context, getMidiFile(), "test_compose.mid");
                 break;
             default:

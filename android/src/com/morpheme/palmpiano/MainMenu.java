@@ -7,8 +7,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import com.morpheme.palmpiano.util.Constants;
+
 public class MainMenu extends AppCompatActivity {
-    private com.morpheme.palmpiano.PalmPiano.PianoMode mode;
+    private Constants.PianoMode mode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +27,7 @@ public class MainMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println("Going to composition mode");
-                mode = PalmPiano.PianoMode.MODE_COMPOSITION;
+                mode = Constants.PianoMode.MODE_COMPOSITION;
                 launchPalmPiano(mode, "");
             }
         });
@@ -40,7 +42,7 @@ public class MainMenu extends AppCompatActivity {
                 configureButtonStart();
                 configureTrackList();
                 System.out.println("Going to playback mode");
-                mode = PalmPiano.PianoMode.MODE_PLAYBACK;
+                mode = Constants.PianoMode.MODE_PLAYBACK;
             }
         });
     }
@@ -54,7 +56,7 @@ public class MainMenu extends AppCompatActivity {
                 configureButtonStart();
                 configureTrackList();
                 System.out.println("Going to game mode");
-                mode = PalmPiano.PianoMode.MODE_GAME;
+                mode = Constants.PianoMode.MODE_GAME;
             }
         });
     }
@@ -76,9 +78,8 @@ public class MainMenu extends AppCompatActivity {
         });
     }
 
-    private void launchPalmPiano(PalmPiano.PianoMode mode, String midiFileName) {
+    private void launchPalmPiano(Constants.PianoMode mode, String midiFileName) {
         System.out.println("Launching PalmPiano activity");
-        startActivity(new Intent(MainMenu.this, AndroidLauncher.class));
         Bundle bundle = new Bundle();
         bundle.putSerializable("pianoMode", mode);
         bundle.putSerializable("midiFile", midiFileName);

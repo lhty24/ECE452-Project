@@ -1,5 +1,5 @@
 package com.morpheme.palmpiano;
-//import javax.sound.midi.*;
+
 import android.content.Context;
 
 import com.morpheme.palmpiano.util.Constants;
@@ -14,7 +14,7 @@ public class SoundPlayer implements EventListener {
 
     private Context context = null;
     private HashSet<Event.EventType> monitoredEvents;
-    private MidiDriver midi = null;
+    private MidiDriver midi;
 
     /* Constructor stuff */
     private SoundPlayer() {
@@ -54,7 +54,7 @@ public class SoundPlayer implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-        System.out.println("SoundPlayer received event: " + event.toString());
+//        System.out.println("SoundPlayer received event: " + event.toString());
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
                 this.playNote(((Byte) event.getData()).byteValue());
@@ -105,3 +105,5 @@ public class SoundPlayer implements EventListener {
         midi.write(midiMessage);
     }
 }
+
+// On pause, stop all sounds or else you will hear a long note.

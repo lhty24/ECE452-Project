@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
-import com.morpheme.palmpiano.PalmPiano;
+import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
 
 import java.nio.ByteBuffer;
@@ -19,11 +19,11 @@ public class MidiPlayback implements MidiNotePlayback {
 
     private boolean isPlaying;
     private HashSet<Event.EventType> monitoredEvents;
-    private PalmPiano.PianoMode pianoMode;
+    private Constants.PianoMode pianoMode;
     private List<Note> notes;
     private int hand;
 
-    public MidiPlayback(PalmPiano.PianoMode mode, int hand, Context context, String midiFileName) {
+    public MidiPlayback(Constants.PianoMode mode, int hand, Context context, String midiFileName) {
         this.pianoMode = mode;
         MidiFile midiFile = MidiFileIO.getMidiFile(context, midiFileName);
         this.notes = MidiFileParser.getMidiEvents(midiFile);
@@ -35,7 +35,7 @@ public class MidiPlayback implements MidiNotePlayback {
         checkHands();
     }
 
-    public MidiPlayback(PalmPiano.PianoMode mode, int hand, List<Note> midiNotes) {
+    public MidiPlayback(Constants.PianoMode mode, int hand, List<Note> midiNotes) {
         this.pianoMode = mode;
         this.notes = midiNotes;
         this.hand = hand;
@@ -93,9 +93,9 @@ public class MidiPlayback implements MidiNotePlayback {
                 prev = newNow;
             }
 
-            if (pianoMode == PalmPiano.PianoMode.MODE_PLAYBACK) {
+            if (pianoMode == Constants.PianoMode.MODE_PLAYBACK) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_AUDIO, noteEvent));
-            } else if (pianoMode == PalmPiano.PianoMode.MODE_GAME) {
+            } else if (pianoMode == Constants.PianoMode.MODE_GAME) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_GAMEPLAY, noteEvent));
             }
         }
