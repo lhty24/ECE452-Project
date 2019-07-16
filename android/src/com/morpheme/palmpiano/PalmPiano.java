@@ -134,6 +134,7 @@ public class PalmPiano implements ApplicationListener {
 
 	@Override
 	public void dispose() {
+		EventBus.getInstance().dispatch(new Event<>(Event.EventType.BACK, null));
 	}
 
 	@Override
@@ -149,10 +150,12 @@ public class PalmPiano implements ApplicationListener {
 
 	@Override
 	public void pause() {
+		EventBus.getInstance().dispatch(new Event<>(Event.EventType.PAUSE, null));
 	}
 
 	@Override
 	public void resume() {
+		EventBus.getInstance().dispatch(new Event<>(Event.EventType.RESUME, null));
 	}
 
 	// Given a midi byte, return the corresponding x position of the key in the game engine

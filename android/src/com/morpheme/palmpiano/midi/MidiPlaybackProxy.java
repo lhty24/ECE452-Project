@@ -49,8 +49,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void playbackMidi() {
         if (actualPlayback != null) {
             actualPlayback.playbackMidi();
-        }
-        else {
+        } else {
             // Virtual proxy behaviour; only instantiate and run upon beginning to play
             while (!this.isPlaying) {}
             if (notes == null) {
@@ -67,8 +66,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void setMidiNotes(List<Note> midiNoteEvents) {
         if (actualPlayback != null) {
             actualPlayback.setMidiNotes(midiNoteEvents);
-        }
-        else {
+        } else {
             notes = midiNoteEvents;
         }
     }
@@ -77,8 +75,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void handleEvent(Event<?> event) {
         if (actualPlayback != null) {
             actualPlayback.handleEvent(event);
-        }
-        else {
+        } else {
             switch (event.getEventType()) {
                 case MIDI_FILE_PLAY:
                     this.isPlaying = true;
@@ -94,9 +91,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
 
     @Override
     public Set<Event.EventType> getMonitoredEvents() {
-        if (actualPlayback != null) {
-            return actualPlayback.getMonitoredEvents();
-        }
+        if (actualPlayback != null) return actualPlayback.getMonitoredEvents();
         return monitoredEvents;
     }
 
@@ -104,8 +99,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void run() {
         if (actualPlayback != null) {
             actualPlayback.run();
-        }
-        else {
+        } else {
             playbackMidi();
         }
     }

@@ -2,6 +2,9 @@ package com.morpheme.palmpiano;
 
 public class Event<D> {
     public enum EventType {
+        BACK,
+        PAUSE,
+        RESUME,
         PIANO_KEY_DOWN,
         PIANO_KEY_UP,
         MIDI_DATA_AUDIO,

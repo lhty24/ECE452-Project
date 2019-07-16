@@ -18,6 +18,7 @@ public class MidiPlayback implements MidiNotePlayback {
     public static final int LEFT_HAND = 2;
 
     private boolean isPlaying;
+    private boolean isPlayingState;
     private HashSet<Event.EventType> monitoredEvents;
     private Constants.PianoMode pianoMode;
     private List<Note> notes;
@@ -32,6 +33,9 @@ public class MidiPlayback implements MidiNotePlayback {
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
+        this.monitoredEvents.add(Event.EventType.BACK);
+        this.monitoredEvents.add(Event.EventType.PAUSE);
+        this.monitoredEvents.add(Event.EventType.RESUME);
         checkHands();
     }
 
@@ -43,6 +47,9 @@ public class MidiPlayback implements MidiNotePlayback {
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
+        this.monitoredEvents.add(Event.EventType.BACK);
+        this.monitoredEvents.add(Event.EventType.PAUSE);
+        this.monitoredEvents.add(Event.EventType.RESUME);
         checkHands();
     }
 
@@ -113,6 +120,14 @@ public class MidiPlayback implements MidiNotePlayback {
                 this.isPlaying = true;
                 break;
             case MIDI_FILE_PAUSE:
+            case PAUSE:
+                this.isPlayingState = this.isPlaying;
+                this.isPlaying = false;
+                break;
+            case RESUME:
+                this.isPlaying = this.isPlayingState;
+                break;
+            case BACK:
                 this.isPlaying = false;
                 break;
             default:

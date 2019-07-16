@@ -26,6 +26,7 @@ public class MidiComposer implements EventListener {
     private MidiTrack tempoTrack;
     private HashSet<Event.EventType> monitoredEvents;
     private long startTime;
+    private long pauseTime;
     private long duration;
     private long nsPerTick;
 
@@ -38,12 +39,16 @@ public class MidiComposer implements EventListener {
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
+        this.monitoredEvents.add(Event.EventType.BACK);
+        this.monitoredEvents.add(Event.EventType.PAUSE);
+        this.monitoredEvents.add(Event.EventType.RESUME);
         this.nsPerTick = 60000000000L / (PPQ * BPM);
         this.start = false;
     }
 
     private void start(long timestamp) {
         this.startTime = timestamp;
+        this.pauseTime = 0;
         this.duration = 0;
         this.track = new MidiTrack();
         this.tempoTrack = new MidiTrack();
@@ -69,7 +74,8 @@ public class MidiComposer implements EventListener {
 
         int value = (int) note;
 
-        duration += timestamp - startTime;
+        duration += timestamp - startTime - pauseTime;
+        pauseTime = 0;
         startTime = timestamp;
 
         long tick = duration / nsPerTick;
@@ -91,10 +97,10 @@ public class MidiComposer implements EventListener {
 
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
-                this.saveNote(Note.NOTE_ON, ((Byte) event.getData()).byteValue(), timestamp);
+                this.saveNote(Note.NOTE_ON, (Byte) event.getData(), timestamp);
                 break;
             case PIANO_KEY_UP:
-                this.saveNote(Note.NOTE_OFF, ((Byte) event.getData()).byteValue(), timestamp);
+                this.saveNote(Note.NOTE_OFF, (Byte) event.getData(), timestamp);
                 break;
             case MIDI_FILE_PLAY:
                 this.start(timestamp);
@@ -103,6 +109,17 @@ public class MidiComposer implements EventListener {
                 this.stop();
                 // FIXME Test line
                 MidiFileIO.writeMidiFile(context, getMidiFile(), "test_compose.mid");
+                break;
+            case PAUSE:
+                this.start = false;
+                this.pauseTime = timestamp;
+                break;
+            case RESUME:
+                this.start = true;
+                this.pauseTime = timestamp - this.pauseTime;
+                break;
+            case BACK:
+                this.start = false;
                 break;
             default:
                 break;

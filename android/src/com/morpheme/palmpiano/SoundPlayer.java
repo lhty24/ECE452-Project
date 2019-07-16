@@ -54,13 +54,12 @@ public class SoundPlayer implements EventListener {
 
     @Override
     public void handleEvent(Event event) {
-//        System.out.println("SoundPlayer received event: " + event.toString());
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
-                this.playNote(((Byte) event.getData()).byteValue());
+                this.playNote((Byte) event.getData());
                 break;
             case PIANO_KEY_UP:
-                this.stopNote(((Byte) event.getData()).byteValue());
+                this.stopNote((Byte) event.getData());
                 break;
             case MIDI_DATA_AUDIO:
                 this.playMidi((byte[]) event.getData());
