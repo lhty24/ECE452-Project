@@ -14,6 +14,7 @@ public final class Constants {
     public static final byte MIDI_PIANO_MEZZO_FORTE = (byte) 64;
 
     public enum PianoMode {
+        MODE_MENU,
         MODE_COMPOSITION,
         MODE_PLAYBACK,
         MODE_GAME

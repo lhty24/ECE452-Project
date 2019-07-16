@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface MidiNotePlayback extends EventListener, Runnable {
     void playbackMidi();
+    void setMidiNotes(String midiFileName);
     void setMidiNotes(List<Note> midiNoteEvents);
 }

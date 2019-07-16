@@ -5,10 +5,12 @@ public class Event<D> {
         BACK,
         PAUSE,
         RESUME,
+        NEW_STAGE,
         PIANO_KEY_DOWN,
         PIANO_KEY_UP,
         MIDI_DATA_AUDIO,
         MIDI_DATA_GAMEPLAY,
+        NEW_MIDI_FILE,
         MIDI_FILE_PLAY,
         MIDI_FILE_PAUSE
     }

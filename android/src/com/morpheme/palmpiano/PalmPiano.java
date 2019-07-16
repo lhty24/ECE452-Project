@@ -21,7 +21,6 @@ import java.util.List;
 public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
     private Context context;
-    private Constants.PianoMode mode;
 
 	// Order of notes in octave
 	public String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
@@ -51,9 +50,6 @@ public class PalmPiano implements ApplicationListener {
 	public void create() {
 		stage = new PianoStage();
 		Gdx.input.setInputProcessor(stage);
-
-		RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(stage);
-		EventBus.getInstance().register(rhythmBoxListener);
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
@@ -89,11 +85,9 @@ public class PalmPiano implements ApplicationListener {
 		Intent intent = ((Activity) context).getIntent();
 		Bundle bundle = intent.getExtras();
 		if (bundle != null) {
-			this.mode = (Constants.PianoMode) bundle.getSerializable("pianoMode");
-
 			// TODO: Implement actual logic for composition/game mode-specific actions
-			switch (mode) {
-				case MODE_PLAYBACK:
+			switch (ModeTracker.getMode()) {
+				case MODE_COMPOSITION:
 					System.out.println("Detected composition mode");
 					break;
 				case MODE_GAME:
@@ -105,30 +99,16 @@ public class PalmPiano implements ApplicationListener {
 						boxes.add(box);
 						stage.addActor(box);
 					}
+
+					EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_MIDI_FILE, (String) bundle.getSerializable("midiFile")));
+					break;
+				case MODE_PLAYBACK:
+					System.out.println("Detected playback mode");
+					EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_MIDI_FILE, (String) bundle.getSerializable("midiFile")));
 					break;
 				default:
 					break;
 			}
-		} else {
-			this.mode = null;
-		}
-
-		SoundPlayer.initialize(context);
-
-		switch (mode) {
-			case MODE_COMPOSITION:
-				MidiComposer c = new MidiComposer(context);
-				EventBus.getInstance().register(c);
-				break;
-			case MODE_GAME:
-			case MODE_PLAYBACK:
-				MidiNotePlayback playback = new MidiPlaybackProxy(mode, MidiPlayback.BOTH_HANDS, context, (String) bundle.getSerializable("midiFile"));
-				EventBus.getInstance().register(playback);
-				Thread midiThread = new Thread(playback);
-				midiThread.start();
-				break;
-			default:
-				break;
 		}
 	}
 

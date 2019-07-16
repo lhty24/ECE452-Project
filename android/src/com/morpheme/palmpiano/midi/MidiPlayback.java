@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
+import com.morpheme.palmpiano.ModeTracker;
 import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
 
@@ -20,31 +21,15 @@ public class MidiPlayback implements MidiNotePlayback {
     private boolean isPlaying;
     private boolean isPlayingState;
     private HashSet<Event.EventType> monitoredEvents;
-    private Constants.PianoMode pianoMode;
     private List<Note> notes;
     private int hand;
 
-    public MidiPlayback(Constants.PianoMode mode, int hand, Context context, String midiFileName) {
-        this.pianoMode = mode;
-        MidiFile midiFile = MidiFileIO.getMidiFile(context, midiFileName);
-        this.notes = MidiFileParser.getMidiEvents(midiFile);
+    public MidiPlayback(int hand) {
         this.hand = hand;
+        this.notes = null;
         this.isPlaying = false;
         this.monitoredEvents = new HashSet<>();
-        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
-        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
-        this.monitoredEvents.add(Event.EventType.BACK);
-        this.monitoredEvents.add(Event.EventType.PAUSE);
-        this.monitoredEvents.add(Event.EventType.RESUME);
-        checkHands();
-    }
-
-    public MidiPlayback(Constants.PianoMode mode, int hand, List<Note> midiNotes) {
-        this.pianoMode = mode;
-        this.notes = midiNotes;
-        this.hand = hand;
-        this.isPlaying = false;
-        this.monitoredEvents = new HashSet<>();
+        this.monitoredEvents.add(Event.EventType.NEW_MIDI_FILE);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.BACK);
@@ -100,12 +85,18 @@ public class MidiPlayback implements MidiNotePlayback {
                 prev = newNow;
             }
 
-            if (pianoMode == Constants.PianoMode.MODE_PLAYBACK) {
+            if (ModeTracker.getMode() == Constants.PianoMode.MODE_PLAYBACK) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_AUDIO, noteEvent));
-            } else if (pianoMode == Constants.PianoMode.MODE_GAME) {
+            } else if (ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_GAMEPLAY, noteEvent));
             }
         }
+    }
+
+    @Override
+    public void setMidiNotes(String midiFileName) {
+        MidiFile midiFile = MidiFileIO.getMidiFile(midiFileName);
+        this.notes = MidiFileParser.getMidiEvents(midiFile);
     }
 
     @Override
@@ -116,6 +107,9 @@ public class MidiPlayback implements MidiNotePlayback {
     @Override
     public void handleEvent(Event<?> event) {
         switch (event.getEventType()) {
+            case NEW_MIDI_FILE:
+                setMidiNotes((String) event.getData());
+                break;
             case MIDI_FILE_PLAY:
                 this.isPlaying = true;
                 break;

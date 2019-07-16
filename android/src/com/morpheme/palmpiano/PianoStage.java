@@ -20,6 +20,8 @@ public class PianoStage extends Stage {
         super();
 
         this.playing = false;
+        Event newStageEvent = new Event<>(Event.EventType.NEW_STAGE, this);
+        EventBus.getInstance().dispatch(newStageEvent);
 
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
 

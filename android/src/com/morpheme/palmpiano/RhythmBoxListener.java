@@ -11,9 +11,10 @@ public class RhythmBoxListener implements EventListener {
     private HashSet<Event.EventType> monitoredEvents;
     private Stage stage;
 
-    public RhythmBoxListener(Stage stage) {
-        this.stage = stage;
+    public RhythmBoxListener() {
+        this.stage = null;
         this.monitoredEvents = new HashSet<>();
+        monitoredEvents.add(Event.EventType.NEW_STAGE);
         monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
     }
 
@@ -27,6 +28,9 @@ public class RhythmBoxListener implements EventListener {
         byte[] data;
 
         switch (event.getEventType()) {
+            case NEW_STAGE:
+                this.stage = (Stage) event.getData();
+                break;
             case MIDI_DATA_GAMEPLAY:
                 data = (byte[]) event.getData();
                 if ((((int) data[0]) & ((int) Constants.MIDI_NOTE_ON )) != 0 && data[2] != 0) {

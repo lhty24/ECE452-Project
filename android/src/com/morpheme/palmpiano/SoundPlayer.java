@@ -1,7 +1,5 @@
 package com.morpheme.palmpiano;
 
-import android.content.Context;
-
 import com.morpheme.palmpiano.util.Constants;
 
 import java.util.HashSet;
@@ -12,7 +10,6 @@ import org.billthefarmer.mididriver.MidiDriver;
 public class SoundPlayer implements EventListener {
     private static SoundPlayer soundPlayer = null;
 
-    private Context context = null;
     private HashSet<Event.EventType> monitoredEvents;
     private MidiDriver midi;
 
@@ -23,7 +20,6 @@ public class SoundPlayer implements EventListener {
         monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
         monitoredEvents.add(Event.EventType.MIDI_DATA_AUDIO);
-        EventBus.getInstance().register(this);
 
         midi = new MidiDriver();
         midi.start();
@@ -33,16 +29,6 @@ public class SoundPlayer implements EventListener {
         msg[0] = (byte) 0xc0;
         msg[1] = (byte) 1;
         midi.write(msg);
-    }
-
-    private SoundPlayer(Context context) {
-        this();
-        // Used for MediaPlayer (MIDI file playback)
-        this.context = context;
-    }
-
-    public static void initialize(Context context) {
-        soundPlayer = new SoundPlayer(context);
     }
 
     public static SoundPlayer getInstance() {

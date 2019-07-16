@@ -21,6 +21,7 @@ public class EventBus {
     }
 
     public void dispatch(Event<?> event) {
+//        System.out.println("Dispatched event: " + event.toString());
         for(EventListener subscriber : subscribers) {
             if (subscriber.getMonitoredEvents().contains(event.getEventType())) {
                 subscriber.handleEvent(event);

@@ -32,8 +32,8 @@ public class MidiComposer implements EventListener {
 
     private boolean start;
 
-    public MidiComposer(Context context) {
-        this.context = context;
+    public MidiComposer() {
+        this.context = null;
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
@@ -108,7 +108,7 @@ public class MidiComposer implements EventListener {
             case MIDI_FILE_PAUSE:
                 this.stop();
                 // FIXME Test line
-                MidiFileIO.writeMidiFile(context, getMidiFile(), "test_compose.mid");
+                MidiFileIO.writeMidiFile(midi, "test_compose.mid");
                 break;
             case PAUSE:
                 this.start = false;
