@@ -17,8 +17,24 @@ import java.util.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
+import android.os.Bundle;
 import android.view.*;
 
+import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.morpheme.palmpiano.Event;
+import com.morpheme.palmpiano.EventBus;
+import com.morpheme.palmpiano.MidiFileIO;
+import com.morpheme.palmpiano.PalmPiano;
+import com.morpheme.palmpiano.PianoStage;
+import com.morpheme.palmpiano.SoundPlayer;
 import com.morpheme.palmpiano.sheetmusic.sheets.AccidSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.BarSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.BlankSymbol;
@@ -31,6 +47,7 @@ import com.morpheme.palmpiano.sheetmusic.sheets.MusicSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.RestSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.Staff;
 import com.morpheme.palmpiano.sheetmusic.sheets.SymbolWidths;
+import com.morpheme.palmpiano.util.Constants;
 
 class BoxedInt {
     public int value;
@@ -42,14 +59,14 @@ class BoxedInt {
  * <ul/>
  *  <li/> SheetMusic():
  *   Create a new SheetMusic control from the given midi file and options.
- * 
+ *
  *  <li/> onDraw():
  *   Method called to draw the SheetMusic
  *
  *  <li/> shadeNotes():
  *   Shade all the notes played at a given pulse time.
  */
-public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, ScrollAnimationListener {
+public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, ScrollAnimationListener, ApplicationListener {
 
     /* Measurements used when drawing.  All measurements are in pixels. */
     public static final int LineWidth  = 1;   /** The width of a line */
@@ -96,22 +113,22 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     private int      viewwidth;       /** The width of this view. */
     private int      viewheight;      /** The height of this view. */
     private int      bufferX;         /** The (left,top) of the bufferCanvas */
-    private int      bufferY; 
+    private int      bufferY;
     private int      scrollX;         /** The (left,top) of the scroll clip */
     private int      scrollY;
     private ScrollAnimation scrollAnimation;
 
-    public SheetMusic(Context context) {
-        super(context);
-        SurfaceHolder holder = getHolder();
-        holder.addCallback(this);
-        bufferX = bufferY = scrollX = scrollY = 0;
-        
-        Activity activity = (Activity)context;
-        screenwidth = activity.getWindowManager().getDefaultDisplay().getWidth();
-        screenheight = activity.getWindowManager().getDefaultDisplay().getHeight();
-        playerHeight = MidiPlayer.getPreferredSize(screenwidth, screenheight).y;
-    }
+//    public SheetMusic(Context context) {
+//        super(context);
+//        SurfaceHolder holder = getHolder();
+//        holder.addCallback(this);
+//        bufferX = bufferY = scrollX = scrollY = 0;
+//
+//        Activity activity = (Activity)context;
+//        screenwidth = activity.getWindowManager().getDefaultDisplay().getWidth();
+//        screenheight = activity.getWindowManager().getDefaultDisplay().getHeight();
+//        playerHeight = MidiPlayer.getPreferredSize(screenwidth, screenheight).y;
+//    }
 
     /** Create a new SheetMusic View.
      * MidiFile is the parsed midi file to display.
@@ -123,79 +140,328 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      * - Vertically align the music symbols in all the tracks
      * - Partition the music notes into horizontal staffs
      */
+//    public void init(MidiFile file, MidiOptions options) {
+//        if (options == null) {
+//            options = new MidiOptions(file);
+//        }
+//        zoom = 1.0f;
+//
+//        filename = file.getFileName();
+//        SetColors(options.noteColors, options.useColors, options.shade1Color, options.shade2Color);
+//        paint = new Paint();
+//        paint.setTextSize(12.0f);
+//        Typeface typeface = Typeface.create(paint.getTypeface(), Typeface.NORMAL);
+//        paint.setTypeface(typeface);
+//        paint.setColor(Color.BLACK);
+//
+//        ArrayList<MidiTrack> tracks = file.ChangeMidiNotes(options);
+//        // SetNoteSize(options.largeNoteSize);
+//        scrollVert = options.scrollVert;
+//        showNoteLetters = options.showNoteLetters;
+//        TimeSignature time = file.getTime();
+//        if (options.time != null) {
+//            time = options.time;
+//        }
+//        if (options.key == -1) {
+//            mainkey = GetKeySignature(tracks);
+//        }
+//        else {
+//            mainkey = new KeySignature(options.key);
+//        }
+//        numtracks = tracks.size();
+//
+//        int lastStart = file.EndTime() + options.shifttime;
+//
+//        /* Create all the music symbols (notes, rests, vertical bars, and
+//         * clef changes).  The symbols variable contains a list of music
+//         * symbols for each track.  The list does not include the left-side
+//         * Clef and key signature symbols.  Those can only be calculated
+//         * when we create the staffs.
+//         */
+//        ArrayList<ArrayList<MusicSymbol>> allsymbols =
+//          new ArrayList<ArrayList<MusicSymbol> >(numtracks);
+//
+//        for (int tracknum = 0; tracknum < numtracks; tracknum++) {
+//            MidiTrack track = tracks.get(tracknum);
+//            ClefMeasures clefs = new ClefMeasures(track.getNotes(), time.getMeasure());
+//            ArrayList<ChordSymbol> chords = CreateChords(track.getNotes(), mainkey, time, clefs);
+//            allsymbols.add(CreateSymbols(chords, clefs, time, lastStart));
+//        }
+//
+//        ArrayList<ArrayList<LyricSymbol>> lyrics = null;
+//        if (options.showLyrics) {
+//            lyrics = GetLyrics(tracks);
+//        }
+//
+//        /* Vertically align the music symbols */
+//        SymbolWidths widths = new SymbolWidths(allsymbols, lyrics);
+//        AlignSymbols(allsymbols, widths, options);
+//
+//        staffs = CreateStaffs(allsymbols, mainkey, options, time.getMeasure());
+//        CreateAllBeamedChords(allsymbols, time);
+//        if (lyrics != null) {
+//            AddLyricsToStaffs(staffs, lyrics);
+//        }
+//
+//        /* After making chord pairs, the stem directions can change,
+//         * which affects the staff height.  Re-calculate the staff height.
+//         */
+//        for (Staff staff : staffs) {
+//            staff.CalculateHeight();
+//        }
+//        zoom = 1.0f;
+//
+//        scrollAnimation = new ScrollAnimation(this, scrollVert);
+//    }
+//
+
+    /** test
+     */
     public void init(MidiFile file, MidiOptions options) {
-        if (options == null) {
-            options = new MidiOptions(file);
-        }
-        zoom = 1.0f;
-
-        filename = file.getFileName();
-        SetColors(options.noteColors, options.useColors, options.shade1Color, options.shade2Color);
-        paint = new Paint();
-        paint.setTextSize(12.0f);
-        Typeface typeface = Typeface.create(paint.getTypeface(), Typeface.NORMAL);
-        paint.setTypeface(typeface);
-        paint.setColor(Color.BLACK);
-        
-        ArrayList<MidiTrack> tracks = file.ChangeMidiNotes(options);
-        // SetNoteSize(options.largeNoteSize);
-        scrollVert = options.scrollVert;
-        showNoteLetters = options.showNoteLetters;
-        TimeSignature time = file.getTime(); 
-        if (options.time != null) {
-            time = options.time;
-        }
-        if (options.key == -1) {
-            mainkey = GetKeySignature(tracks);
-        }
-        else {
-            mainkey = new KeySignature(options.key);
-        }
-        numtracks = tracks.size();
-
-        int lastStart = file.EndTime() + options.shifttime;
-
-        /* Create all the music symbols (notes, rests, vertical bars, and
-         * clef changes).  The symbols variable contains a list of music
-         * symbols for each track.  The list does not include the left-side 
-         * Clef and key signature symbols.  Those can only be calculated 
-         * when we create the staffs.
-         */
-        ArrayList<ArrayList<MusicSymbol>> allsymbols =
-          new ArrayList<ArrayList<MusicSymbol> >(numtracks);
-
-        for (int tracknum = 0; tracknum < numtracks; tracknum++) {
-            MidiTrack track = tracks.get(tracknum);
-            ClefMeasures clefs = new ClefMeasures(track.getNotes(), time.getMeasure());
-            ArrayList<ChordSymbol> chords = CreateChords(track.getNotes(), mainkey, time, clefs);
-            allsymbols.add(CreateSymbols(chords, clefs, time, lastStart));
-        }
-
-        ArrayList<ArrayList<LyricSymbol>> lyrics = null;
-        if (options.showLyrics) {
-            lyrics = GetLyrics(tracks);
-        }
-
-        /* Vertically align the music symbols */
-        SymbolWidths widths = new SymbolWidths(allsymbols, lyrics);
-        AlignSymbols(allsymbols, widths, options);
-
-        staffs = CreateStaffs(allsymbols, mainkey, options, time.getMeasure());
-        CreateAllBeamedChords(allsymbols, time);
-        if (lyrics != null) {
-            AddLyricsToStaffs(staffs, lyrics);
-        }
-
-        /* After making chord pairs, the stem directions can change,
-         * which affects the staff height.  Re-calculate the staff height.
-         */
-        for (Staff staff : staffs) {
-            staff.CalculateHeight();
-        }
-        zoom = 1.0f;
-
-        scrollAnimation = new ScrollAnimation(this, scrollVert);
+//        if (options == null) {
+//            options = new MidiOptions(file);
+//        }
+//        zoom = 1.0f;
+//
+//        filename = file.getFileName();
+//        SetColors(options.noteColors, options.useColors, options.shade1Color, options.shade2Color);
+//        paint = new Paint();
+//        paint.setTextSize(12.0f);
+//        Typeface typeface = Typeface.create(paint.getTypeface(), Typeface.NORMAL);
+//        paint.setTypeface(typeface);
+//        paint.setColor(Color.BLACK);
+//
+//        ArrayList<MidiTrack> tracks = file.ChangeMidiNotes(options);
+//        // SetNoteSize(options.largeNoteSize);
+//        scrollVert = options.scrollVert;
+//        showNoteLetters = options.showNoteLetters;
+//        TimeSignature time = file.getTime();
+//        if (options.time != null) {
+//            time = options.time;
+//        }
+//        if (options.key == -1) {
+//            mainkey = GetKeySignature(tracks);
+//        }
+//        else {
+//            mainkey = new KeySignature(options.key);
+//        }
+//        numtracks = tracks.size();
+//
+//        int lastStart = file.EndTime() + options.shifttime;
     }
+
+    private PianoStage stage;
+    private EventBus eb;
+    private Context context;
+    //private PalmPiano.PianoMode mode;
+    private PalmPiano.PianoMode mode;
+
+    // Order of notes in octave
+    public String[] notes = {"A", "AS", "B", "C", "CS", "D", "DS", "E", "F", "FS", "G", "GS"};
+
+    public static final int wkInterval = Constants.WK_WIDTH + Constants.WK_GAP;
+    public static final int[] offsetMap = {
+            0,
+            wkInterval - Constants.BK_WIDTH / 2,
+            wkInterval,
+            2 * wkInterval,
+            3 * wkInterval - Constants.BK_WIDTH / 2,
+            3 * wkInterval,
+            4 * wkInterval - Constants.BK_WIDTH / 2,
+            4 * wkInterval,
+            5 * wkInterval,
+            6 * wkInterval - Constants.BK_WIDTH / 2,
+            6 * wkInterval,
+            7 * wkInterval - Constants.BK_WIDTH / 2
+    };
+
+    public SheetMusic(Context context) {
+        super(context);
+        this.context = context;
+    }
+
+//    @Override
+//    public void create() {
+//
+//    }
+//
+//    @Override
+//    public void dispose() {}
+//
+//    @Override
+//    public void render() {}
+//
+//    @Override
+//    public void resize(int width, int height) {
+//    }
+//
+//    @Override
+//    public void pause() {
+//    }
+//
+//    @Override
+//    public void resume() {
+//    }
+
+    public class PianoKey extends Actor {
+        boolean bk = false;
+        Byte midiNote = 0x0b;
+        Texture texture;
+        Sprite sprite;
+        float actorX = 0, actorY = 0;
+        boolean pressed;
+
+        public PianoKey(boolean bk, final Byte midiNote, float x){
+            String file = "wk.png";
+            this.bk = bk;
+            if (bk) {
+                this.actorY = Constants.WK_HEIGHT-Constants.BK_HEIGHT;
+                file = "bk.png";
+            }
+            texture = new Texture(Gdx.files.internal(file));
+            sprite = new Sprite(texture);
+            this.midiNote = midiNote;
+            this.actorX = x;
+            setBounds(actorX,actorY,texture.getWidth(),texture.getHeight());
+            addListener(new InputListener(){
+                public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    System.out.println(midiNote.toString());
+                    pressed = true;
+                    System.out.println(midiNote);
+
+                    eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
+
+                    return true;
+                }
+
+                public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                    pressed = false;
+                    System.out.println(midiNote);
+
+                    eb.dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
+//					eb.dispatch(new Event<>(Event.EventType.MIDI_FILE_PAUSE, null));
+
+                }
+            });
+        }
+
+
+        @Override
+        public void draw(Batch batch, float alpha){
+            // Visual feedback that key is pressed
+            if (this.pressed)
+                batch.setColor(1,1,1, 0.5f);
+            else
+                batch.setColor(1,1,1, 1);
+            batch.draw(sprite,actorX,actorY);
+            batch.setColor(1,1,1,1);
+        }
+
+        @Override
+        public void act(float delta){
+
+        }
+    }
+
+
+    @Override
+    public void create() {
+        eb = EventBus.getInstance();
+        stage = new PianoStage(eb);
+        Gdx.input.setInputProcessor(stage);
+
+        //RhythmBoxListener rhythmBoxListener = new RhythmBoxListener(stage);
+
+        List<PianoKey> wks = new ArrayList<>();
+        List<PianoKey> bks = new ArrayList<>();
+        //List<RhythmBox> boxes = new ArrayList<>();
+
+        for (int oc = 0; oc < 7; oc++) {
+            boolean bk;
+            for (int i = 0; i < notes.length; i++) {
+                if ( i == 1 || i == 4|| i == 6 || i == 9 || i == 11 ) {
+                    bk = true;
+                } else {
+                    bk = false;
+                }
+                PianoKey k = new PianoKey(bk, (byte) (Constants.MIDI_OFFSET + i + oc*12),  offsetMap[i] + oc* (7* wkInterval));
+                k.setTouchable(Touchable.enabled);
+                if (bk) {
+                    bks.add(k);
+                    continue;
+                } else {
+                    wks.add(k);
+                }
+            }
+        }
+
+        for (PianoKey wk : wks) {
+            stage.addActor(wk);
+        }
+
+        for (PianoKey bk : bks) {
+            stage.addActor(bk);
+        }
+
+        Intent intent = ((Activity) context).getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            this.mode = (PalmPiano.PianoMode) bundle.getSerializable("pianoMode");
+
+            // TODO: Implement actual logic for composition/game mode-specific actions
+            switch (mode) {
+                case MODE_COMPOSITION:
+                    System.out.println("Detected composition mode");
+                    break;
+                case MODE_GAME:
+                    System.out.println("Detected game mode");
+
+//                    for (int oc = 0; oc < 7; oc++) {
+//                        boolean bk;
+//                        RhythmBox box = new RhythmBox(false, 21, 1);
+//                        box.setTouchable(Touchable.enabled);
+//                        boxes.add(box);
+//                        stage.addActor(box);
+//                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            this.mode = null;
+        }
+
+        SoundPlayer.initialize(context);
+
+        MidiFileIO midi = new MidiFileIO(mode, (String) bundle.getSerializable("midiFile"));
+        Thread midiThread = new Thread(midi);
+        midiThread.start();
+    }
+
+    @Override
+    public void dispose() {
+    }
+
+    @Override
+    public void render() {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.act(Gdx.graphics.getDeltaTime());
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
 
     /** Calculate the size of the sheet music width and height
      *  (without zoom scaling to fit the screen).  Store the result in
@@ -212,7 +478,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         sheetheight += LeftMargin;
     }
 
-    /* Adjust the zoom level so that the sheet music page (PageWidth)
+    /** Adjust the zoom level so that the sheet music page (PageWidth)
      * fits within the width. If the heightspec is 0, return the screenheight.
      * Else, use the given view width/height. 
      */
@@ -232,7 +498,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             setMeasuredDimension(specwidth, screenheight);
         }
         else {
-            setMeasuredDimension(specwidth, specheight);            
+            setMeasuredDimension(specwidth, specheight);
         }
     }
 
@@ -241,7 +507,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      *  and create the bufferCanvas.  Otherwise, do nothing.
      */
     @Override
-    protected void 
+    protected void
     onSizeChanged(int newwidth, int newheight, int oldwidth, int oldheight) {
         viewwidth = newwidth;
         viewheight = newheight;
@@ -267,7 +533,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         }
         draw();
     }
-    
+
 
     /** Get the best key signature given the midi notes in all the tracks. */
     private KeySignature GetKeySignature(ArrayList<MidiTrack> tracks) {
@@ -289,15 +555,15 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      * @return An array of ChordSymbols
      */
     private
-    ArrayList<ChordSymbol> CreateChords(ArrayList<MidiNote> midinotes, 
-                                   KeySignature key,
-                                   TimeSignature time,
-                                   ClefMeasures clefs) {
+    ArrayList<ChordSymbol> CreateChords(ArrayList<MidiNote> midinotes,
+                                        KeySignature key,
+                                        TimeSignature time,
+                                        ClefMeasures clefs) {
 
         int i = 0;
         ArrayList<ChordSymbol> chords = new ArrayList<ChordSymbol>();
         ArrayList<MidiNote> notegroup = new ArrayList<MidiNote>(12);
-        int len = midinotes.size(); 
+        int len = midinotes.size();
 
         while (i < len) {
 
@@ -330,7 +596,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      * clef changes.
      * Return a list of symbols (ChordSymbol, BarSymbol, RestSymbol, ClefSymbol)
      */
-    private ArrayList<MusicSymbol> 
+    private ArrayList<MusicSymbol>
     CreateSymbols(ArrayList<ChordSymbol> chords, ClefMeasures clefs,
                   TimeSignature time, int lastStart) {
 
@@ -345,7 +611,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     /** Add in the vertical bars delimiting measures. 
      *  Also, add the time signature symbols.
      */
-    private ArrayList<MusicSymbol> 
+    private ArrayList<MusicSymbol>
     AddBars(ArrayList<ChordSymbol> chords, TimeSignature time, int lastStart) {
         ArrayList<MusicSymbol> symbols = new ArrayList<MusicSymbol>();
 
@@ -431,22 +697,22 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
 
             case DottedHalf:
                 r1 = new RestSymbol(start, NoteDuration.Half);
-                r2 = new RestSymbol(start + time.getQuarter()*2, 
-                                    NoteDuration.Quarter);
+                r2 = new RestSymbol(start + time.getQuarter()*2,
+                        NoteDuration.Quarter);
                 result = new RestSymbol[]{ r1, r2 };
                 return result;
 
             case DottedQuarter:
                 r1 = new RestSymbol(start, NoteDuration.Quarter);
-                r2 = new RestSymbol(start + time.getQuarter(), 
-                                    NoteDuration.Eighth);
+                r2 = new RestSymbol(start + time.getQuarter(),
+                        NoteDuration.Eighth);
                 result = new RestSymbol[]{ r1, r2 };
-                return result; 
+                return result;
 
             case DottedEighth:
                 r1 = new RestSymbol(start, NoteDuration.Eighth);
-                r2 = new RestSymbol(start + time.getQuarter()/2, 
-                                    NoteDuration.Sixteenth);
+                r2 = new RestSymbol(start + time.getQuarter()/2,
+                        NoteDuration.Sixteenth);
                 result = new RestSymbol[]{ r1, r2 };
                 return result;
 
@@ -464,8 +730,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      */
     private
     ArrayList<MusicSymbol> AddClefChanges(ArrayList<MusicSymbol> symbols,
-                                     ClefMeasures clefs,
-                                     TimeSignature time) {
+                                          ClefMeasures clefs,
+                                          TimeSignature time) {
 
         ArrayList<MusicSymbol> result = new ArrayList<MusicSymbol>( symbols.size() );
         Clef prevclef = clefs.GetClef(0);
@@ -482,7 +748,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         }
         return result;
     }
-           
+
 
     /** Notes with the same start times in different staffs should be
      * vertically aligned.  The SymbolWidths class is used to help 
@@ -529,15 +795,15 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
 
                 /* BarSymbols are not included in the SymbolWidths calculations */
                 while (i < symbols.size() && (symbols.get(i) instanceof BarSymbol) &&
-                    symbols.get(i).getStartTime() <= start) {
+                        symbols.get(i).getStartTime() <= start) {
                     result.add(symbols.get(i));
                     i++;
                 }
 
                 if (i < symbols.size() && symbols.get(i).getStartTime() == start) {
 
-                    while (i < symbols.size() && 
-                           symbols.get(i).getStartTime() == start) {
+                    while (i < symbols.size() &&
+                            symbols.get(i).getStartTime() == start) {
 
                         result.add(symbols.get(i));
                         i++;
@@ -566,7 +832,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
                 while (i < result.size() && result.get(i).getStartTime() == start) {
                     i++;
                 }
-            } 
+            }
             allsymbols.set(track, result);
         }
     }
@@ -611,8 +877,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             for (int chordIndex = 1; chordIndex < numChords; chordIndex++) {
                 i++;
                 int remaining = numChords - 1 - chordIndex;
-                while ((i < symbols.size() - remaining) && 
-                       (symbols.get(i) instanceof BlankSymbol)) {
+                while ((i < symbols.size() - remaining) &&
+                        (symbols.get(i) instanceof BlankSymbol)) {
 
                     horizDistance.value += symbols.get(i).getWidth();
                     i++;
@@ -652,9 +918,9 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
                 BoxedInt horizDistance = new BoxedInt();
                 horizDistance.value = 0;
                 boolean found = FindConsecutiveChords(symbols, time,
-                                                   startIndex,
-                                                   chordIndexes,
-                                                   horizDistance);
+                        startIndex,
+                        chordIndexes,
+                        horizDistance);
                 if (!found) {
                     break;
                 }
@@ -692,8 +958,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     private static void
     CreateAllBeamedChords(ArrayList<ArrayList<MusicSymbol>> allsymbols, TimeSignature time) {
         if ((time.getNumerator() == 3 && time.getDenominator() == 4) ||
-            (time.getNumerator() == 6 && time.getDenominator() == 8) ||
-            (time.getNumerator() == 6 && time.getDenominator() == 4) ) {
+                (time.getNumerator() == 6 && time.getDenominator() == 8) ||
+                (time.getNumerator() == 6 && time.getDenominator() == 4) ) {
 
             CreateBeamedChords(allsymbols, time, 6, true);
         }
@@ -721,8 +987,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      *  Each Staff has a maxmimum width of PageWidth (800 pixels).
      *  Also, measures should not span multiple Staffs.
      */
-    private ArrayList<Staff> 
-    CreateStaffsForTrack(ArrayList<MusicSymbol> symbols, int measurelen, 
+    private ArrayList<Staff>
+    CreateStaffsForTrack(ArrayList<MusicSymbol> symbols, int measurelen,
                          KeySignature key, MidiOptions options,
                          int track, int totaltracks) {
         int keysigWidth = KeySignatureWidth(key);
@@ -746,7 +1012,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             }
 
             while (endindex < symbols.size() &&
-                   width + symbols.get(endindex).getWidth() < maxwidth) {
+                    width + symbols.get(endindex).getWidth() < maxwidth) {
 
                 width += symbols.get(endindex).getWidth();
                 endindex++;
@@ -771,13 +1037,13 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
                 /* endindex stays the same */
             }
             else if (symbols.get(startindex).getStartTime() / measurelen ==
-                     symbols.get(endindex).getStartTime() / measurelen) {
+                    symbols.get(endindex).getStartTime() / measurelen) {
                 /* endindex stays the same */
             }
             else {
                 int endmeasure = symbols.get(endindex+1).getStartTime()/measurelen;
-                while (symbols.get(endindex).getStartTime() / measurelen == 
-                       endmeasure) {
+                while (symbols.get(endindex).getStartTime() / measurelen ==
+                        endmeasure) {
                     endindex--;
                 }
             }
@@ -814,20 +1080,20 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
      *   staffs = { Staff0 for track 0, Staff0 for track1, Staff0 for track2,
      *              Staff1 for track 0, Staff1 for track1, Staff1 for track2,
      *              Staff2 for track 0, Staff2 for track1, Staff2 for track2,
-     *              ... } 
+     *              ... }
      */
-    private ArrayList<Staff> 
-    CreateStaffs(ArrayList<ArrayList<MusicSymbol>> allsymbols, KeySignature key, 
+    private ArrayList<Staff>
+    CreateStaffs(ArrayList<ArrayList<MusicSymbol>> allsymbols, KeySignature key,
                  MidiOptions options, int measurelen) {
 
-        ArrayList<ArrayList<Staff>> trackstaffs = 
-          new ArrayList<ArrayList<Staff>>( allsymbols.size() );
+        ArrayList<ArrayList<Staff>> trackstaffs =
+                new ArrayList<ArrayList<Staff>>( allsymbols.size() );
         int totaltracks = allsymbols.size();
 
         for (int track = 0; track < totaltracks; track++) {
             ArrayList<MusicSymbol> symbols = allsymbols.get( track );
-            trackstaffs.add(CreateStaffsForTrack(symbols, measurelen, key, 
-                                                 options, track, totaltracks));
+            trackstaffs.add(CreateStaffsForTrack(symbols, measurelen, key,
+                    options, track, totaltracks));
         }
 
         /* Update the EndTime of each Staff. EndTime is used for playback */
@@ -894,9 +1160,9 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     public KeySignature getMainKey() { return mainkey; }
 
     /** Get the lyrics for each track */
-    private static ArrayList<ArrayList<LyricSymbol>> 
+    private static ArrayList<ArrayList<LyricSymbol>>
     GetLyrics(ArrayList<MidiTrack> tracks) {
-       boolean hasLyrics = false;
+        boolean hasLyrics = false;
         ArrayList<ArrayList<LyricSymbol>> result = new ArrayList<ArrayList<LyricSymbol>>();
         for (int tracknum = 0; tracknum < tracks.size(); tracknum++) {
             ArrayList<LyricSymbol> lyrics = new ArrayList<LyricSymbol>();
@@ -950,14 +1216,14 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             bufferBitmap = null;
         }
         if (scrollVert) {
-            bufferBitmap = Bitmap.createBitmap(viewwidth, 
-                                               (viewheight + playerHeight) * 2, 
-                                               Bitmap.Config.ARGB_8888);
+            bufferBitmap = Bitmap.createBitmap(viewwidth,
+                    (viewheight + playerHeight) * 2,
+                    Bitmap.Config.ARGB_8888);
         }
         else {
-            bufferBitmap = Bitmap.createBitmap(viewwidth * 2, 
-                                               (viewheight + playerHeight) * 2, 
-                                               Bitmap.Config.ARGB_8888);
+            bufferBitmap = Bitmap.createBitmap(viewwidth * 2,
+                    (viewheight + playerHeight) * 2,
+                    Bitmap.Config.ARGB_8888);
         }
 
         bufferCanvas = new Canvas(bufferBitmap);
@@ -998,13 +1264,13 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         canvas.drawBitmap(bufferBitmap, 0, 0, paint);
         canvas.translate(scrollX - bufferX, scrollY - bufferY);
     }
-    
+
     /** Return true if the scrollX/scrollY is in the bufferBitmap */
     private boolean isScrollPositionInBuffer() {
         if ((scrollY < bufferY) ||
-            (scrollX < bufferX) ||
-            (scrollY > bufferY + bufferBitmap.getHeight()/3) ||
-            (scrollX > bufferX + bufferBitmap.getWidth()/3) ) {
+                (scrollX < bufferX) ||
+                (scrollY > bufferY + bufferBitmap.getHeight()/3) ||
+                (scrollX > bufferX + bufferBitmap.getWidth()/3) ) {
 
             return false;
         }
@@ -1012,10 +1278,10 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             return true;
         }
     }
-    
+
     /** Draw the SheetMusic to the bufferCanvas, with the
      * given (left,top) corner.
-     *  
+     *
      * Scale the graphics by the current zoom factor.
      * Only draw Staffs which lie inside the buffer area.
      */
@@ -1026,11 +1292,11 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
 
         bufferX =left;
         bufferY = top;
-        
+
         bufferCanvas.translate(-bufferX, -bufferY);
         Rect clip = new Rect(bufferX, bufferY,
-                             bufferX + bufferBitmap.getWidth(), 
-                             bufferY + bufferBitmap.getHeight());
+                bufferX + bufferBitmap.getWidth(),
+                bufferY + bufferBitmap.getHeight());
 
         // Scale both the canvas and the clip by the zoom factor
         clip.left   = (int)(clip.left   / zoom);
@@ -1144,7 +1410,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             /* Skip the staffs until we reach the given page number */
             while (staffnum + 1 < staffs.size() && pagenum < pagenumber) {
                 int heights = staffs.get(staffnum).getHeight() +
-                              staffs.get(staffnum+1).getHeight();
+                        staffs.get(staffnum+1).getHeight();
                 if (ypos + heights >= PageHeight) {
                     pagenum++;
                     ypos = 0;
@@ -1164,7 +1430,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             }
             for (; staffnum + 1 < staffs.size(); staffnum += 2) {
                 int heights = staffs.get(staffnum).getHeight() +
-                              staffs.get(staffnum+1).getHeight();
+                        staffs.get(staffnum+1).getHeight();
 
                 if (ypos + heights >= PageHeight)
                     break;
@@ -1214,9 +1480,9 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
 
         /* Draw the page number */
         canvas.drawText("" + pagenumber,
-                        PageWidth-leftmargin,
-                        topmargin + PageHeight - 12,
-                        paint);
+                PageWidth-leftmargin,
+                topmargin + PageHeight - 12,
+                paint);
 
     }
 
@@ -1247,7 +1513,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
          */
         bufferCanvas.translate(-bufferX, -bufferY);
 
-        /* Loop through each staff.  Each staff will shade any notes that 
+        /* Loop through each staff.  Each staff will shade any notes that
          * start at currentPulseTime, and unshade notes at prevPulseTime.
          */
         int x_shade = 0;
@@ -1257,8 +1523,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         int ypos = 0;
         for (Staff staff : staffs) {
             bufferCanvas.translate(0, ypos);
-            x_shade = staff.ShadeNotes(bufferCanvas, paint, shade1, 
-                            currentPulseTime, prevPulseTime, x_shade);
+            x_shade = staff.ShadeNotes(bufferCanvas, paint, shade1,
+                    currentPulseTime, prevPulseTime, x_shade);
             bufferCanvas.translate(0, -ypos);
             ypos += staff.getHeight();
             if (currentPulseTime >= staff.getEndTime()) {
@@ -1293,8 +1559,8 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             return;
         }
 
-        /* Draw the buffer canvas to the real canvas.        
-         * Translate canvas such that (scrollX,scrollY) within the 
+        /* Draw the buffer canvas to the real canvas.
+         * Translate canvas such that (scrollX,scrollY) within the
          * bufferCanvas maps to (0,0) on the real canvas.
          */
         SurfaceHolder holder = getHolder();
@@ -1309,9 +1575,9 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     }
 
     /** Scroll the sheet music so that the shaded notes are visible.
-      * If scrollGradually is true, scroll gradually (smooth scrolling)
-      * to the shaded notes. Update the scrollX/scrollY fields.
-      */
+     * If scrollGradually is true, scroll gradually (smooth scrolling)
+     * to the shaded notes. Update the scrollX/scrollY fields.
+     */
     void ScrollToShadedNotes(int x_shade, int y_shade, boolean scrollGradually) {
         if (scrollVert) {
             int scrollDist = (int)(y_shade - scrollY);
@@ -1331,7 +1597,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             int scrollDist = x_shade - x_view;
 
             if (scrollGradually) {
-                if (x_shade > xmax) 
+                if (x_shade > xmax)
                     scrollDist = (x_shade - x_view)/3;
                 else if (x_shade > x_view)
                     scrollDist = (x_shade - x_view)/6;
@@ -1368,7 +1634,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
         // Get the width/height of the scrollable area
         int scrollwidth = (int)(sheetwidth * zoom);
         int scrollheight = (int)(sheetheight * zoom);
-        
+
         if (scrollX < 0) {
             scrollX = 0;
         }
@@ -1429,7 +1695,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
     public void setPlayer(MidiPlayer p) {
         player = p;
     }
-    
+
     public void
     surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         draw();
