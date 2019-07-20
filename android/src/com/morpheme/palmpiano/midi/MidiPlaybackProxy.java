@@ -1,10 +1,6 @@
 package com.morpheme.palmpiano.midi;
 
-import android.content.Context;
-
 import com.morpheme.palmpiano.Event;
-import com.morpheme.palmpiano.EventBus;
-import com.morpheme.palmpiano.PalmPiano;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,26 +10,16 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     private MidiNotePlayback actualPlayback;
 
     private HashSet<Event.EventType> monitoredEvents;
-    private PalmPiano.PianoMode mode;
     private int hand;
     private List<Note> notes;
     private boolean isPlaying;
 
-    private Context context;
     private String midiFileName;
 
-    public MidiPlaybackProxy(PalmPiano.PianoMode mode, int hand, Context context, String midiFileName) {
-        this(mode, hand, null);
-        this.context = context;
-        this.midiFileName = midiFileName;
-    }
-
-    public MidiPlaybackProxy(PalmPiano.PianoMode mode, int hand, List<Note> midiNotes) {
+    public MidiPlaybackProxy(int hand) {
         // Data to store when actual object is needed
-        this.mode = mode;
         this.hand = hand;
-        this.notes = midiNotes;
-        this.context = null;
+        this.notes = null;
         this.midiFileName = null;
 
         // Un-instantiated actual object
@@ -41,6 +27,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
 
         // Dummy data to return when actual object not yet instantiated
         this.monitoredEvents = new HashSet<>();
+        this.monitoredEvents.add(Event.EventType.NEW_MIDI_FILE);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.isPlaying = false;
@@ -50,17 +37,27 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void playbackMidi() {
         if (actualPlayback != null) {
             actualPlayback.playbackMidi();
-        }
-        else {
+        } else {
             // Virtual proxy behaviour; only instantiate and run upon beginning to play
             while (!this.isPlaying) {}
-            if (notes == null) {
-                actualPlayback = new MidiPlayback(mode, hand, context, midiFileName);
+            actualPlayback = new MidiPlayback(hand);
+            if (notes != null) {
+                actualPlayback.setMidiNotes(notes);
             } else {
-                actualPlayback = new MidiPlayback(mode, hand, notes);
+                actualPlayback.setMidiNotes(midiFileName);
             }
             actualPlayback.handleEvent(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-            actualPlayback.playbackMidi();
+            actualPlayback.run();
+        }
+    }
+
+    @Override
+    public void setMidiNotes(String midiFileName) {
+        if (actualPlayback != null) {
+            actualPlayback.setMidiNotes(midiFileName);
+        }
+        else {
+            this.midiFileName = midiFileName;
         }
     }
 
@@ -68,8 +65,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void setMidiNotes(List<Note> midiNoteEvents) {
         if (actualPlayback != null) {
             actualPlayback.setMidiNotes(midiNoteEvents);
-        }
-        else {
+        } else {
             notes = midiNoteEvents;
         }
     }
@@ -78,9 +74,11 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void handleEvent(Event<?> event) {
         if (actualPlayback != null) {
             actualPlayback.handleEvent(event);
-        }
-        else {
+        } else {
             switch (event.getEventType()) {
+                case NEW_MIDI_FILE:
+                    setMidiNotes((String) event.getData());
+                    break;
                 case MIDI_FILE_PLAY:
                     this.isPlaying = true;
                     break;
@@ -95,9 +93,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
 
     @Override
     public Set<Event.EventType> getMonitoredEvents() {
-        if (actualPlayback != null) {
-            return actualPlayback.getMonitoredEvents();
-        }
+        if (actualPlayback != null) return actualPlayback.getMonitoredEvents();
         return monitoredEvents;
     }
 
@@ -105,8 +101,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
     public void run() {
         if (actualPlayback != null) {
             actualPlayback.run();
-        }
-        else {
+        } else {
             playbackMidi();
         }
     }

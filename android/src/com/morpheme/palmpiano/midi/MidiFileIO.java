@@ -1,6 +1,5 @@
 package com.morpheme.palmpiano.midi;
 
-import android.content.Context;
 import android.os.Environment;
 
 import com.badlogic.gdx.Gdx;
@@ -13,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 public final class MidiFileIO {
-    public static MidiFile getMidiFile(Context context, String filename) {
+    public static MidiFile getMidiFile(String filename) {
         try {
             File mid = Gdx.files.local(filename).file();
 
@@ -40,11 +39,12 @@ public final class MidiFileIO {
         return null;
     }
 
-    public static void writeMidiFile(Context context, MidiFile midi, String filename) {
+    public static void writeMidiFile(MidiFile midi, String filename) {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return;
 
         try {
-            File mid = new File(context.getFilesDir(), filename);
+            FileHandle handle = Gdx.files.local(filename);
+            File mid = handle.file();
             midi.writeToFile(mid);
         } catch(Exception e) {
             e.printStackTrace();

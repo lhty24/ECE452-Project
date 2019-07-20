@@ -3,7 +3,6 @@ package com.morpheme.palmpiano.midi;
 import android.content.Context;
 
 import com.morpheme.palmpiano.Event;
-import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.EventListener;
 import com.pdrogfer.mididroid.MidiFile;
 import com.pdrogfer.mididroid.MidiTrack;
@@ -19,7 +18,7 @@ import java.util.Set;
 public class MidiComposer implements EventListener {
     private final int PPQ = 480;
     private final int BPM = 120;
-    private final int VELOCITY = 100;
+    private final int VELOCITY = 60;
 
     private Context context;
     private MidiFile midi;
@@ -27,25 +26,29 @@ public class MidiComposer implements EventListener {
     private MidiTrack tempoTrack;
     private HashSet<Event.EventType> monitoredEvents;
     private long startTime;
+    private long pauseTime;
     private long duration;
     private long nsPerTick;
 
     private boolean start;
 
-    public MidiComposer(Context context) {
-        this.context = context;
+    public MidiComposer() {
+        this.context = null;
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
-        EventBus.getInstance().register(this);
+        this.monitoredEvents.add(Event.EventType.BACK);
+        this.monitoredEvents.add(Event.EventType.PAUSE);
+        this.monitoredEvents.add(Event.EventType.RESUME);
         this.nsPerTick = 60000000000L / (PPQ * BPM);
         this.start = false;
     }
 
-    private void start() {
-        this.startTime = System.nanoTime();
+    private void start(long timestamp) {
+        this.startTime = timestamp;
+        this.pauseTime = 0;
         this.duration = 0;
         this.track = new MidiTrack();
         this.tempoTrack = new MidiTrack();
@@ -66,16 +69,14 @@ public class MidiComposer implements EventListener {
         this.start = false;
     }
 
-    private void saveNote(int state, byte note) {
+    private void saveNote(int state, byte note, long timestamp) {
         if (!start) return;
 
         int value = (int) note;
 
-        long now = System.nanoTime();
-        long dt = now - startTime;
-
-        duration += dt;
-        startTime = now;
+        duration += timestamp - startTime - pauseTime;
+        pauseTime = 0;
+        startTime = timestamp;
 
         long tick = duration / nsPerTick;
 
@@ -92,20 +93,33 @@ public class MidiComposer implements EventListener {
 
     @Override
     public void handleEvent(Event<?> event) {
+        long timestamp = event.getTimestamp();
+
         switch (event.getEventType()) {
             case PIANO_KEY_DOWN:
-                this.saveNote(Note.NOTE_ON, ((Byte) event.getData()).byteValue());
+                this.saveNote(Note.NOTE_ON, (Byte) event.getData(), timestamp);
                 break;
             case PIANO_KEY_UP:
-                this.saveNote(Note.NOTE_OFF, ((Byte) event.getData()).byteValue());
+                this.saveNote(Note.NOTE_OFF, (Byte) event.getData(), timestamp);
                 break;
             case MIDI_FILE_PLAY:
-                this.start();
+                this.start(timestamp);
                 break;
             case MIDI_FILE_PAUSE:
                 this.stop();
-                // Test line
-                MidiFileIO.writeMidiFile(context, getMidiFile(), "test_compose.mid");
+                // FIXME Test line
+                MidiFileIO.writeMidiFile(midi, "test_compose.mid");
+                break;
+            case PAUSE:
+                this.start = false;
+                this.pauseTime = timestamp;
+                break;
+            case RESUME:
+                this.start = true;
+                this.pauseTime = timestamp - this.pauseTime;
+                break;
+            case BACK:
+                this.start = false;
                 break;
             default:
                 break;
