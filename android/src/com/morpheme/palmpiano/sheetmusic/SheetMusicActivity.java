@@ -192,15 +192,6 @@ public class SheetMusicActivity extends MidiHandlingActivity
      */
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.song_settings:
-                changeSettings();
-                break;
-            case R.id.save_images:
-                showSaveImagesDialog();
-                break;
-        }
-//        menuItem.setChecked(true);
         drawerLayout.closeDrawers();
         return true;
     }
