@@ -7,6 +7,7 @@ import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.ModeTracker;
 import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
+import com.pdrogfer.mididroid.MidiTrack;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ public class MidiPlayback implements MidiNotePlayback {
     public static final int RIGHT_HAND = 1;
     public static final int LEFT_HAND = 2;
 
+    private boolean isThreadRunning;
     private boolean isPlaying;
     private boolean isPlayingState;
     private HashSet<Event.EventType> monitoredEvents;
@@ -27,6 +29,7 @@ public class MidiPlayback implements MidiNotePlayback {
     public MidiPlayback(int hand) {
         this.hand = hand;
         this.notes = null;
+        this.isThreadRunning = false;
         this.isPlaying = false;
         this.monitoredEvents = new HashSet<>();
         this.monitoredEvents.add(Event.EventType.NEW_MIDI_FILE);
@@ -54,6 +57,14 @@ public class MidiPlayback implements MidiNotePlayback {
         long prev = System.nanoTime();
         long dt = 0;
 
+        while (notes == null) {
+            try {
+                Thread.sleep(500);
+            } catch (Exception e) {
+                System.err.println("Exception " + e.toString());
+            }
+        }
+
         for(Note note : notes) {
             if (hand != BOTH_HANDS && note.getTrackNumber() != hand) continue;
 
@@ -77,12 +88,16 @@ public class MidiPlayback implements MidiNotePlayback {
 
             while (dt <= timestamp) {
                 newNow = System.nanoTime();
-                while (!isPlaying) {
+                while (!isPlaying && isThreadRunning) {
                     newNow = System.nanoTime();
                     prev = newNow;
                 }
                 dt += (newNow - prev);
                 prev = newNow;
+            }
+
+            if (!isThreadRunning) {
+                break;
             }
 
             if (ModeTracker.getMode() == Constants.PianoMode.MODE_PLAYBACK) {
@@ -95,8 +110,13 @@ public class MidiPlayback implements MidiNotePlayback {
 
     @Override
     public void setMidiNotes(String midiFileName) {
-        MidiFile midiFile = MidiFileIO.getMidiFile(midiFileName);
-        this.notes = MidiFileParser.getMidiEvents(midiFile);
+        if (midiFileName == null) {
+            this.notes = null;
+        }
+        else {
+            MidiFile midiFile = MidiFileIO.getMidiFile(midiFileName);
+            this.notes = MidiFileParser.getMidiEvents(midiFile);
+        }
     }
 
     @Override
@@ -123,6 +143,8 @@ public class MidiPlayback implements MidiNotePlayback {
                 break;
             case BACK:
                 this.isPlaying = false;
+                this.isThreadRunning = false;
+                this.notes = null;
                 break;
             default:
                 break;
@@ -136,6 +158,11 @@ public class MidiPlayback implements MidiNotePlayback {
 
     @Override
     public void run() {
+        isThreadRunning = true;
+        if (ModeTracker.getMode() != Constants.PianoMode.MODE_GAME && ModeTracker.getMode() != Constants.PianoMode.MODE_PLAYBACK) {
+            return;
+        }
         playbackMidi();
+        isThreadRunning = false;
     }
 }

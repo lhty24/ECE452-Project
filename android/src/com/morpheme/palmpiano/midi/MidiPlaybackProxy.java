@@ -47,7 +47,7 @@ public class MidiPlaybackProxy implements MidiNotePlayback {
                 actualPlayback.setMidiNotes(midiFileName);
             }
             actualPlayback.handleEvent(new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-            actualPlayback.playbackMidi();
+            actualPlayback.run();
         }
     }
 

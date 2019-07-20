@@ -89,6 +89,7 @@ public class PalmPiano implements ApplicationListener {
 			switch (ModeTracker.getMode()) {
 				case MODE_COMPOSITION:
 					System.out.println("Detected composition mode");
+					EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_MIDI_FILE, null));
 					break;
 				case MODE_GAME:
 					System.out.println("Detected game mode");

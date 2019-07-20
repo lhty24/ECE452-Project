@@ -15,6 +15,8 @@ import com.morpheme.palmpiano.midi.MidiPlaybackProxy;
 import com.morpheme.palmpiano.util.Constants;
 
 public class MainMenu extends Activity {
+    private MidiNotePlayback playback;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,10 +37,8 @@ public class MainMenu extends Activity {
         MidiComposer c = new MidiComposer();
         eventBus.register(c);
 
-        MidiNotePlayback playback = new MidiPlaybackProxy(MidiPlayback.BOTH_HANDS);
+        playback = new MidiPlaybackProxy(MidiPlayback.BOTH_HANDS);
         eventBus.register(playback);
-        Thread midiThread = new Thread(playback);
-        midiThread.start();
 
         RhythmBoxListener rhythmBoxListener = new RhythmBoxListener();
         eventBus.register(rhythmBoxListener);
@@ -103,6 +103,8 @@ public class MainMenu extends Activity {
 
     private void launchPalmPiano(String midiFileName) {
         System.out.println("Launching PalmPiano activity");
+        Thread midiThread = new Thread(playback);
+        midiThread.start();
         Bundle bundle = new Bundle();
         bundle.putSerializable("midiFile", midiFileName);
         Intent intent = new Intent(MainMenu.this, AndroidLauncher.class);
