@@ -184,17 +184,6 @@ public class SheetMusicActivity extends MidiHandlingActivity
         super.onConfigurationChanged(newConfig);
     }
 
-    /** When the menu button is pressed, initialize the menus. */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (player != null) {
-            player.Pause();
-        }
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.sheet_menu, menu);
-        return true;
-    }
-
     /** Callback when a menu item is selected.
      *  - Choose Song : Choose a new song
      *  - Song Settings : Adjust the sheet music and sound options

@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="right"
         android:fitsSystemWindows="true"
-        tools:layout_gravity="left"
-        app:menu="@menu/sheet_menu" />
+        tools:layout_gravity="left" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
