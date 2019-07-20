@@ -61,6 +61,9 @@ public class SoundPlayer implements EventListener {
                 this.playMidi((byte[]) event.getData());
                 break;
             case BACK:
+                this.pauseNotes();
+                this.notes.clear();
+                break;
             case PAUSE:
                 this.pauseNotes();
                 break;
