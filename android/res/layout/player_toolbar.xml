@@ -61,14 +61,6 @@
         android:paddingBottom="8dp"
         android:progress="100" />
 
-    <Button
-        android:id="@+id/btn_midi"
-        style="@style/DisabledToolbarButton"
-        android:text="MIDI"
-        android:enabled="false"
-        android:layout_width="80dp"
-        android:textSize="16sp" />
-
     <View
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -87,17 +79,5 @@
         android:text="R"
         android:textColor="@color/IconColor"
         android:textSize="16sp" />
-
-    <ImageButton
-        android:id="@+id/btn_piano"
-        style="@style/ToolbarButtonStyle"
-        android:src="@drawable/ic_piano"
-        android:contentDescription="@string/show_hide_piano" />
-
-    <ImageButton
-        android:id="@+id/btn_settings"
-        style="@style/ToolbarButtonStyle"
-        android:src="@drawable/ic_settings"
-        android:contentDescription="@string/settings" />
 </LinearLayout>
 <!--</merge>-->

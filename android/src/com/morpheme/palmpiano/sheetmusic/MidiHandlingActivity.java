@@ -41,7 +41,6 @@ public abstract class MidiHandlingActivity extends AbstractSingleMidiActivity {
     @Override
     public void onMidiInputDeviceAttached(@NonNull MidiInputDevice midiInputDevice) {
         OnMidiDeviceStatus(true);
-//        ((Button)this.findViewById(R.id.btn_midi)).setTextColor(Color.BLUE);
         log("MIDI Input device connected: " + midiInputDevice.getManufacturerName() + " - " + midiInputDevice.getProductName());
     }
 
