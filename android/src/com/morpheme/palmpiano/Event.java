@@ -12,7 +12,9 @@ public class Event<D> {
         MIDI_DATA_GAMEPLAY,
         NEW_MIDI_FILE,
         MIDI_FILE_PLAY,
-        MIDI_FILE_PAUSE
+        MIDI_FILE_PAUSE,
+        MIDI_RECORD_START,
+        MIDI_RECORD_STOP
     }
 
     private long timestamp;

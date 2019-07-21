@@ -1,13 +1,10 @@
 package com.morpheme.palmpiano.midi;
 
-import android.content.Context;
-
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.ModeTracker;
 import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
-import com.pdrogfer.mididroid.MidiTrack;
 
 import java.nio.ByteBuffer;
 import java.util.HashSet;

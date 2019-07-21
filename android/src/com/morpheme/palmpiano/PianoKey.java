@@ -32,14 +32,12 @@ public class PianoKey extends Actor {
         addListener(new InputListener(){
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 pressed = true;
-                System.out.println(midiNote);
                 EventBus.getInstance().dispatch(new Event<Object>(Event.EventType.PIANO_KEY_DOWN, midiNote));
                 return true;
             }
 
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 pressed = false;
-                System.out.println(midiNote);
                 EventBus.getInstance().dispatch(new Event<Object>(Event.EventType.PIANO_KEY_UP, midiNote));
             }
         });

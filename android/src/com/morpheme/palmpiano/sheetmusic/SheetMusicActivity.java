@@ -24,8 +24,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -38,8 +36,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.morpheme.palmpiano.R;
 import com.morpheme.palmpiano.sheetmusic.sheets.ClefSymbol;
-
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;

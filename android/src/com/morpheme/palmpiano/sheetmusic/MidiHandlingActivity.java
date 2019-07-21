@@ -1,21 +1,14 @@
 package com.morpheme.palmpiano.sheetmusic;
 
-import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
-import android.widget.Button;
-import android.widget.Toast;
-
-//import androidx.annotation.NonNull;
 
 import androidx.annotation.NonNull;
-
-import com.morpheme.palmpiano.R;
-
-import org.billthefarmer.mididriver.MidiDriver;
 
 import jp.kshoji.driver.midi.activity.AbstractSingleMidiActivity;
 import jp.kshoji.driver.midi.device.MidiInputDevice;
 import jp.kshoji.driver.midi.device.MidiOutputDevice;
+
+//import androidx.annotation.NonNull;
 
 public abstract class MidiHandlingActivity extends AbstractSingleMidiActivity {
     void log(String s) {

@@ -1,26 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     tools:context="MainMenu">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="70dp">
+        android:layout_marginBottom="30dp">
     <Spinner
         android:id="@+id/trackSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:drawable/btn_dropdown"
-        android:entries="@array/trackListDisplay"
-        android:spinnerMode="dropdown" />
+        style="@android:style/Widget.Holo.Light.Spinner"
+        android:spinnerMode="dropdown"
+        android:layout_marginHorizontal="100dp"/>
+    </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="50dp">
     <Button
         android:id="@+id/buttonStart"
-        android:layout_width="152dp"
-        android:layout_height="50dp"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
         android:layout_gravity="center"
-        android:layout_marginTop="55dp"
+        android:layout_marginHorizontal="50dp"
+        android:background="#FCFCFC"
+        android:layout_weight="1"
         android:text="@string/start" />
+
+    <Button
+        android:id="@+id/buttonBack"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="50dp"
+        android:background="#FCFCFC"
+        android:layout_weight="1"
+        android:text="@string/back" />
+    </LinearLayout>
 
 </LinearLayout>
