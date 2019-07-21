@@ -3,10 +3,9 @@
 
     <string name="app_name">Palm Piano</string>
     <string name="composition_mode">Composition Mode</string>
+    <string name="playback_mode">Playback Mode</string>
     <string name="start">Start</string>
     <string name="game_mode">Game Mode</string>
-    <string name="sheet_music">Sheet Music Mode</string>
-
 
     <string name="song_settings_str">Song Settings</string>
     <string name="save_images_str">Save As Images</string>
