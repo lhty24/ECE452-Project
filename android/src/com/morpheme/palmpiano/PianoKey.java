@@ -17,7 +17,7 @@ public class PianoKey extends Actor {
     private float actorX = 0, actorY = 0;
     private boolean pressed;
 
-    public PianoKey(boolean bk, final Byte midiNote, float x){
+    public PianoKey(boolean bk, final Byte midiNote, float x) {
         String file = "wk.png";
         this.bk = bk;
         if (bk) {
@@ -56,7 +56,5 @@ public class PianoKey extends Actor {
     }
 
     @Override
-    public void act(float delta){
-
-    }
+    public void act(float delta) {}
 }
