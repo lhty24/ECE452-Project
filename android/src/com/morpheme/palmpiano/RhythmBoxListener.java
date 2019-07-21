@@ -51,7 +51,7 @@ public class RhythmBoxListener implements EventListener {
     }
 
     private void createRhythmBox(byte note, long len) {
-        RhythmBox rhythmBox = new RhythmBox(PalmPiano.getNoteBk(note), note, len);
+        RhythmBox rhythmBox = new RhythmBox(KeyboardGroup.getNoteBk(note), note, len);
         stage.addActor(rhythmBox);
     }
 }

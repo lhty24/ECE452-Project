@@ -20,7 +20,7 @@ public class RhythmBox extends Actor {
     public RhythmBox(boolean bk, int midi_note, long duration) {
         this.bk = bk;
         this.started = true;
-        int notePosition = PalmPiano.getNotePosition((byte) midi_note);
+        int notePosition = KeyboardGroup.getNotePosition((byte) midi_note);
         this.actorX = notePosition;
         this.duration = duration;
         this.actorY = 1300;

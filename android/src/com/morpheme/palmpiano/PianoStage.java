@@ -21,6 +21,9 @@ public class PianoStage extends Stage {
     public PianoStage() {
         super();
 
+        KeyboardGroup keyboardGroup = new KeyboardGroup();
+        this.addActor(keyboardGroup);
+
         this.playing = false;
         this.recording = false;
         Event newStageEvent = new Event<>(Event.EventType.NEW_STAGE, this);
