@@ -49,7 +49,6 @@ public class PalmPiano implements ApplicationListener {
 
 		List<PianoKey> wks = new ArrayList<>();
 		List<PianoKey> bks = new ArrayList<>();
-		List<RhythmBox> boxes = new ArrayList<>();
 
 		for (int oc = 0; oc < 7; oc++) {
 			boolean bk;
@@ -89,14 +88,6 @@ public class PalmPiano implements ApplicationListener {
 					break;
 				case MODE_GAME:
 					System.out.println("Detected game mode");
-
-					for (int oc = 0; oc < 7; oc++) {
-						RhythmBox box = new RhythmBox(false, 21, 1);
-						box.setTouchable(Touchable.enabled);
-						boxes.add(box);
-						stage.addActor(box);
-					}
-
 					EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_MIDI_FILE, (String) bundle.getSerializable("midiFile")));
 					break;
 				case MODE_PLAYBACK:

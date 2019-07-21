@@ -27,17 +27,17 @@ public class RhythmBox extends Actor {
         this.duration = duration;
         this.actorY = 1300;
 
-        if (textureWk == null || textureBk == null) {
-            textureWk = new Texture(Gdx.files.internal("t1.png"));
-            textureBk = new Texture(Gdx.files.internal("t2.png"));
-        }
-
         addListener(new InputListener() {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 ((RhythmBox)event.getTarget()).started = true;
                 return true;
             }
         });
+    }
+
+    public static void setTextures() {
+        textureWk = new Texture(Gdx.files.internal("t1.png"));
+        textureBk = new Texture(Gdx.files.internal("t2.png"));
     }
 
     // FIXME - Magic Eyeball
