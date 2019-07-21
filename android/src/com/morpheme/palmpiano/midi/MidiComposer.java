@@ -110,7 +110,6 @@ public class MidiComposer implements EventListener {
                 break;
             case MIDI_RECORD_STOP:
                 this.stop();
-                // FIXME Test line
                 MidiFileIO.writeMidiFile(midi,  this.fileName + ".mid");
                 break;
             case PAUSE:
