@@ -63,6 +63,9 @@ public class MainMenu extends Activity {
 
         RhythmBoxListener rhythmBoxListener = new RhythmBoxListener();
         eventBus.register(rhythmBoxListener);
+
+        FailNoteListener failNoteListener = new FailNoteListener();
+        eventBus.register(failNoteListener);
     }
 
     private void configureButtonComposition() {
