@@ -30,6 +30,7 @@ public class RhythmBoxListener implements EventListener {
         switch (event.getEventType()) {
             case NEW_STAGE:
                 this.stage = (Stage) event.getData();
+                RhythmBox.setTextures();
                 break;
             case MIDI_DATA_GAMEPLAY:
                 data = (byte[]) event.getData();

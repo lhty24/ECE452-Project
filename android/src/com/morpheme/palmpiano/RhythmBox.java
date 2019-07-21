@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 public class RhythmBox extends Actor {
     private boolean bk;
@@ -26,18 +24,11 @@ public class RhythmBox extends Actor {
         this.actorX = notePosition;
         this.duration = duration;
         this.actorY = 1300;
+    }
 
-        if (textureWk == null || textureBk == null) {
-            textureWk = new Texture(Gdx.files.internal("t1.png"));
-            textureBk = new Texture(Gdx.files.internal("t2.png"));
-        }
-
-        addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                ((RhythmBox)event.getTarget()).started = true;
-                return true;
-            }
-        });
+    public static void setTextures() {
+        textureWk = new Texture(Gdx.files.internal("t1.png"));
+        textureBk = new Texture(Gdx.files.internal("t2.png"));
     }
 
     // FIXME - Magic Eyeball
