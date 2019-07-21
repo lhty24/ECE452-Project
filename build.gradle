@@ -6,6 +6,7 @@ buildscript {
         mavenCentral()
         maven { url "https://plugins.gradle.org/m2/" }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://github.com/joytunes/USB-MIDI-Driver/raw/master/MIDIDriver/snapshots/" }
         jcenter()
         google()
     }
@@ -39,6 +40,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }
+        maven { url "https://github.com/joytunes/USB-MIDI-Driver/raw/master/MIDIDriver/snapshots/" }
     }
 }
 
@@ -77,6 +79,10 @@ project(":android") {
         implementation "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         implementation "com.github.billthefarmer:mididriver:v1.16"
         implementation "com.github.pdrogfer:MidiDroid:v1.1"
+        implementation "jp.kshoji:midi-driver:0.1.5:@aar"
+        implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+        implementation 'androidx.appcompat:appcompat:1.0.2'
+        implementation 'androidx.preference:preference:1.1.0-beta01'
     }
 }
 

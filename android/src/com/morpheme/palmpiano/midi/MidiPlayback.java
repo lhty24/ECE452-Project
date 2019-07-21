@@ -159,7 +159,8 @@ public class MidiPlayback implements MidiNotePlayback {
     @Override
     public void run() {
         isThreadRunning = true;
-        if ((ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) || (ModeTracker.getMode() == Constants.PianoMode.MODE_PLAYBACK)) {
+//        if ((ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) || (ModeTracker.getMode() == Constants.PianoMode.MODE_PLAYBACK)) {
+        if ((ModeTracker.getMode() == Constants.PianoMode.MODE_GAME)) {
             playbackMidi();
         }
         isThreadRunning = false;

@@ -2,7 +2,7 @@ package com.morpheme.palmpiano;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +13,8 @@ import com.morpheme.palmpiano.midi.MidiNotePlayback;
 import com.morpheme.palmpiano.midi.MidiPlayback;
 import com.morpheme.palmpiano.midi.MidiPlaybackProxy;
 import com.morpheme.palmpiano.util.Constants;
+import com.morpheme.palmpiano.sheetmusic.FileUri;
+import com.morpheme.palmpiano.sheetmusic.SheetMusicActivity;
 
 public class MainMenu extends Activity {
     private MidiNotePlayback playback;
@@ -102,13 +104,23 @@ public class MainMenu extends Activity {
     }
 
     private void launchPalmPiano(String midiFileName) {
-        System.out.println("Launching PalmPiano activity");
-        Thread midiThread = new Thread(playback);
-        midiThread.start();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("midiFile", midiFileName);
-        Intent intent = new Intent(MainMenu.this, AndroidLauncher.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
+        if (ModeTracker.getMode() == Constants.PianoMode.MODE_PLAYBACK) {
+            Uri uri = Uri.parse("file:///android_asset/" + midiFileName);
+            FileUri file = new FileUri(uri, midiFileName);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, file.getUri(), this, SheetMusicActivity.class);
+            intent.putExtra(SheetMusicActivity.MidiTitleID, file.toString());
+            startActivity(intent);
+        }
+        else {
+            System.out.println("Launching PalmPiano activity");
+            Thread midiThread = new Thread(playback);
+            midiThread.start();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("midiFile", midiFileName);
+            Intent intent = new Intent(MainMenu.this, AndroidLauncher.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
     }
 }
