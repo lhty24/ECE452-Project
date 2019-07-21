@@ -18,7 +18,6 @@ public class MidiPlayback implements MidiNotePlayback {
 
     private boolean isThreadRunning;
     private boolean isPlaying;
-    private boolean isPlayingState;
     private HashSet<Event.EventType> monitoredEvents;
     private List<Note> notes;
     private int hand;
@@ -34,7 +33,6 @@ public class MidiPlayback implements MidiNotePlayback {
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.BACK);
         this.monitoredEvents.add(Event.EventType.PAUSE);
-        this.monitoredEvents.add(Event.EventType.RESUME);
         checkHands();
     }
 
@@ -132,11 +130,7 @@ public class MidiPlayback implements MidiNotePlayback {
                 break;
             case MIDI_FILE_PAUSE:
             case PAUSE:
-                this.isPlayingState = this.isPlaying;
                 this.isPlaying = false;
-                break;
-            case RESUME:
-                this.isPlaying = this.isPlayingState;
                 break;
             case BACK:
                 this.isPlaying = false;

@@ -1,5 +1,6 @@
 package com.morpheme.palmpiano;
 
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.morpheme.palmpiano.util.Constants;
 
@@ -10,11 +11,15 @@ import java.util.Set;
 public class RhythmBoxListener implements EventListener {
     private HashSet<Event.EventType> monitoredEvents;
     private Stage stage;
+    private Group gameGroup;
 
     public RhythmBoxListener() {
         this.stage = null;
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(Event.EventType.NEW_STAGE);
+        monitoredEvents.add(Event.EventType.PAUSE);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
     }
 
@@ -30,7 +35,17 @@ public class RhythmBoxListener implements EventListener {
         switch (event.getEventType()) {
             case NEW_STAGE:
                 this.stage = (Stage) event.getData();
+                this.gameGroup = this.stage.getRoot().findActor("gameGroup");
                 RhythmBox.setTextures();
+                break;
+            case MIDI_FILE_PLAY:
+                RhythmBox.setIsRunning(true);
+                break;
+            case MIDI_FILE_PAUSE:
+                RhythmBox.setIsRunning(false);
+                break;
+            case PAUSE:
+                RhythmBox.setIsRunning(false);
                 break;
             case MIDI_DATA_GAMEPLAY:
                 data = (byte[]) event.getData();
@@ -51,7 +66,7 @@ public class RhythmBoxListener implements EventListener {
     }
 
     private void createRhythmBox(byte note, long len) {
-        RhythmBox rhythmBox = new RhythmBox(PalmPiano.getNoteBk(note), note, len);
-        stage.addActor(rhythmBox);
+        RhythmBox rhythmBox = new RhythmBox(KeyboardGroup.getNoteBk(note), note, len);
+        gameGroup.addActor(rhythmBox);
     }
 }
