@@ -27,6 +27,8 @@ import com.morpheme.palmpiano.util.Constants;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainMenu extends Activity {
@@ -125,17 +127,19 @@ public class MainMenu extends Activity {
 
         List<String> fileNames = new ArrayList<>();
 
-        // MIDI files in ASSETS folder and INTERNAL STORAGE
         try {
+            // MIDI files in ASSETS folder
             String[] assets = getAssets().list("");
             for (String f : assets) {
                 if (f.endsWith(".mid") || f.endsWith(".midi"))
                     fileNames.add(f);
             }
+
+            // MIDI files in DATA/ INTERNAL STORAGE folder
             File local = new File("/data/user/0/com.morpheme.palmpiano/files/midi/");
             String[] composedMidis = local.list();
             for (String f : composedMidis) {
-                if (f.endsWith(".mid") || f.endsWith(".midi"))
+                if ((f.endsWith(".mid") || f.endsWith(".midi")) && !fileNames.contains(f))
                     fileNames.add(f);
             }
         } catch (Exception ex) {
@@ -152,25 +156,8 @@ public class MainMenu extends Activity {
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERM);
         }
 
+        Collections.sort(fileNames);
 
-        // MIDI files in external directory (exported data)
-//        if (hasReadPerms && android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-//        {
-//            File dir= new File(String.valueOf(android.os.Environment.getExternalStorageDirectory()) + "/midi");
-//            try {
-//                File[] files = dir.listFiles();
-//                for (File f : files) {
-////                    if (f.endsWith(".mid") || f.endsWith(".midi"))
-//                        fileNames.add(f.toString());
-//                }
-//            } catch (Exception ex) {
-//                System.out.println("GET EXTERNAL STORAGE " + dir.toURI());
-//                ex.printStackTrace();
-//            }
-//        }
-
-
-        System.out.println(fileNames);
         // populate above list from your desired path
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fileNames);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -220,9 +207,6 @@ public class MainMenu extends Activity {
             }
 
             FileUri file = new FileUri(uri, midiFileName);
-
-
-
 
             Intent intent = new Intent(Intent.ACTION_VIEW, file.getUri(), this, SheetMusicActivity.class);
             intent.putExtra(SheetMusicActivity.MidiTitleID, file.toString());
