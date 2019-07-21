@@ -2,6 +2,7 @@ package com.morpheme.palmpiano.midi;
 
 import android.content.Context;
 
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventListener;
 import com.pdrogfer.mididroid.MidiFile;
@@ -31,12 +32,13 @@ public class MidiComposer implements EventListener {
     private long nsPerTick;
 
     private boolean start;
+    private String fileName;
 
     public MidiComposer() {
         this.context = null;
         this.monitoredEvents = new HashSet<>();
-        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
-        this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
+        this.monitoredEvents.add(Event.EventType.MIDI_RECORD_START);
+        this.monitoredEvents.add(Event.EventType.MIDI_RECORD_STOP);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         this.monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
         this.monitoredEvents.add(Event.EventType.BACK);
@@ -102,13 +104,14 @@ public class MidiComposer implements EventListener {
             case PIANO_KEY_UP:
                 this.saveNote(Note.NOTE_OFF, (Byte) event.getData(), timestamp);
                 break;
-            case MIDI_FILE_PLAY:
+            case MIDI_RECORD_START:
+                this.fileName = (String) event.getData();
                 this.start(timestamp);
                 break;
-            case MIDI_FILE_PAUSE:
+            case MIDI_RECORD_STOP:
                 this.stop();
                 // FIXME Test line
-                MidiFileIO.writeMidiFile(midi, "test_compose.mid");
+                MidiFileIO.writeMidiFile(midi,  this.fileName + ".mid");
                 break;
             case PAUSE:
                 this.start = false;

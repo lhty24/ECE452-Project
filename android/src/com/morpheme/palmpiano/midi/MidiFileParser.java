@@ -29,7 +29,6 @@ public final class MidiFileParser {
         int trackNum = 0;
 
         for (MidiTrack track : midiFile.getTracks()) {
-            System.out.println("TRACK");
             List<MidiEvent> midiEvents = new ArrayList<>();
             Iterator<MidiEvent> it = track.getEvents().iterator();
 

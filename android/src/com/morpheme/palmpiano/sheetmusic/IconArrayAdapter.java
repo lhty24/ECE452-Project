@@ -24,13 +24,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-//import androidx.annotation.NonNull;
-
 import androidx.annotation.NonNull;
 
 import com.morpheme.palmpiano.R;
 
 import java.util.List;
+
+//import androidx.annotation.NonNull;
 
 /**
  *  The ListAdapter for displaying the list of songs,

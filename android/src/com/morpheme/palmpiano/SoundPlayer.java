@@ -2,11 +2,11 @@ package com.morpheme.palmpiano;
 
 import com.morpheme.palmpiano.util.Constants;
 
+import org.billthefarmer.mididriver.MidiDriver;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.billthefarmer.mididriver.MidiDriver;
 
 public class SoundPlayer implements EventListener {
     private static SoundPlayer soundPlayer = null;

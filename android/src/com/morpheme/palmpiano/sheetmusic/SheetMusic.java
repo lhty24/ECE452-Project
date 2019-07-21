@@ -12,12 +12,19 @@
 
 package com.morpheme.palmpiano.sheetmusic;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import android.app.*;
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.View;
 
 import com.morpheme.palmpiano.sheetmusic.sheets.AccidSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.BarSymbol;
@@ -31,6 +38,10 @@ import com.morpheme.palmpiano.sheetmusic.sheets.MusicSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.RestSymbol;
 import com.morpheme.palmpiano.sheetmusic.sheets.Staff;
 import com.morpheme.palmpiano.sheetmusic.sheets.SymbolWidths;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 class BoxedInt {
     public int value;
@@ -260,7 +271,7 @@ public class SheetMusic extends SurfaceView implements SurfaceHolder.Callback, S
             if (zoom < 0.9)
                 zoom = 0.9f;
             if (zoom > 1.1)
-                zoom = 1.1f;
+                zoom = 3.0f;
         }
         if (bufferCanvas == null) {
             createBufferCanvas();

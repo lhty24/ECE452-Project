@@ -12,10 +12,8 @@
 
 package com.morpheme.palmpiano.sheetmusic;
 
-import android.graphics.*;
 import android.os.Handler;
-import android.util.Log;
-import android.view.*;
+import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 
 /** @class ScrollAnimation

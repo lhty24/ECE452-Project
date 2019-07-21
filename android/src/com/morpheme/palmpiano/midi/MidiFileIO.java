@@ -14,7 +14,7 @@ import java.io.OutputStream;
 public final class MidiFileIO {
     public static MidiFile getMidiFile(String filename) {
         try {
-            File mid = Gdx.files.local(filename).file();
+            File mid = Gdx.files.local("midi/" + filename).file();
 
             if (mid.length() == 0) {
                 // Internal storage is read only so read it and write to local storage file
@@ -43,7 +43,12 @@ public final class MidiFileIO {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) return;
 
         try {
-            FileHandle handle = Gdx.files.local(filename);
+
+            File f = new File("/data/user/0/com.morpheme.palmpiano/files/midi/");
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+            FileHandle handle = Gdx.files.local("midi/"+filename);
             File mid = handle.file();
             midi.writeToFile(mid);
         } catch(Exception e) {

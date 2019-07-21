@@ -18,8 +18,6 @@ import android.view.View;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
-import com.morpheme.palmpiano.R;
-
 /**
  *  Used in a PreferenceScreen to let
  *  the user choose a color for an option.
