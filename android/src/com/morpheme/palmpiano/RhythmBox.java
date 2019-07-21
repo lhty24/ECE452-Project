@@ -4,25 +4,30 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.morpheme.palmpiano.util.Constants;
 
 public class RhythmBox extends Actor {
+    // FIXME: currently some random number that (kinda) works
+    private static long time_by_height_factor = 5000000L;
+    private static boolean isRunning = true;
+
     private boolean bk;
-    private boolean started;
 
     private static Texture textureWk;
     private static Texture textureBk;
 
     private long duration;
+    private int boxHeight;
 
     private float actorX;
     private float actorY;
 
     public RhythmBox(boolean bk, int midi_note, long duration) {
         this.bk = bk;
-        this.started = true;
         int notePosition = KeyboardGroup.getNotePosition((byte) midi_note);
         this.actorX = notePosition;
         this.duration = duration;
+        this.boxHeight = (int) (duration / time_by_height_factor);
         this.actorY = 1300;
     }
 
@@ -31,15 +36,18 @@ public class RhythmBox extends Actor {
         textureBk = new Texture(Gdx.files.internal("t2.png"));
     }
 
-    // FIXME - Magic Eyeball
+    public static void setIsRunning(boolean newIsRunning) {
+        isRunning = newIsRunning;
+    }
+
     @Override
     public void draw(Batch batch, float alpha){
         batch.setColor(1,1,1, 1);
 
         if (bk) {
-            batch.draw(textureBk, actorX, actorY, textureBk.getWidth(), (int) (duration / 5000000L));
+            batch.draw(textureBk, actorX, actorY, textureBk.getWidth(), boxHeight);
         } else {
-            batch.draw(textureWk, actorX, actorY, textureWk.getWidth(), (int) (duration / 5000000L));
+            batch.draw(textureWk, actorX, actorY, textureWk.getWidth(), boxHeight);
         }
 
         batch.setColor(1,1,1,1);
@@ -47,8 +55,11 @@ public class RhythmBox extends Actor {
 
     @Override
     public void act(float delta){
-        if(started) {
+        if(isRunning) {
             actorY -= 5;
+            if (actorY + boxHeight < getParent().getY()) {
+                this.remove();
+            }
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.morpheme.palmpiano.midi;
 
 import android.content.Context;
+import android.view.Display;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventListener;
+import com.morpheme.palmpiano.ModeTracker;
+import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
 import com.pdrogfer.mididroid.MidiTrack;
 import com.pdrogfer.mididroid.event.NoteOff;
@@ -117,7 +120,8 @@ public class MidiComposer implements EventListener {
                 this.pauseTime = timestamp;
                 break;
             case RESUME:
-                this.start = true;
+                // Only resume (i.e. start) if it is currently composition mode
+                this.start = (ModeTracker.getMode() == Constants.PianoMode.MODE_COMPOSITION);
                 this.pauseTime = timestamp - this.pauseTime;
                 break;
             case BACK:

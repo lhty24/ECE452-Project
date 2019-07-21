@@ -15,6 +15,9 @@ public class RhythmBoxListener implements EventListener {
         this.stage = null;
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(Event.EventType.NEW_STAGE);
+        monitoredEvents.add(Event.EventType.PAUSE);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
     }
 
@@ -31,6 +34,15 @@ public class RhythmBoxListener implements EventListener {
             case NEW_STAGE:
                 this.stage = (Stage) event.getData();
                 RhythmBox.setTextures();
+                break;
+            case MIDI_FILE_PLAY:
+                RhythmBox.setIsRunning(true);
+                break;
+            case MIDI_FILE_PAUSE:
+                RhythmBox.setIsRunning(false);
+                break;
+            case PAUSE:
+                RhythmBox.setIsRunning(false);
                 break;
             case MIDI_DATA_GAMEPLAY:
                 data = (byte[]) event.getData();
