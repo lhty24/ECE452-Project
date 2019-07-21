@@ -13,14 +13,14 @@ public class FailNoteActor extends Actor {
     private static Texture texturePaintbrushX;
 
     public FailNoteActor(byte midi_note) {
-        int notePosition = PalmPiano.getNotePosition(midi_note);
-        if (PalmPiano.getNoteBk(midi_note)) {
+        int notePosition = KeyboardGroup.getNotePosition(midi_note);
+        if (KeyboardGroup.getNoteBk(midi_note)) {
             setX(notePosition + Constants.BK_WIDTH / 2);
         }
         else {
             setX(notePosition + Constants.WK_WIDTH / 2);
         }
-        setY(Constants.WK_HEIGHT);
+        setY(0);
     }
 
     public static void setTextures() {

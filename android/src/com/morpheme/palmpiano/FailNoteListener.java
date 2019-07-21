@@ -1,5 +1,6 @@
 package com.morpheme.palmpiano;
 
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.morpheme.palmpiano.midi.Note;
 
@@ -8,6 +9,7 @@ import java.util.Set;
 
 public class FailNoteListener implements EventListener {
     private Stage stage;
+    private Group group;
     private HashSet<Event.EventType> monitoredEvents;
 
     public FailNoteListener() {
@@ -18,7 +20,7 @@ public class FailNoteListener implements EventListener {
 
     private void createFailNote(byte note) {
         FailNoteActor failNote = new FailNoteActor(note);
-        stage.addActor(failNote);
+        group.addActor(failNote);
     }
 
     @Override
@@ -27,6 +29,7 @@ public class FailNoteListener implements EventListener {
             case NEW_STAGE:
                 FailNoteActor.setTextures();
                 this.stage = (Stage) event.getData();
+                this.group = stage.getRoot().findActor("gameGroup");
                 break;
             // TODO: currently X's on every piano key press; change to event from score system
             case PIANO_KEY_DOWN:
