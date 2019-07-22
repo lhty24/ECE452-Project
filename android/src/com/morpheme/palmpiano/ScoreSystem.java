@@ -179,7 +179,9 @@ public class ScoreSystem implements EventListener {
             onGameNotesMutex.acquire();
             offGameNotesMutex.acquire();
             if (!areEventsIncoming && onGameNotes.isEmpty() && offGameNotes.isEmpty()) {
+//                System.out.println("FINAL SCORE: " + (float) numerator / (float) denominator);
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.FINAL_SCORE, (float) numerator / (float) denominator));
+                areEventsIncoming = true;
             }
             offGameNotesMutex.release();
             onGameNotesMutex.release();
@@ -194,6 +196,13 @@ public class ScoreSystem implements EventListener {
         byte[] data;
 
         switch (event.getEventType()) {
+            case NEW_MIDI_FILE:
+                if (ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) {
+                    areEventsIncoming = true;
+                    numerator = 1;
+                    denominator = 1;
+                }
+                break;
             case BACK:
                 isRunning = false;
                 clearNotes();
@@ -242,7 +251,9 @@ public class ScoreSystem implements EventListener {
             default:
                 break;
         }
-//        checkEndOfNotes();
+        if (isRunning) {
+            checkEndOfNotes();
+        }
     }
 
     @Override
