@@ -43,7 +43,7 @@ public class ToolbarGroup extends Group {
         returnBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+                ppCallback.onReturnPressed();
                 }
             }
         );
@@ -61,7 +61,6 @@ public class ToolbarGroup extends Group {
               @Override
               public void clicked(InputEvent event, float x, float y) {
                   System.out.println("returnBtn clicked");
-                  // TBD
                   ppCallback.onMenuPressed();
               }
           }

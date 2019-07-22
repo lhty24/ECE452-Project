@@ -15,6 +15,7 @@ public class PalmPiano implements ApplicationListener {
 
 	public interface PalmPianoCallback {
 		public void onMenuPressed();
+		public void onReturnPressed();
 		public void onGameEnd();
 	}
 
