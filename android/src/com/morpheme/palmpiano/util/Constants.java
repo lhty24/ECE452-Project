@@ -1,5 +1,7 @@
 package com.morpheme.palmpiano.util;
 
+import com.badlogic.gdx.Gdx;
+
 public final class Constants {
     public static final int BK_WIDTH = 90;
     public static final int BK_HEIGHT = 320;
@@ -11,6 +13,7 @@ public final class Constants {
     public static final int BAR_BTN1 = 50;
     public static final int BAR_BTN2 = 120;
     public static final int BAR_BTN3 = 190;
+    public static final int BAR_BTN_RIGHT = Gdx.graphics.getWidth()-1;
     public static final int BAR_HEIGHT = 0;
 
     public static final byte MIDI_NOTE_OFF          = (byte) 0x80;

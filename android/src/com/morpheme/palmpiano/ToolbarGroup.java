@@ -18,11 +18,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.morpheme.palmpiano.util.Constants;
 
 public class ToolbarGroup extends Group {
-    private Button returnBtn, playPauseBtn, resetBtn, recordStopBtn;
+    private Button returnBtn, playPauseBtn, resetBtn, recordStopBtn, menuBtn;
     private boolean playing, recording;
 
 
-    public ToolbarGroup(int posX) {
+    public ToolbarGroup(int xLeft, int xRight) {
         super();
 
         this.setPosition(0, 0);
@@ -31,12 +31,12 @@ public class ToolbarGroup extends Group {
         this.recording = false;
 
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
-        this.setPosition(posX, Gdx.graphics.getHeight()-100);
+        this.setPosition(xLeft, Gdx.graphics.getHeight()-100);
 
         // Prep res for buttons
-        Texture textureReturn, textureRecordStop, texturePlayPause, textureReset;
-        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionReset;
-        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableReset;
+        Texture textureReturn, textureRecordStop, texturePlayPause, textureReset, textureMenu;
+        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionReset, regionMenu;
+        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableReset, drawableMenu;
         TextureRegionDrawable drawableRecordStopChecked, drawablePlayPauseChecked;
 
         textureReturn = new Texture(Gdx.files.internal("btn_return.png"));
@@ -55,6 +55,28 @@ public class ToolbarGroup extends Group {
             }
         );
 
+        textureMenu = new Texture(Gdx.files.internal("btn_menu.png"));
+        regionMenu = new TextureRegion(textureMenu);
+        drawableMenu = new TextureRegionDrawable(regionMenu);
+
+        menuBtn = new Button(drawableMenu);
+        menuBtn.setSize(50, 50);
+        //menuBtn.setPosition(Constants.BAR_BTN_RIGHT, Constants.BAR_HEIGHT);
+        menuBtn.setPosition(xRight - 100, Constants.BAR_HEIGHT);
+
+        menuBtn.addListener(new ClickListener() {
+              @Override
+              public void clicked(InputEvent event, float x, float y) {
+                  System.out.println("returnBtn clicked");
+                  // TBD
+              }
+          }
+        );
+
+
+        this.addActor(returnBtn);
+        this.addActor(menuBtn);
+
 //        //returnBtn.addListener() {};
 //        private void configureButtonBack() {
 //            android.widget.Button buttonBack = findViewById(R.id.buttonBack);
@@ -71,9 +93,6 @@ public class ToolbarGroup extends Group {
 //                }
 //            });
 //        }
-
-
-        this.addActor(returnBtn);
 
         switch (ModeTracker.getMode()) {
             case MODE_COMPOSITION:

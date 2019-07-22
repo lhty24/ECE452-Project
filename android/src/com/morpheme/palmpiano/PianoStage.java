@@ -16,10 +16,11 @@ public class PianoStage extends Stage {
     public PianoStage() {
         super();
 
-        int posX = this.getViewport().getScreenX();
+        int xLeft = this.getViewport().getScreenX();
+        int xRight = this.getViewport().getScreenWidth();
 
         KeyboardGroup keyboardGroup = new KeyboardGroup();
-        ToolbarGroup toolbarGroup = new ToolbarGroup(posX);
+        ToolbarGroup toolbarGroup = new ToolbarGroup(xLeft, xRight);
         this.addActor(keyboardGroup);
         this.addActor(toolbarGroup);
 
