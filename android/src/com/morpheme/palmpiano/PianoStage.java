@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 
+import static com.morpheme.palmpiano.util.Constants.CAMERA_VIEWPORT_X_OFFSET;
+
 public class PianoStage extends Stage {
     private Button playPauseBtn, resetBtn, recordStopBtn;
 
@@ -32,6 +34,9 @@ public class PianoStage extends Stage {
         Event newStageEvent = new Event<>(Event.EventType.NEW_STAGE, this);
         EventBus.getInstance().dispatch(newStageEvent);
 
+        OrthographicCamera cam = ((OrthographicCamera)this.getCamera());
+        cam.position.set(cam.position.x + CAMERA_VIEWPORT_X_OFFSET, cam.position.y, 0);
+
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
 
         switch (ModeTracker.getMode()) {
@@ -39,7 +44,7 @@ public class PianoStage extends Stage {
                 // Composition
                 recordStopBtn = new TextButton("Start",uiSkin,"default");
                 recordStopBtn.setSize(300,100);
-                recordStopBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
+                recordStopBtn.setPosition(getViewport().getScreenX() + CAMERA_VIEWPORT_X_OFFSET,Gdx.graphics.getHeight()-200);
                 recordStopBtn.addListener(new InputListener(){
                     @Override
                     public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -66,7 +71,7 @@ public class PianoStage extends Stage {
                 // Game
                 playPauseBtn = new TextButton("Start",uiSkin,"default");
                 playPauseBtn.setSize(300,100);
-                playPauseBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
+                playPauseBtn.setPosition(getViewport().getScreenX() + CAMERA_VIEWPORT_X_OFFSET,Gdx.graphics.getHeight()-200);
                 playPauseBtn.addListener(new InputListener(){
                     @Override
                     public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
@@ -85,7 +90,7 @@ public class PianoStage extends Stage {
 
                 resetBtn = new TextButton("Reset",uiSkin,"default");
                 resetBtn.setSize(300,100);
-                resetBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-320);
+                resetBtn.setPosition(getViewport().getScreenX() + CAMERA_VIEWPORT_X_OFFSET,Gdx.graphics.getHeight()-320);
                 resetBtn.addListener(new InputListener(){
                     @Override
                     public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {

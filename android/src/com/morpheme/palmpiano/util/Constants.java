@@ -19,4 +19,7 @@ public final class Constants {
         MODE_PLAYBACK,
         MODE_GAME
     }
+
+    // Shift the camera X position on initialize so it is around C3/ C4 on the keyboard
+    public static final int CAMERA_VIEWPORT_X_OFFSET = 2000;
 }
