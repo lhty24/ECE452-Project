@@ -96,8 +96,10 @@ public class MainMenu extends Activity {
 
     private void initializeModules() {
         EventBus eventBus = EventBus.getInstance();
+        eventBus.clearAll();
 
         SoundPlayer soundPlayer = SoundPlayer.getInstance();
+        soundPlayer.clearAll();
         eventBus.register(soundPlayer);
 
         MidiComposer c = new MidiComposer();

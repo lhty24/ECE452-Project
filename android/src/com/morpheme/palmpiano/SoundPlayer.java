@@ -46,6 +46,10 @@ public class SoundPlayer implements EventListener {
         return soundPlayer;
     }
 
+    public void clearAll(){
+        this.notes.clear();
+    }
+
     @Override
     public void handleEvent(Event event) {
         switch (event.getEventType()) {

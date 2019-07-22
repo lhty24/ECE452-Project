@@ -20,6 +20,10 @@ public class EventBus {
         subscribers.add(newSubscriber);
     }
 
+    public void clearAll() {
+        subscribers.clear();
+    }
+
     public void dispatch(Event<?> event) {
         System.out.println("Dispatched event: " + event.toString());
         for(EventListener subscriber : subscribers) {
