@@ -3,6 +3,7 @@ package com.morpheme.palmpiano;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -12,114 +13,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.morpheme.palmpiano.util.Constants;
 
 public class PianoStage extends Stage {
-    private Button playPauseBtn, resetBtn, recordStopBtn;
-
-    private boolean playing, recording;
-
     public PianoStage() {
         super();
 
+        int posX = this.getViewport().getScreenX();
+
         KeyboardGroup keyboardGroup = new KeyboardGroup();
+        ToolbarGroup toolbarGroup = new ToolbarGroup(posX);
         this.addActor(keyboardGroup);
+        this.addActor(toolbarGroup);
 
         GameVisualsGroup gvg = new GameVisualsGroup();
         gvg.setName("gameGroup");
         gvg.setY(Constants.WK_HEIGHT);
         this.addActor(gvg);
 
-        this.playing = false;
-        this.recording = false;
         Event newStageEvent = new Event<>(Event.EventType.NEW_STAGE, this);
         EventBus.getInstance().dispatch(newStageEvent);
-
-        Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
-
-        switch (ModeTracker.getMode()) {
-            case MODE_COMPOSITION:
-                // Composition
-                recordStopBtn = new TextButton("Start",uiSkin,"default");
-                recordStopBtn.setSize(300,100);
-                recordStopBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
-                recordStopBtn.addListener(new InputListener(){
-                    @Override
-                    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                        if(!isRecording()) {
-                            FileDialog listener = new FileDialog();
-                            Gdx.input.getTextInput(listener, "Compose MIDI file", "", "My composition");
-                        } else {
-                            ((TextButton) recordStopBtn).getLabel().setText("Record");
-                            EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_RECORD_STOP, null));
-                            setRecording(false);
-                        }
-
-                        return true;
-                    }
-                    @Override
-                    public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                        ((TextButton) recordStopBtn).getLabel().setText(isRecording() ? "Stop" : "Record");
-                    }
-                });
-
-                this.addActor(recordStopBtn);
-                break;
-            case MODE_GAME:
-                // Game
-                playPauseBtn = new TextButton("Start",uiSkin,"default");
-                playPauseBtn.setSize(300,100);
-                playPauseBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-200);
-                playPauseBtn.addListener(new InputListener(){
-                    @Override
-                    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
-                        EventBus.getInstance().dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-                        setPlaying(!isPlaying());
-                        return true;
-                    }
-                    @Override
-                    public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Playing" : "Paused");
-                    }
-                });
-
-                this.addActor(playPauseBtn);
-
-                resetBtn = new TextButton("Reset",uiSkin,"default");
-                resetBtn.setSize(300,100);
-                resetBtn.setPosition(this.getViewport().getScreenX(),Gdx.graphics.getHeight()-320);
-                resetBtn.addListener(new InputListener(){
-                    @Override
-                    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
-                        EventBus.getInstance().dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-                        setPlaying(!isPlaying());
-                        return true;
-                    }
-                    @Override
-                    public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Playing" : "Paused");
-                    }
-                });
-
-                this.addActor(resetBtn);
-                break;
-
-        }
-    }
-
-    public boolean isPlaying() {
-        return playing;
-    }
-
-    public boolean isRecording() {
-        return recording;
-    }
-
-    public void setPlaying(boolean playing) {
-        this.playing = playing;
-    }
-
-    public void setRecording(boolean recording) {
-        this.recording = recording;
     }
 
     @Override
@@ -131,11 +41,15 @@ public class PianoStage extends Stage {
             cam.position.set(cam.position.x - x, cam.position.y, 0);
             switch (ModeTracker.getMode()) {
                 case MODE_COMPOSITION:
-                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
+//                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
+                    Actor btn_comp = this.getRoot().findActor("recordStopBtn");
+                    btn_comp.setPosition(btn_comp.getX() - x, Gdx.graphics.getHeight() - 200);
                     break;
                 case MODE_GAME:
-                    playPauseBtn.setPosition(playPauseBtn.getX() - x, Gdx.graphics.getHeight() - 200);
-                    resetBtn.setPosition(resetBtn.getX() - x, Gdx.graphics.getHeight() - 320);
+                    Actor btn_game1 = this.getRoot().findActor("playPauseBtn");
+                    Actor btn_game2 = this.getRoot().findActor("resetBtn");
+                    btn_game1.setPosition(btn_game1.getX() - x, Gdx.graphics.getHeight() - 200);
+                    btn_game2.setPosition(btn_game2.getX() - x, Gdx.graphics.getHeight() - 320);
                     break;
             }
         }
@@ -143,21 +57,6 @@ public class PianoStage extends Stage {
         return true;
     }
 
-    public class FileDialog implements Input.TextInputListener {
-        @Override
-        public void input (String fileName)
-        {
-            if (!fileName.isEmpty()) {
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_RECORD_START, fileName));
-                ((TextButton) recordStopBtn).getLabel().setText("Stop");
-                setRecording(true);
-            }
-        }
 
-        @Override
-        public void canceled () {
-        }
-
-
-    }
 }
+

@@ -8,6 +8,11 @@ public final class Constants {
     public static final int WK_HEIGHT = 512;
     public static final int WK_GAP = 2;
 
+    public static final int BAR_BTN1 = 50;
+    public static final int BAR_BTN2 = 120;
+    public static final int BAR_BTN3 = 190;
+    public static final int BAR_HEIGHT = 0;
+
     public static final byte MIDI_NOTE_OFF          = (byte) 0x80;
     public static final byte MIDI_NOTE_ON           = (byte) 0x90;
     public static final byte MIDI_OFFSET            = (byte) 21;
