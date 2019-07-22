@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.OpenableColumns;
+import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -69,7 +70,8 @@ public class MainMenu extends Activity {
                     configureButtonExport();
                     configureButtonShare();
                     configureButtonDelete();
-                    configureButtonBack(false);
+                    Constants.PianoMode prevMode = Constants.PianoMode.valueOf(bun.getSerializable("prevMode").toString());
+                    configureButtonBack(false, prevMode);
                     break;
                 default:
                     break;
@@ -127,7 +129,7 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
-                configureButtonBack(true);
+                configureButtonBack(true, null);
                 configureTrackList();
                 System.out.println("Going to playback mode");
                 ModeTracker.setMode(Constants.PianoMode.MODE_PLAYBACK);
@@ -142,7 +144,7 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
-                configureButtonBack(true);
+                configureButtonBack(true, null);
                 configureTrackList();
                 System.out.println("Going to game mode");
                 ModeTracker.setMode(Constants.PianoMode.MODE_GAME);
@@ -192,7 +194,7 @@ public class MainMenu extends Activity {
                 configureButtonExport();
                 configureButtonShare();
                 configureButtonDelete();
-                configureButtonBack(true);
+                configureButtonBack(true, null);
             }
         });
     }
@@ -268,7 +270,7 @@ public class MainMenu extends Activity {
 
     // If toMenu = true, always return to Main Menu.
     // Otherwise, returns to previous activity
-    private void configureButtonBack(boolean toMenu) {
+    private void configureButtonBack(boolean toMenu, Constants.PianoMode prevMode) {
         Button buttonBack = findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -280,6 +282,8 @@ public class MainMenu extends Activity {
                     initializeModules();
                     configureMain();
                 } else {
+//                    finish();
+                    ModeTracker.setMode(prevMode);
                     onBackPressed();
                 }
             }
