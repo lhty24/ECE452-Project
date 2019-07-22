@@ -123,11 +123,6 @@ public class MainMenu extends Activity {
 
     private void configureTrackList() {
         Spinner spinner = findViewById(R.id.trackSpinner);
-        // list all files in directory
-//        Uri uri = Uri.parse("/data/data/" + this.getPackageName() + "/assets");
-
-//        File folder = new File(uri.getPath());
-//        File[] listOfFiles = folder.listFiles();
 
         List<String> fileNames = new ArrayList<>();
 
@@ -177,6 +172,54 @@ public class MainMenu extends Activity {
                 Spinner spinner = findViewById(R.id.trackSpinner);
                 String midiFileName = spinner.getSelectedItem().toString();
                 launchPalmPiano(midiFileName);
+            }
+        });
+    }
+
+    private void configureButtonSettings() {
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Going back to menu screen");
+                setContentView(R.layout.activity_main_menu);
+                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
+                initializeModules();
+                configureButtonComposition();
+                configureButtonPlayback();
+                configureButtonGame();
+            }
+        });
+    }
+
+    private void configureButtonExport() {
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Going back to menu screen");
+                setContentView(R.layout.activity_main_menu);
+                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
+                initializeModules();
+                configureButtonComposition();
+                configureButtonPlayback();
+                configureButtonGame();
+            }
+        });
+    }
+
+    private void configureButtonImport() {
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Going back to menu screen");
+                setContentView(R.layout.activity_main_menu);
+                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
+                initializeModules();
+                configureButtonComposition();
+                configureButtonPlayback();
+                configureButtonGame();
             }
         });
     }
