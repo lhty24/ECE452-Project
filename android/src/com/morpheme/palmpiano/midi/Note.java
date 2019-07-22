@@ -21,6 +21,11 @@ public class Note {
     private int note;
     private long tick;
 
+    public Note(byte note, long timestamp) {
+        this.note = (int) note;
+        this.timestamp = timestamp;
+    }
+
     public Note(int track, int note, int velocity, long tick, long lengthNs) {
         this.track = track;
         this.note = note;

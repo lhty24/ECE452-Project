@@ -14,7 +14,14 @@ public class Event<D> {
         MIDI_FILE_PLAY,
         MIDI_FILE_PAUSE,
         MIDI_RECORD_START,
-        MIDI_RECORD_STOP
+        MIDI_RECORD_STOP,
+        NEW_TIMER,
+        CANCEL_TIMER,
+        EXPIRED_NOTE,
+        FAIL_NOTE,
+        UPDATE_SCORE,
+        END_OF_SONG,
+        FINAL_SCORE,
     }
 
     private long timestamp;

@@ -3,6 +3,7 @@ package com.morpheme.palmpiano.midi;
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.ModeTracker;
+import com.morpheme.palmpiano.PalmPiano;
 import com.morpheme.palmpiano.util.Constants;
 import com.pdrogfer.mididroid.MidiFile;
 
@@ -100,6 +101,10 @@ public class MidiPlayback implements MidiNotePlayback {
             } else if (ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_DATA_GAMEPLAY, noteEvent));
             }
+        }
+
+        if (isThreadRunning) {
+            EventBus.getInstance().dispatch(new Event<>(Event.EventType.END_OF_SONG, null));
         }
     }
 

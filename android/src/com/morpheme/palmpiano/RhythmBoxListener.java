@@ -11,7 +11,7 @@ import java.util.Set;
 public class RhythmBoxListener implements EventListener {
     private HashSet<Event.EventType> monitoredEvents;
     private Stage stage;
-    private Group gameGroup;
+    private GameVisualsGroup gameGroup;
 
     public RhythmBoxListener() {
         this.stage = null;
@@ -67,6 +67,13 @@ public class RhythmBoxListener implements EventListener {
 
     private void createRhythmBox(byte note, long len) {
         RhythmBox rhythmBox = new RhythmBox(KeyboardGroup.getNoteBk(note), note, len);
-        gameGroup.addActor(rhythmBox);
+        try {
+            gameGroup.getGameVisualsMutex().acquire();
+            gameGroup.addActor(rhythmBox);
+            gameGroup.getGameVisualsMutex().release();
+        }
+        catch (InterruptedException e) {
+            System.err.println(e.toString());
+        }
     }
 }
