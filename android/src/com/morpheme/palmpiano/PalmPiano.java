@@ -57,6 +57,8 @@ public class PalmPiano implements ApplicationListener {
 					break;
 			}
 		}
+
+		EventBus.getInstance().dispatch(new Event<>(Event.EventType.PP_CALLBACK, ppCallback));
 	}
 
 	@Override

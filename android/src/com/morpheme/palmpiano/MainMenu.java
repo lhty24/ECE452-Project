@@ -15,13 +15,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.gson.Gson;
 import com.morpheme.palmpiano.midi.MidiComposer;
 import com.morpheme.palmpiano.midi.MidiNotePlayback;
 import com.morpheme.palmpiano.midi.MidiPlayback;
@@ -29,10 +33,16 @@ import com.morpheme.palmpiano.midi.MidiPlaybackProxy;
 import com.morpheme.palmpiano.sheetmusic.FileUri;
 import com.morpheme.palmpiano.sheetmusic.SheetMusicActivity;
 import com.morpheme.palmpiano.util.Constants;
+import com.morpheme.palmpiano.util.LeaderboardData;
+import com.morpheme.palmpiano.util.LeaderboardDataSet;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +50,7 @@ import java.util.List;
 
 public class MainMenu extends Activity {
     private static MidiNotePlayback playback;
+    private static LeaderboardFileIO leaderboardFileIO;
     private static final int READ_PERM = 1;
     private static final int WRITE_PERM = 2;
     private static final int IMPORT_CODE = 900;
@@ -61,8 +72,10 @@ public class MainMenu extends Activity {
             Serializable serial = bun.getSerializable("destination");
             switch (serial.toString()) {
                 case Constants.MENU_LEADERBOARD:
-                    // TODO: actually go to leaderboard
                     System.out.println("Going to leaderboard screen");
+                    setContentView(R.layout.activity_leaderboard_menu);
+                    configureLeaderboardView();
+                    configureButtonBack(true, null);
                     break;
                 case Constants.MENU_SETTINGS:
                     setContentView(R.layout.activity_settings_menu);
@@ -130,6 +143,9 @@ public class MainMenu extends Activity {
 
         NoteTimerTracker noteTimerTracker = new NoteTimerTracker();
         eventBus.register(noteTimerTracker);
+
+        leaderboardFileIO = new LeaderboardFileIO();
+        eventBus.register(leaderboardFileIO);
 
         initialized = true;
     }
@@ -202,6 +218,9 @@ public class MainMenu extends Activity {
             @Override
             public void onClick(View v) {
                 System.out.println("Going to leaderboard screen");
+                setContentView(R.layout.activity_leaderboard_menu);
+                configureLeaderboardView();
+                configureButtonBack(true, null);
             }
         });
     }
@@ -345,6 +364,31 @@ public class MainMenu extends Activity {
                 }
             }
         });
+    }
+
+    private void configureLeaderboardView() {
+        LinearLayout layout = findViewById(R.id.leaderboardsLayout);
+        TextView tmpText;
+
+        LeaderboardDataSet leaderboardDataSet = leaderboardFileIO.getLeaderboardDataSet();
+
+        for (Object dataObject : leaderboardDataSet.leaderboardData) {
+            LeaderboardData data = (LeaderboardData) dataObject;
+            tmpText = new TextView(this);
+            tmpText.setHeight(75);
+            tmpText.setText(data.songName);
+            tmpText.setTextSize(20);
+            tmpText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            layout.addView(tmpText);
+            for (Object scoreObject : data.scores) {
+                float score = (Float) scoreObject;
+                tmpText = new TextView(this);
+                tmpText.setHeight(75);
+                tmpText.setText(String.format("%.2f", score * 100));
+                tmpText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                layout.addView(tmpText);
+            }
+        }
     }
 
     private void launchPalmPiano(String midiFileName) {

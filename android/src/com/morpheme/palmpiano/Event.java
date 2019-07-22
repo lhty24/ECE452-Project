@@ -22,6 +22,7 @@ public class Event<D> {
         UPDATE_SCORE,
         END_OF_SONG,
         FINAL_SCORE,
+        PP_CALLBACK,
     }
 
     private long timestamp;
