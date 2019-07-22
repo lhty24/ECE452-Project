@@ -4,10 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.OpenableColumns;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,6 +32,7 @@ import com.morpheme.palmpiano.util.Constants;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +41,7 @@ public class MainMenu extends Activity {
     private MidiNotePlayback playback;
     private static final int READ_PERM = 1;
     private static final int WRITE_PERM = 2;
+    private static final int IMPORT_CODE = 900;
     private static boolean hasReadPerms = false;
     private static boolean hasWritePerms = false;
 
@@ -231,8 +235,8 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 System.out.println("Importing");
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("file/*");
-                startActivityForResult(intent, 0);
+                intent.setType("*/*");
+                startActivityForResult(intent, IMPORT_CODE);
             }
         });
     }
@@ -300,6 +304,68 @@ public class MainMenu extends Activity {
 
         }
     }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case IMPORT_CODE:
+                if (data != null) {
+                    Uri uri = data.getData();
+                    System.out.println(requestCode);
+                    System.out.println(resultCode);
+                    System.out.println(data.getDataString());
+
+                    String uriString = uri.toString();
+                    File myFile = new File(uriString);
+                    String path = myFile.getAbsolutePath();
+                    String displayName = null;
+
+                    if (uriString.startsWith("content://")) {
+                        Cursor cursor = null;
+                        try {
+                            cursor = getContentResolver().query(uri, null, null, null, null);
+                            if (cursor != null && cursor.moveToFirst()) {
+                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                            }
+                        } finally {
+                            cursor.close();
+                        }
+                    } else if (uriString.startsWith("file://")) {
+                        displayName = myFile.getName();
+                    }
+
+                    if (!(displayName.endsWith(".mid") || displayName.endsWith(".midi"))) {
+                        Toast.makeText(MainMenu.this, "This is not a MIDI file!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    try {
+                        InputStream is = getContentResolver().openInputStream(uri);
+
+                        File dir = new File(Constants.localPath);
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+
+                        File f = new File(Constants.localPath, displayName);
+
+                        int read;
+                        byte[] bytes = new byte[1024];
+                        FileOutputStream fos = new FileOutputStream(f);
+                        while ((read = is.read(bytes)) != -1) {
+                            fos.write(bytes, 0, read);
+                        }
+                        fos.close();
+                        configureTrackList();
+                        Toast.makeText(MainMenu.this, "Imported "+displayName + " successfully", Toast.LENGTH_LONG).show();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                break;
+
+        }
+
+    }
+
 
     public List<String> getMidiFiles() {
         List<String> fileNames = new ArrayList<>();

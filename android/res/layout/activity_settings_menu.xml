@@ -25,7 +25,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="50dp"
+        android:layout_marginVertical="20dp"
         android:orientation="horizontal">
 
         <Button
@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
             android:background="#FCFCFC"
             android:text="@string/export_string" />
@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
             android:background="#FCFCFC"
             android:text="@string/share" />
@@ -53,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
             android:background="#FCFCFC"
             android:text="@string/import_string" />
@@ -62,7 +62,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginVertical="50dp"
+        android:layout_marginVertical="20dp"
         android:orientation="horizontal">
 
         <Button
@@ -70,7 +70,7 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
             android:background="#FCFCFC"
             android:text="@string/delete" />
@@ -80,7 +80,7 @@
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_weight="1"
             android:background="#FCFCFC"
             android:text="@string/back" />
