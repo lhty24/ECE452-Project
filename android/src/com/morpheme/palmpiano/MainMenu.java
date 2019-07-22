@@ -71,6 +71,9 @@ public class MainMenu extends Activity {
                     configureButtonExport();
                     configureButtonShare();
                     configureButtonDelete();
+                    configureButtonDifficultyEasy();
+                    configureButtonDifficultyMedium();
+                    configureButtonDifficultyHard();
                     prevMode = Constants.PianoMode.valueOf(bun.getSerializable("prevMode").toString());
                     configureButtonBack(false, prevMode);
                     break;
@@ -216,6 +219,39 @@ public class MainMenu extends Activity {
                 configureButtonShare();
                 configureButtonDelete();
                 configureButtonBack(true, null);
+                configureButtonDifficultyEasy();
+                configureButtonDifficultyMedium();
+                configureButtonDifficultyHard();
+            }
+        });
+    }
+
+    private void configureButtonDifficultyEasy() {
+        Button buttonEasy = findViewById(R.id.buttonEasy);
+        buttonEasy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScoreSystem.setDifficulty(ScoreSystem.EASY_DIFFICULTY);
+            }
+        });
+    }
+
+    private void configureButtonDifficultyMedium() {
+        Button buttonMedium = findViewById(R.id.buttonMedium);
+        buttonMedium.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScoreSystem.setDifficulty(ScoreSystem.MEDIUM_DIFFICULTY);
+            }
+        });
+    }
+
+    private void configureButtonDifficultyHard() {
+        Button buttonHard = findViewById(R.id.buttonHard);
+        buttonHard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScoreSystem.setDifficulty(ScoreSystem.HARD_DIFFICULTY);
             }
         });
     }

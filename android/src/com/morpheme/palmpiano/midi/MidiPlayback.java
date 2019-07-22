@@ -34,7 +34,6 @@ public class MidiPlayback implements MidiNotePlayback {
         this.monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         this.monitoredEvents.add(Event.EventType.BACK);
         this.monitoredEvents.add(Event.EventType.PAUSE);
-        checkHands();
     }
 
     private void checkHands() {
@@ -60,6 +59,8 @@ public class MidiPlayback implements MidiNotePlayback {
                 System.err.println("Exception " + e.toString());
             }
         }
+
+        checkHands();
 
         for(Note note : notes) {
             if (hand != BOTH_HANDS && note.getTrackNumber() != hand) continue;

@@ -7,7 +7,9 @@
     <string name="start">Start</string>
     <string name="back">Back</string>
     <string name="game_mode">Game Mode</string>
-
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
     <string name="song_settings_str">Song Settings</string>
     <string name="save_images_str">Save As Images</string>
     <string name="save_images_descr_str">Save the sheet music as images, in the directory /Pictures/MidiSheetMusic, with the following filename</string>
