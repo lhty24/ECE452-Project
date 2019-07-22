@@ -44,6 +44,7 @@ public class ToolbarGroup extends Group {
         drawableReturn = new TextureRegionDrawable(regionReturn);
 
         returnBtn = new Button(drawableReturn);
+        returnBtn.setName("returnBtn");
         returnBtn.setSize(50, 50);
         returnBtn.setPosition(Constants.BAR_BTN1, Constants.BAR_HEIGHT);
         returnBtn.addListener(new ClickListener() {
@@ -105,6 +106,7 @@ public class ToolbarGroup extends Group {
                 drawableRecordStopChecked = new TextureRegionDrawable(regionRecordStop);
 
                 recordStopBtn = new Button(drawableRecordStop, drawableRecordStop, drawableRecordStopChecked);
+                recordStopBtn.setName("recordStopBtn");
                 recordStopBtn.setSize(50, 50);
                 recordStopBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
                 recordStopBtn.addListener(new InputListener() {
@@ -140,6 +142,7 @@ public class ToolbarGroup extends Group {
                 drawablePlayPauseChecked = new TextureRegionDrawable(regionPlayPause);
 
                 playPauseBtn = new Button(drawablePlayPause, drawablePlayPause, drawablePlayPauseChecked);
+                playPauseBtn.setName("playPauseBtn");
                 playPauseBtn.setSize(50, 50);
                 playPauseBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
 
@@ -180,6 +183,7 @@ public class ToolbarGroup extends Group {
                 drawableReset = new TextureRegionDrawable(regionReset);
 
                 resetBtn = new Button(drawableReset);
+                resetBtn.setName("resetBtn");
                 resetBtn.setSize(50, 50);
                 resetBtn.setPosition(Constants.BAR_BTN3, Constants.BAR_HEIGHT);
                 resetBtn.addListener(new InputListener() {
