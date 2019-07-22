@@ -1,13 +1,13 @@
 package com.morpheme.palmpiano;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,6 +29,7 @@ import com.morpheme.palmpiano.sheetmusic.SheetMusicActivity;
 import com.morpheme.palmpiano.util.Constants;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +43,8 @@ public class MainMenu extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
@@ -81,18 +84,8 @@ public class MainMenu extends Activity {
             @Override
             public void onClick(View v) {
                 System.out.println("Going to composition mode");
-
-                hasWritePerms = ContextCompat.checkSelfPermission(MainMenu.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-
-                // Check write permissions
-                if (hasWritePerms) {
-                    ModeTracker.setMode(Constants.PianoMode.MODE_COMPOSITION);
-                    launchPalmPiano("");
-                } else {
-                    // Request permission from the user
-                    ActivityCompat.requestPermissions(MainMenu.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERM);
-                }
+                ModeTracker.setMode(Constants.PianoMode.MODE_COMPOSITION);
+                launchPalmPiano("");
             }
         });
     }
@@ -167,6 +160,8 @@ public class MainMenu extends Activity {
                 configureTrackList();
                 configureButtonImport();
                 configureButtonExport();
+                configureButtonShare();
+                configureButtonDelete();
                 configureButtonBack();
 
             }
@@ -178,8 +173,53 @@ public class MainMenu extends Activity {
         buttonExport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Exporting");
+                Spinner spinner = findViewById(R.id.trackSpinner);
+                String midiFileName = spinner.getSelectedItem().toString();
 
+                writeExternal(midiFileName);
+            }
+        });
+    }
+
+    private void configureButtonShare() {
+        Button buttonShare = findViewById(R.id.buttonShare);
+        buttonShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = findViewById(R.id.trackSpinner);
+                String midiFileName = spinner.getSelectedItem().toString();
+                writeExternal(midiFileName);
+
+                File f = new File(Environment.getExternalStorageDirectory(), "midi/" + midiFileName);
+                Uri path = Uri.fromFile(f);
+                Intent emailIntent = new Intent(Intent.ACTION_SEND);
+                emailIntent .setType("vnd.android.cursor.dir/email");
+                emailIntent .putExtra(Intent.EXTRA_EMAIL, "");
+                emailIntent .putExtra(Intent.EXTRA_STREAM, path);
+                emailIntent .putExtra(Intent.EXTRA_SUBJECT, "PalmPiano: "+midiFileName);
+                startActivity(Intent.createChooser(emailIntent , "Send email..."));
+            }
+        });
+    }
+
+    private void configureButtonDelete() {
+        Button buttonDelete = findViewById(R.id.buttonDelete);
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = findViewById(R.id.trackSpinner);
+                String midiFileName = spinner.getSelectedItem().toString();
+
+                // For now delete the matching file on both local and external dirs
+                File f1 = new File(Constants.localPath, midiFileName);
+                File f2 = new File(Environment.getExternalStorageDirectory(), "midi/"+midiFileName);
+                boolean deleted = f1.delete() || f2.delete();
+                if (deleted) {
+                    Toast.makeText(MainMenu.this, "Deleted "+ midiFileName + " from storage", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(MainMenu.this, "Failed to delete "+ midiFileName + " from storage", Toast.LENGTH_LONG).show();
+                }
+                configureTrackList();
             }
         });
     }
@@ -190,8 +230,9 @@ public class MainMenu extends Activity {
             @Override
             public void onClick(View v) {
                 System.out.println("Importing");
-
-
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("file/*");
+                startActivityForResult(intent, 0);
             }
         });
     }
@@ -215,7 +256,7 @@ public class MainMenu extends Activity {
             Uri uri;
 
             // First check if the file is in LOCAL
-            File f = new File("/data/user/0/com.morpheme.palmpiano/files/midi/"  + midiFileName);
+            File f = new File(Constants.localPath + midiFileName);
             if (f.exists()) {
                 uri = Uri.parse(f.toString());
             } else {
@@ -228,8 +269,7 @@ public class MainMenu extends Activity {
             Intent intent = new Intent(Intent.ACTION_VIEW, file.getUri(), this, SheetMusicActivity.class);
             intent.putExtra(SheetMusicActivity.MidiTitleID, file.toString());
             startActivity(intent);
-        }
-        else {
+        } else {
             System.out.println("Launching PalmPiano activity");
             Thread midiThread = new Thread(playback);
             midiThread.start();
@@ -272,7 +312,7 @@ public class MainMenu extends Activity {
             }
 
             // MIDI files in DATA/ INTERNAL STORAGE folder
-            File local = new File("/data/user/0/com.morpheme.palmpiano/files/midi/");
+            File local = new File(Constants.localPath);
             String[] composedMidis = local.list();
             for (String f : composedMidis) {
                 if ((f.endsWith(".mid") || f.endsWith(".midi")) && !fileNames.contains(f))
@@ -294,5 +334,49 @@ public class MainMenu extends Activity {
 
         Collections.sort(fileNames);
         return fileNames;
+    }
+
+    public void writeExternal(String midiFileName){
+        hasWritePerms = ContextCompat.checkSelfPermission(MainMenu.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+        // Check write permissions
+        if (hasWritePerms) {
+            System.out.println("Exporting");
+            Uri uri;
+            // First check if the file is in LOCAL
+            File f = new File(Constants.localPath + midiFileName);
+            if (f.exists()) {
+                uri = Uri.parse(f.toString());
+            } else {
+                // If not, it is in INTERNAL
+                uri = Uri.parse("file:///android_asset/" + midiFileName);
+            }
+
+            FileUri file = new FileUri(uri, midiFileName);
+            byte[] data = file.getData(MainMenu.this);
+
+            System.out.println(file.getUri());
+            System.out.println(data);
+
+            try {
+                File dir = new File(Environment.getExternalStorageDirectory(), "midi/");
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                f = new File(Environment.getExternalStorageDirectory(), "midi/" + midiFileName);
+
+                FileOutputStream fos = new FileOutputStream(f);
+                fos.write(data);
+                fos.close();
+                Toast.makeText(MainMenu.this, "Saved to external storage at ~/midi/"+midiFileName, Toast.LENGTH_LONG).show();
+            } catch (Exception ex) {
+                Toast.makeText(MainMenu.this, "Failed to write to external storage", Toast.LENGTH_LONG).show();
+                ex.printStackTrace();
+            }
+        } else {
+            // Request permission from the user
+            ActivityCompat.requestPermissions(MainMenu.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERM);
+        }
     }
 }
