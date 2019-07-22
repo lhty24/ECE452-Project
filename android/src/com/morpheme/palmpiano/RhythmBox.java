@@ -81,7 +81,17 @@ public class RhythmBox extends Actor {
         if(isRunning) {
             actorY -= VELOCITY * dt;
             // Negative value to have box persist longer in case it might still be used elsewhere
-            if (actorY + boxHeight < -50) this.remove();
+            if (actorY + boxHeight < -50) {
+                GameVisualsGroup gameGroup = (GameVisualsGroup) getParent();
+                try {
+                    gameGroup.getGameVisualsMutex().acquire();
+                    this.remove();
+                    gameGroup.getGameVisualsMutex().release();
+                }
+                catch (InterruptedException e) {
+                    System.err.println(e.toString());
+                }
+            }
         }
     }
 }

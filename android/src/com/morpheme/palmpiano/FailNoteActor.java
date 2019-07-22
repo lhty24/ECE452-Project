@@ -48,7 +48,15 @@ public class FailNoteActor extends Actor {
     public void act(float delta){
         setScale(getScaleX() - (delta * scaleSpeedFactor), getScaleY() - (delta * scaleSpeedFactor));
         if (getScaleX() <= 0.1 || getScaleY() <= 0.1) {
-            this.remove();
+            GameVisualsGroup gameGroup = (GameVisualsGroup) getParent();
+            try {
+                gameGroup.getGameVisualsMutex().acquire();
+                this.remove();
+                gameGroup.getGameVisualsMutex().release();
+            }
+            catch (InterruptedException e) {
+                System.err.println(e.toString());
+            }
         }
         setY(getY() + (delta * floatUpSpeedFactor));
     }

@@ -2,6 +2,17 @@ package com.morpheme.palmpiano;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 
+import java.util.concurrent.Semaphore;
+
 public class GameVisualsGroup extends Group {
-    public GameVisualsGroup() {}
+    private Semaphore gameVisualsMutex;
+
+    public GameVisualsGroup() {
+        this.gameVisualsMutex = new Semaphore(1);
+    }
+
+    public Semaphore getGameVisualsMutex() {
+        return gameVisualsMutex;
+    }
+
 }

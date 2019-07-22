@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Semaphore;
 
 class NoteTimer extends TimerTask {
     private Note note;
@@ -30,9 +31,15 @@ public class ScoreSystem implements EventListener {
     private List<Note> onGameNotes;
     private List<Note> offGameNotes;
 
+    private Semaphore onGameNotesMutex;
+    private Semaphore offGameNotesMutex;
+
     public ScoreSystem () {
         onGameNotes = new ArrayList<>();
         offGameNotes = new ArrayList<>();
+
+        onGameNotesMutex = new Semaphore(1);
+        offGameNotesMutex = new Semaphore(1);
 
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
@@ -43,13 +50,20 @@ public class ScoreSystem implements EventListener {
 
     private void checkNoteScore(byte midiNote, long timestamp, boolean isKeyDown) {
         if (isKeyDown) {
-            for (Note note : onGameNotes) {
-                if ((int) midiNote == note.getNoteValue()) {
-                    if (note.getTimestamp() < timestamp) {
+            try {
+                onGameNotesMutex.acquire();
+                for (Note note : onGameNotes) {
+                    if ((int) midiNote == note.getNoteValue()) {
+                        if (note.getTimestamp() < timestamp) {
 //                        onGameNotes
+                        }
+                        break;
                     }
-                    break;
                 }
+                onGameNotesMutex.release();
+            }
+            catch (InterruptedException e) {
+                System.err.println(e.toString());
             }
         }
     }
@@ -58,8 +72,18 @@ public class ScoreSystem implements EventListener {
         Note noteOn = new Note(midiNote, timestamp + RhythmBox.getDelay());
         Note noteOff = new Note(midiNote, timestamp + RhythmBox.getDelay() + duration);
 
-        onGameNotes.add(noteOn);
-        offGameNotes.add(noteOff);
+        try {
+            onGameNotesMutex.acquire();
+            onGameNotes.add(noteOn);
+            onGameNotesMutex.release();
+
+            offGameNotesMutex.acquire();
+            offGameNotes.add(noteOff);
+            offGameNotesMutex.release();
+        }
+        catch (InterruptedException e) {
+            System.err.println(e.toString());
+        }
 
         Timer onTimer = new Timer();
         Timer offTimer = new Timer();
@@ -69,23 +93,32 @@ public class ScoreSystem implements EventListener {
     }
 
     private void checkNoteExpired(Note note) {
-        System.out.println("expired...");
-        for (Note n : onGameNotes) {
-            if (n == note) {
-                System.out.println("removing onNote...");
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
-                onGameNotes.remove(n);
-                break;
+        try {
+            onGameNotesMutex.acquire();
+            for (Note n : onGameNotes) {
+                if (n == note) {
+                    EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
+                    onGameNotes.remove(note);
+                    break;
+                }
             }
+            onGameNotesMutex.release();
+        } catch (InterruptedException e) {
+            System.err.println(e.toString());
         }
 
-        for (Note n : offGameNotes) {
-            if (n == note) {
-                System.out.println("removing offNote...");
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
-                offGameNotes.remove(n);
-                break;
+        try {
+            offGameNotesMutex.acquire();
+            for (Note n : offGameNotes) {
+                if (n == note) {
+                    EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
+                    offGameNotes.remove(note);
+                    break;
+                }
             }
+            offGameNotesMutex.release();
+        } catch (InterruptedException e) {
+            System.err.println(e.toString());
         }
     }
 
