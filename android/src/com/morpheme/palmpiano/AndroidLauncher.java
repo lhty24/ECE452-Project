@@ -21,6 +21,7 @@ public class AndroidLauncher extends AndroidApplication implements PalmPiano.Pal
 	public void onMenuPressed() {
 		Intent intent = new Intent(this, MainMenu.class);
 		intent.putExtra("destination", Constants.MENU_SETTINGS);
+		intent.putExtra("prevMode", ModeTracker.getMode());
 		startActivity(intent);
 	}
 
