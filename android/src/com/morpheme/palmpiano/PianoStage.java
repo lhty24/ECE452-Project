@@ -38,7 +38,6 @@ public class PianoStage extends Stage {
             cam.position.set(cam.position.x - x, cam.position.y, 0);
             switch (ModeTracker.getMode()) {
                 case MODE_COMPOSITION:
-//                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
                     Actor recordStopBtn = this.getRoot().findActor("recordStopBtn");
                     Actor returnBtn_comp = this.getRoot().findActor("returnBtn");
                     Actor menuBtn_comp = this.getRoot().findActor("menuBtn");
@@ -48,11 +47,9 @@ public class PianoStage extends Stage {
                     break;
                 case MODE_GAME:
                     Actor playPauseBtn = this.getRoot().findActor("playPauseBtn");
-                    Actor resetBtn = this.getRoot().findActor("resetBtn");
                     Actor returnBtn = this.getRoot().findActor("returnBtn");
                     Actor menuBtn_game = this.getRoot().findActor("menuBtn");
                     playPauseBtn.setPosition(playPauseBtn.getX() - x, playPauseBtn.getY());
-                    resetBtn.setPosition(resetBtn.getX() - x, resetBtn.getY());
                     returnBtn.setPosition(returnBtn.getX() - x, returnBtn.getY());
                     menuBtn_game.setPosition(menuBtn_game.getX()-x, menuBtn_game.getY());
                     break;
