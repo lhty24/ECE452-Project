@@ -103,6 +103,7 @@ public class ScoreSystem implements EventListener {
                         // Accuracy is at least 50% if within difficultyTime
                         numerator += 2;
                         denominator += 2;
+                        System.out.println("numerator: " + numerator + ", denominator: " + denominator);
                         EventBus.getInstance().dispatch(new Event<>(Event.EventType.CANCEL_TIMER, note));
                         gameNotesList.remove(note);
                         foundNote = true;
@@ -114,6 +115,7 @@ public class ScoreSystem implements EventListener {
             if (!foundNote) {
                 numerator += 0;
                 denominator += 2;
+                System.out.println("numerator: " + numerator + ", denominator: " + denominator);
 
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, midiNote));
             }
@@ -132,6 +134,7 @@ public class ScoreSystem implements EventListener {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
                     numerator += 0;
                     denominator += 2;
+                    System.out.println("numerator: " + numerator + ", denominator: " + denominator);
                     onGameNotes.remove(note);
                     break;
                 }
@@ -147,7 +150,8 @@ public class ScoreSystem implements EventListener {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
                     numerator += 0;
-                    denominator += 2;
+
+                    System.out.println("numerator: " + numerator + ", denominator: " + denominator);
                     offGameNotes.remove(note);
                     break;
                 }
