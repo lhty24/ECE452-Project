@@ -48,9 +48,15 @@ public class MainMenu extends Activity {
         setContentView(R.layout.activity_main_menu);
         ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
         initializeModules();
+        configureMain();
+    }
+
+    private void configureMain() {
         configureButtonComposition();
         configureButtonPlayback();
         configureButtonGame();
+        configureButtonLeaderboard();
+        configureButtonSettings();
     }
 
     private void initializeModules() {
@@ -123,42 +129,7 @@ public class MainMenu extends Activity {
 
     private void configureTrackList() {
         Spinner spinner = findViewById(R.id.trackSpinner);
-
-        List<String> fileNames = new ArrayList<>();
-
-        try {
-            // MIDI files in ASSETS folder
-            String[] assets = getAssets().list("");
-            for (String f : assets) {
-                if (f.endsWith(".mid") || f.endsWith(".midi"))
-                    fileNames.add(f);
-            }
-
-            // MIDI files in DATA/ INTERNAL STORAGE folder
-            File local = new File("/data/user/0/com.morpheme.palmpiano/files/midi/");
-            String[] composedMidis = local.list();
-            for (String f : composedMidis) {
-                if ((f.endsWith(".mid") || f.endsWith(".midi")) && !fileNames.contains(f))
-                    fileNames.add(f);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        hasReadPerms = ContextCompat.checkSelfPermission(MainMenu.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-
-        // Check read permissions
-        if (hasReadPerms) {
-        } else {
-            // Request permission from the user
-            ActivityCompat.requestPermissions(MainMenu.this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERM);
-        }
-
-        Collections.sort(fileNames);
-
-        // populate above list from your desired path
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, fileNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, getMidiFiles());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
@@ -176,50 +147,51 @@ public class MainMenu extends Activity {
         });
     }
 
-    private void configureButtonSettings() {
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
+    private void configureButtonLeaderboard() {
+        Button buttonLeaderboard = findViewById(R.id.buttonLeaderboard);
+        buttonLeaderboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Going back to menu screen");
-                setContentView(R.layout.activity_main_menu);
-                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-                initializeModules();
-                configureButtonComposition();
-                configureButtonPlayback();
-                configureButtonGame();
+                System.out.println("Going to leaderboard screen");
+            }
+        });
+    }
+
+    private void configureButtonSettings() {
+        Button buttonSettings = findViewById(R.id.buttonSettings);
+        buttonSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("Going back to settings screen");
+                setContentView(R.layout.activity_settings_menu);
+                configureTrackList();
+                configureButtonImport();
+                configureButtonExport();
+                configureButtonBack();
+
             }
         });
     }
 
     private void configureButtonExport() {
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
+        Button buttonExport = findViewById(R.id.buttonExport);
+        buttonExport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Going back to menu screen");
-                setContentView(R.layout.activity_main_menu);
-                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-                initializeModules();
-                configureButtonComposition();
-                configureButtonPlayback();
-                configureButtonGame();
+                System.out.println("Exporting");
+
             }
         });
     }
 
     private void configureButtonImport() {
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(new View.OnClickListener() {
+        Button buttonImport = findViewById(R.id.buttonImport);
+        buttonImport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Going back to menu screen");
-                setContentView(R.layout.activity_main_menu);
-                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-                initializeModules();
-                configureButtonComposition();
-                configureButtonPlayback();
-                configureButtonGame();
+                System.out.println("Importing");
+
+
             }
         });
     }
@@ -233,9 +205,7 @@ public class MainMenu extends Activity {
                 setContentView(R.layout.activity_main_menu);
                 ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
                 initializeModules();
-                configureButtonComposition();
-                configureButtonPlayback();
-                configureButtonGame();
+                configureMain();
             }
         });
     }
@@ -289,5 +259,40 @@ public class MainMenu extends Activity {
                 }
 
         }
+    }
+
+    public List<String> getMidiFiles() {
+        List<String> fileNames = new ArrayList<>();
+        try {
+            // MIDI files in ASSETS folder
+            String[] assets = getAssets().list("");
+            for (String f : assets) {
+                if (f.endsWith(".mid") || f.endsWith(".midi"))
+                    fileNames.add(f);
+            }
+
+            // MIDI files in DATA/ INTERNAL STORAGE folder
+            File local = new File("/data/user/0/com.morpheme.palmpiano/files/midi/");
+            String[] composedMidis = local.list();
+            for (String f : composedMidis) {
+                if ((f.endsWith(".mid") || f.endsWith(".midi")) && !fileNames.contains(f))
+                    fileNames.add(f);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        hasReadPerms = ContextCompat.checkSelfPermission(MainMenu.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+        // Check read permissions
+        if (hasReadPerms) {
+        } else {
+            // Request permission from the user
+            ActivityCompat.requestPermissions(MainMenu.this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERM);
+        }
+
+        Collections.sort(fileNames);
+        return fileNames;
     }
 }

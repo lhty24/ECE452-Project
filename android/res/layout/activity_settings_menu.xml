@@ -36,7 +36,33 @@
         android:layout_marginHorizontal="50dp"
         android:background="#FCFCFC"
         android:layout_weight="1"
-        android:text="@string/export" />
+        android:text="@string/export_string" />
+
+       <Button
+        android:id="@+id/buttonImport"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="50dp"
+        android:background="#FCFCFC"
+        android:layout_weight="1"
+        android:text="@string/import_string" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="50dp">
+        <Button
+            android:id="@+id/buttonBack"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="50dp"
+            android:background="#FCFCFC"
+            android:layout_weight="1"
+            android:text="@string/back" />
     </LinearLayout>
 
 </LinearLayout>
