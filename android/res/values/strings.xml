@@ -52,5 +52,6 @@
     <string name="forward">Forward</string>
     <string name="show_hide_piano">Show/Hide Piano</string>
     <string name="settings">Settings</string>
+    <string name="leaderboard">Leaderboard</string>
 
 </resources>

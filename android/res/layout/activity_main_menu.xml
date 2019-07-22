@@ -5,11 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#FFFFFF"
-    tools:context=".MainMenu">
+    tools:context=".MainMenu" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="200dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -24,15 +24,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+
         <Button
-            android:id="@+id/buttonComposition"
+            android:id="@+id/buttonGame"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
             android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/composition_mode" />
+            android:text="@string/game_mode" />
 
         <Button
             android:id="@+id/buttonPlayback"
@@ -45,14 +46,52 @@
             android:text="@string/playback_mode" />
 
         <Button
-            android:id="@+id/buttonGame"
+            android:id="@+id/buttonComposition"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
             android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/game_mode" />
+            android:text="@string/composition_mode" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonLeaderboard"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:background="#FCFCFC"
+            android:layout_weight="1"
+            android:text="@string/leaderboard" />
+
+        <Button
+            android:id="@+id/buttonDummy"
+            android:visibility="invisible"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:background="#FCFCFC"
+            android:layout_weight="1"
+            android:text="" />
+
+        <Button
+            android:id="@+id/buttonSettings"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="20dp"
+            android:background="#FCFCFC"
+            android:layout_weight="1"
+            android:text="@string/settings" />
 
     </LinearLayout>
 
