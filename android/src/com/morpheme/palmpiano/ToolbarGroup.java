@@ -18,7 +18,7 @@ public class ToolbarGroup extends Group {
     private boolean playing, recording;
 
 
-    public ToolbarGroup(int xLeft, int width) {
+    public ToolbarGroup(int xLeft, int width, PalmPiano.PalmPianoCallback ppCallback) {
         super();
         this.setPosition(0, 0);
         this.playing = false;
@@ -62,6 +62,7 @@ public class ToolbarGroup extends Group {
               public void clicked(InputEvent event, float x, float y) {
                   System.out.println("returnBtn clicked");
                   // TBD
+                  ppCallback.onMenuPressed();
               }
           }
         );

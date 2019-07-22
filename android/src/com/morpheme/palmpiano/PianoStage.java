@@ -7,14 +7,14 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.morpheme.palmpiano.util.Constants;
 
 public class PianoStage extends Stage {
-    public PianoStage() {
+    public PianoStage(PalmPiano.PalmPianoCallback ppCallback) {
         super();
 
         int xLeft = this.getViewport().getScreenX();
         int width = this.getViewport().getScreenWidth();
 
         KeyboardGroup keyboardGroup = new KeyboardGroup();
-        ToolbarGroup toolbarGroup = new ToolbarGroup(xLeft, width);
+        ToolbarGroup toolbarGroup = new ToolbarGroup(xLeft, width, ppCallback);
         this.addActor(keyboardGroup);
         this.addActor(toolbarGroup);
 
