@@ -1,4 +1,4 @@
-package com.morpheme.palmpiano;
+package com.morpheme.palmpiano.util;
 
 import com.morpheme.palmpiano.midi.Note;
 

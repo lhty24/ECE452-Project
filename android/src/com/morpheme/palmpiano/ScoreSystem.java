@@ -2,13 +2,13 @@ package com.morpheme.palmpiano;
 
 import com.morpheme.palmpiano.midi.Note;
 import com.morpheme.palmpiano.util.Constants;
+import com.morpheme.palmpiano.util.TimerData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.Semaphore;
 
 public class ScoreSystem implements EventListener {
