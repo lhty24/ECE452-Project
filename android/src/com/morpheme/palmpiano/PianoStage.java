@@ -43,13 +43,15 @@ public class PianoStage extends Stage {
                 case MODE_COMPOSITION:
 //                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
                     Actor btn_comp = this.getRoot().findActor("recordStopBtn");
-                    btn_comp.setPosition(btn_comp.getX() - x, Gdx.graphics.getHeight() - 200);
+                    btn_comp.setPosition(btn_comp.getX() - x, btn_comp.getY());
                     break;
                 case MODE_GAME:
-                    Actor btn_game1 = this.getRoot().findActor("playPauseBtn");
-                    Actor btn_game2 = this.getRoot().findActor("resetBtn");
-                    btn_game1.setPosition(btn_game1.getX() - x, Gdx.graphics.getHeight() - 200);
-                    btn_game2.setPosition(btn_game2.getX() - x, Gdx.graphics.getHeight() - 320);
+                    Actor playPauseBtn = this.getRoot().findActor("playPauseBtn");
+                    Actor resetBtn = this.getRoot().findActor("resetBtn");
+                    Actor returnBtn = this.getRoot().findActor("returnBtn");
+                    playPauseBtn.setPosition(playPauseBtn.getX() - x, playPauseBtn.getY());
+                    resetBtn.setPosition(resetBtn.getX() - x, resetBtn.getY());
+                    returnBtn.setPosition(returnBtn.getX()-x, returnBtn.getY());
                     break;
             }
         }
