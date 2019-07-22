@@ -101,8 +101,8 @@ public class ScoreSystem implements EventListener {
                     long difference = Math.abs(midline - timestamp);
                     if (difference <= difficultyTime) {
                         // Accuracy is at least 50% if within difficultyTime
-                        numerator += difficultyTime - difference / 2.0;
-                        denominator += difficultyTime;
+                        numerator += 2;
+                        denominator += 2;
                         EventBus.getInstance().dispatch(new Event<>(Event.EventType.CANCEL_TIMER, note));
                         gameNotesList.remove(note);
                         foundNote = true;
@@ -113,7 +113,8 @@ public class ScoreSystem implements EventListener {
             gameNotesMutex.release();
             if (!foundNote) {
                 numerator += 0;
-                denominator += difficultyTime;
+                denominator += 2;
+
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, midiNote));
             }
             EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
@@ -130,7 +131,7 @@ public class ScoreSystem implements EventListener {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
                     numerator += 0;
-                    denominator += difficultyTime;
+                    denominator += 2;
                     onGameNotes.remove(note);
                     break;
                 }
@@ -146,7 +147,7 @@ public class ScoreSystem implements EventListener {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
                     numerator += 0;
-                    denominator += difficultyTime;
+                    denominator += 2;
                     offGameNotes.remove(note);
                     break;
                 }
