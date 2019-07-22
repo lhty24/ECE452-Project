@@ -127,7 +127,7 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
-                configureButtonBack(false);
+                configureButtonBack(true);
                 configureTrackList();
                 System.out.println("Going to playback mode");
                 ModeTracker.setMode(Constants.PianoMode.MODE_PLAYBACK);
