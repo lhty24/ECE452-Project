@@ -1,7 +1,5 @@
 package com.morpheme.palmpiano.util;
 
-import com.badlogic.gdx.Gdx;
-
 public final class Constants {
     public static final int BK_WIDTH = 90;
     public static final int BK_HEIGHT = 320;
