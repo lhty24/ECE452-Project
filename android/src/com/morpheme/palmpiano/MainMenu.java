@@ -46,6 +46,7 @@ public class MainMenu extends Activity {
     private static final int IMPORT_CODE = 900;
     private static boolean hasReadPerms = false;
     private static boolean hasWritePerms = false;
+    private static Constants.PianoMode prevMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MainMenu extends Activity {
                     configureButtonExport();
                     configureButtonShare();
                     configureButtonDelete();
-                    Constants.PianoMode prevMode = Constants.PianoMode.valueOf(bun.getSerializable("prevMode").toString());
+                    prevMode = Constants.PianoMode.valueOf(bun.getSerializable("prevMode").toString());
                     configureButtonBack(false, prevMode);
                     break;
                 default:
@@ -82,8 +83,14 @@ public class MainMenu extends Activity {
             initializeModules();
             configureMain();
         }
+    }
 
-
+    @Override
+    public void onBackPressed(){
+        if (prevMode != null){
+            ModeTracker.setMode(prevMode);
+            finish();
+        }
     }
 
     private void configureMain() {
