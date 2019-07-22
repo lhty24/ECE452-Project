@@ -9,25 +9,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.Semaphore;
 
-class NoteTimer extends TimerTask {
-    private Note note;
-
-    public NoteTimer(Note note) {
-        super();
-        this.note = note;
-    }
-
-    @Override
-    public void run() {
-        EventBus.getInstance().dispatch(new Event<>(Event.EventType.EXPIRED_NOTE, note));
-    }
-}
-
 public class ScoreSystem implements EventListener {
+    public static final int EASY_DIFFICULTY = 75;
+    public static final int MEDIUM_DIFFICULTY = 40;
+    public static final int HARD_DIFFICULTY = 20;
+
     private HashSet<Event.EventType> monitoredEvents;
+    private boolean isRunning;
+    private boolean areEventsIncoming;
+
+    private int difficulty;
+    private long difficultyTime;
+    private long numerator;
+    private long denominator;
     private List<Note> onGameNotes;
     private List<Note> offGameNotes;
 
@@ -35,6 +31,12 @@ public class ScoreSystem implements EventListener {
     private Semaphore offGameNotesMutex;
 
     public ScoreSystem () {
+        isRunning = false;
+        areEventsIncoming = true;
+        this.difficulty = EASY_DIFFICULTY;
+        this.difficultyTime = (long) (difficulty / RhythmBox.getVelocity() * 1000000000L);
+        this.numerator = 1;
+        this.denominator = 1;
         onGameNotes = new ArrayList<>();
         offGameNotes = new ArrayList<>();
 
@@ -42,30 +44,15 @@ public class ScoreSystem implements EventListener {
         offGameNotesMutex = new Semaphore(1);
 
         this.monitoredEvents = new HashSet<>();
+        monitoredEvents.add(Event.EventType.BACK);
+        monitoredEvents.add(Event.EventType.PAUSE);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PLAY);
+        monitoredEvents.add(Event.EventType.MIDI_FILE_PAUSE);
         monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
         monitoredEvents.add(Event.EventType.PIANO_KEY_UP);
         monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
         monitoredEvents.add(Event.EventType.EXPIRED_NOTE);
-    }
-
-    private void checkNoteScore(byte midiNote, long timestamp, boolean isKeyDown) {
-        if (isKeyDown) {
-            try {
-                onGameNotesMutex.acquire();
-                for (Note note : onGameNotes) {
-                    if ((int) midiNote == note.getNoteValue()) {
-                        if (note.getTimestamp() < timestamp) {
-//                        onGameNotes
-                        }
-                        break;
-                    }
-                }
-                onGameNotesMutex.release();
-            }
-            catch (InterruptedException e) {
-                System.err.println(e.toString());
-            }
-        }
+        monitoredEvents.add(Event.EventType.END_OF_SONG);
     }
 
     private void storeGameNotes(byte midiNote, long timestamp, long duration) {
@@ -85,11 +72,51 @@ public class ScoreSystem implements EventListener {
             System.err.println(e.toString());
         }
 
-        Timer onTimer = new Timer();
-        Timer offTimer = new Timer();
+        EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_TIMER, new TimerData(noteOn, RhythmBox.getDelay() + difficultyTime)));
+        EventBus.getInstance().dispatch(new Event<>(Event.EventType.NEW_TIMER, new TimerData(noteOff, RhythmBox.getDelay() + difficultyTime + duration)));
+    }
 
-        onTimer.schedule(new NoteTimer(noteOn), RhythmBox.getDelay() / 1000000L);
-        offTimer.schedule(new NoteTimer(noteOff), (RhythmBox.getDelay() + duration) / 1000000L);
+    private void checkNotePressed(byte midiNote, long timestamp, boolean isKeyDown) {
+        List<Note> gameNotesList;
+        Semaphore gameNotesMutex;
+        if (isKeyDown) {
+            gameNotesList = onGameNotes;
+            gameNotesMutex = onGameNotesMutex;
+        }
+        else {
+            gameNotesList = offGameNotes;
+            gameNotesMutex = offGameNotesMutex;
+        }
+        try {
+            boolean foundNote = false;
+            gameNotesMutex.acquire();
+            for (Note note : gameNotesList) {
+                if ((int) midiNote == note.getNoteValue()) {
+                    // FIXME: midline currently at border between groups; should fix once new line is drawn
+                    long midline = note.getTimestamp()/* - difficultyTime*/;
+                    long difference = Math.abs(midline - timestamp);
+                    if (difference <= difficultyTime) {
+                        // Accuracy is at least 50% if within difficultyTime
+                        numerator += difficultyTime - difference / 2.0;
+                        denominator += difficultyTime;
+                        EventBus.getInstance().dispatch(new Event<>(Event.EventType.CANCEL_TIMER, note));
+                        gameNotesList.remove(note);
+                        foundNote = true;
+                    }
+                    break;
+                }
+            }
+            gameNotesMutex.release();
+            if (!foundNote) {
+                numerator += 0;
+                denominator += difficultyTime;
+                EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, midiNote));
+            }
+            EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
+        }
+        catch (InterruptedException e) {
+            System.err.println(e.toString());
+        }
     }
 
     private void checkNoteExpired(Note note) {
@@ -98,6 +125,8 @@ public class ScoreSystem implements EventListener {
             for (Note n : onGameNotes) {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
+                    numerator += 0;
+                    denominator += difficultyTime;
                     onGameNotes.remove(note);
                     break;
                 }
@@ -112,12 +141,31 @@ public class ScoreSystem implements EventListener {
             for (Note n : offGameNotes) {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
+                    numerator += 0;
+                    denominator += difficultyTime;
                     offGameNotes.remove(note);
                     break;
                 }
             }
             offGameNotesMutex.release();
         } catch (InterruptedException e) {
+            System.err.println(e.toString());
+        }
+
+        EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
+    }
+
+    private void checkEndOfNotes() {
+        try {
+            onGameNotesMutex.acquire();
+            offGameNotesMutex.acquire();
+            if (!areEventsIncoming && onGameNotes.isEmpty() && offGameNotes.isEmpty()) {
+                EventBus.getInstance().dispatch(new Event<>(Event.EventType.FINAL_SCORE, (float) numerator / (float) denominator));
+            }
+            offGameNotesMutex.release();
+            onGameNotesMutex.release();
+        }
+        catch (InterruptedException e) {
             System.err.println(e.toString());
         }
     }
@@ -127,32 +175,54 @@ public class ScoreSystem implements EventListener {
         byte[] data;
 
         switch (event.getEventType()) {
+            case BACK:
+                isRunning = false;
+                break;
+            case PAUSE:
+                isRunning = false;
+                break;
+            case MIDI_FILE_PLAY:
+                isRunning = true;
+                break;
+            case MIDI_FILE_PAUSE:
+                isRunning = false;
+                break;
             case PIANO_KEY_DOWN:
-                checkNoteScore((Byte) event.getData(), event.getTimestamp(), true);
+                if (isRunning) {
+                    checkNotePressed((Byte) event.getData(), event.getTimestamp(), true);
+                }
                 break;
             case PIANO_KEY_UP:
-                checkNoteScore((Byte) event.getData(), event.getTimestamp(), false);
+                if (isRunning) {
+                    checkNotePressed((Byte) event.getData(), event.getTimestamp(), false);
+                }
                 break;
             case MIDI_DATA_GAMEPLAY:
-                data = (byte[]) event.getData();
-                if ((((int) data[0]) & ((int) Constants.MIDI_NOTE_ON )) != 0 && data[2] != 0) {
-                    byte[] lengthBytes = new byte[data.length - 3];
-                    for(int i = 3; i < data.length; i++) {
-                        lengthBytes[i - 3] = data[i];
-                    }
-                    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-                    buffer.put(lengthBytes);
-                    buffer.flip();
+                if (isRunning) {
+                    data = (byte[]) event.getData();
+                    if ((((int) data[0]) & ((int) Constants.MIDI_NOTE_ON)) != 0 && data[2] != 0) {
+                        byte[] lengthBytes = new byte[data.length - 3];
+                        for (int i = 3; i < data.length; i++) {
+                            lengthBytes[i - 3] = data[i];
+                        }
+                        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+                        buffer.put(lengthBytes);
+                        buffer.flip();
 
-                    storeGameNotes(data[1], event.getTimestamp(), buffer.getLong());
+                        storeGameNotes(data[1], event.getTimestamp(), buffer.getLong());
+                    }
                 }
                 break;
             case EXPIRED_NOTE:
                 checkNoteExpired((Note) event.getData());
                 break;
+            case END_OF_SONG:
+                areEventsIncoming = false;
+                break;
             default:
                 break;
         }
+        checkEndOfNotes();
     }
 
     @Override

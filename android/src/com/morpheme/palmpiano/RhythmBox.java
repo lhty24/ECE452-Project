@@ -10,7 +10,7 @@ import com.morpheme.palmpiano.util.Constants;
 
 public class RhythmBox extends Actor {
     private static boolean isRunning = true;
-    private final float VELOCITY = 250.0F;
+    private static final float VELOCITY = 250.0F;
 
     private boolean bk;
 
@@ -39,6 +39,10 @@ public class RhythmBox extends Actor {
         this.actorY = this.groupHeight;
         delay = (long) (this.groupHeight / VELOCITY * 1000000000L);
         this.boxHeight = (int) (duration / 1000000000.0F * VELOCITY);
+    }
+
+    public static float getVelocity() {
+        return VELOCITY;
     }
 
     public static long getDelay() {

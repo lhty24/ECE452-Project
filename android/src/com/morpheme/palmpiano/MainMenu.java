@@ -69,6 +69,9 @@ public class MainMenu extends Activity {
 
         ScoreSystem scoreSystem = new ScoreSystem();
         eventBus.register(scoreSystem);
+
+        NoteTimerTracker noteTimerTracker = new NoteTimerTracker();
+        eventBus.register(noteTimerTracker);
     }
 
     private void configureButtonComposition() {

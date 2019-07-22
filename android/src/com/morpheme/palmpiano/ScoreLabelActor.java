@@ -14,14 +14,14 @@ import java.util.Set;
 public class ScoreLabelActor extends Actor implements EventListener {
 
     private HashSet<Event.EventType> monitoredEvents;
-    private long score;
+//    private long score;
     private float accuracy;
     private BitmapFont bmFont;
     OrthographicCamera camera;
 
     public ScoreLabelActor() {
-        this.score = 0;
-        this.accuracy = 0.0f;
+//        this.score = 0;
+        this.accuracy = 1.0f;
         this.bmFont = new BitmapFont();
         // Font made by gomarice: https://www.1001fonts.com/game-music-love-font.html
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("gomarice_game_music_love.ttf"));
@@ -38,15 +38,16 @@ public class ScoreLabelActor extends Actor implements EventListener {
         camera = (OrthographicCamera) this.getParent().getStage().getCamera();
         float posX = camera.position.x - camera.viewportWidth / 2;
         // FIXME: value 50 is for the ToolbarGroup height in the future
-        bmFont.draw(batch, "Score: " + score + "\nAccuracy: " + accuracy + "%", 10 + posX, Gdx.graphics.getHeight() - Constants.WK_HEIGHT - 50);
+        String accuracyString = String.format("Accuracy: %.2f", accuracy * 100.0);
+        bmFont.draw(batch, accuracyString, 10 + posX, Gdx.graphics.getHeight() - Constants.WK_HEIGHT - 50);
     }
 
     @Override
     public void handleEvent(Event<?> event) {
         switch (event.getEventType()) {
             case UPDATE_SCORE:
-                score = (long) ((float []) event.getData())[0];
-                accuracy = ((float []) event.getData())[1];
+//                score = (long) ((float []) event.getData())[0];
+                accuracy = (Float) event.getData();
                 break;
             default:
                 break;

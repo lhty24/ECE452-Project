@@ -1,8 +1,6 @@
 package com.morpheme.palmpiano;
 
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.morpheme.palmpiano.midi.Note;
 
 import java.util.HashSet;
 import java.util.Set;
