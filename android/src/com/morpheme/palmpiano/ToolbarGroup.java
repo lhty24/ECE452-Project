@@ -22,7 +22,7 @@ public class ToolbarGroup extends Group {
     private boolean playing, recording;
 
 
-    public ToolbarGroup(int xLeft, int xRight) {
+    public ToolbarGroup(int xLeft, int width) {
         super();
 
         this.setPosition(0, 0);
@@ -61,9 +61,10 @@ public class ToolbarGroup extends Group {
         drawableMenu = new TextureRegionDrawable(regionMenu);
 
         menuBtn = new Button(drawableMenu);
+        menuBtn.setName("menuBtn");
         menuBtn.setSize(50, 50);
         //menuBtn.setPosition(Constants.BAR_BTN_RIGHT, Constants.BAR_HEIGHT);
-        menuBtn.setPosition(xRight - 100, Constants.BAR_HEIGHT);
+        menuBtn.setPosition(xLeft + width - 100, Constants.BAR_HEIGHT);
 
         menuBtn.addListener(new ClickListener() {
               @Override
