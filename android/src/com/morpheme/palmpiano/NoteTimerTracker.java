@@ -69,6 +69,7 @@ public class NoteTimerTracker implements EventListener {
             for (NoteTimer noteTimer : newNoteTimers) {
                 noteTimers.add(noteTimer);
             }
+            newNoteTimers.clear();
             timerTrackerMutex.release();
         }
         catch (InterruptedException e) {

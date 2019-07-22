@@ -1,8 +1,5 @@
 package com.morpheme.palmpiano;
 
-
-import com.morpheme.palmpiano.Event;
-import com.morpheme.palmpiano.EventBus;
 import com.morpheme.palmpiano.midi.Note;
 
 import java.util.Timer;

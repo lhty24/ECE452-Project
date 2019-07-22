@@ -37,9 +37,9 @@ public class ScoreLabelActor extends Actor implements EventListener {
     public void draw(Batch batch, float alpha) {
         camera = (OrthographicCamera) this.getParent().getStage().getCamera();
         float posX = camera.position.x - camera.viewportWidth / 2;
-        // FIXME: value 50 is for the ToolbarGroup height in the future
         String accuracyString = String.format("Accuracy: %.2f", accuracy * 100.0);
-        bmFont.draw(batch, accuracyString, 10 + posX, Gdx.graphics.getHeight() - Constants.WK_HEIGHT - 50);
+        // 100 is for the ToolbarGroup height, 48 is for the font size
+        bmFont.draw(batch, accuracyString, 10 + posX, Gdx.graphics.getHeight() - Constants.WK_HEIGHT - 100 - 48);
     }
 
     @Override

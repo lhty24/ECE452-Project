@@ -40,12 +40,14 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainMenu extends Activity {
-    private MidiNotePlayback playback;
+    private static MidiNotePlayback playback;
     private static final int READ_PERM = 1;
     private static final int WRITE_PERM = 2;
     private static final int IMPORT_CODE = 900;
     private static boolean hasReadPerms = false;
     private static boolean hasWritePerms = false;
+
+    private static boolean initialized = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +80,6 @@ public class MainMenu extends Activity {
             }
         } else {
             setContentView(R.layout.activity_main_menu);
-
             initializeModules();
             configureMain();
         }
@@ -95,6 +96,10 @@ public class MainMenu extends Activity {
     }
 
     private void initializeModules() {
+        if (initialized) {
+            return;
+        }
+
         EventBus eventBus = EventBus.getInstance();
 
         SoundPlayer soundPlayer = SoundPlayer.getInstance();
@@ -117,6 +122,8 @@ public class MainMenu extends Activity {
 
         NoteTimerTracker noteTimerTracker = new NoteTimerTracker();
         eventBus.register(noteTimerTracker);
+
+        initialized = true;
     }
 
     private void configureButtonComposition() {

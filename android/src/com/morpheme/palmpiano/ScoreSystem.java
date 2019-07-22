@@ -155,6 +155,20 @@ public class ScoreSystem implements EventListener {
         EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
     }
 
+    private void clearNotes() {
+        try {
+            onGameNotesMutex.acquire();
+            onGameNotes.clear();
+            onGameNotesMutex.release();
+            offGameNotesMutex.acquire();
+            offGameNotes.clear();
+            offGameNotesMutex.release();
+        }
+        catch (InterruptedException e) {
+            System.err.println(e.toString());
+        }
+    }
+
     private void checkEndOfNotes() {
         try {
             onGameNotesMutex.acquire();
@@ -177,6 +191,7 @@ public class ScoreSystem implements EventListener {
         switch (event.getEventType()) {
             case BACK:
                 isRunning = false;
+                clearNotes();
                 break;
             case PAUSE:
                 isRunning = false;
@@ -222,7 +237,7 @@ public class ScoreSystem implements EventListener {
             default:
                 break;
         }
-        checkEndOfNotes();
+//        checkEndOfNotes();
     }
 
     @Override
