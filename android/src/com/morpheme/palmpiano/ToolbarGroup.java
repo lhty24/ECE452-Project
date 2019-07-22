@@ -27,9 +27,9 @@ public class ToolbarGroup extends Group {
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
         this.setPosition(xLeft, Gdx.graphics.getHeight()-100);
 
-        Texture textureReturn, textureRecordStop, texturePlayPause, textureReset, textureMenu;
-        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionReset, regionMenu;
-        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableReset, drawableMenu;
+        Texture textureReturn, textureRecordStop, texturePlayPause, textureMenu;
+        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionMenu;
+        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableMenu;
         TextureRegionDrawable drawableRecordStopChecked, drawablePlayPauseChecked;
 
         textureReturn = new Texture(Gdx.files.internal("btn_return.png"));
@@ -135,29 +135,6 @@ public class ToolbarGroup extends Group {
                 });
 
                 this.addActor(playPauseBtn);
-
-                textureReset = new Texture(Gdx.files.internal("btn_rewind.png"));
-                regionReset = new TextureRegion(textureReset);
-                drawableReset = new TextureRegionDrawable(regionReset);
-
-                resetBtn = new Button(drawableReset);
-                resetBtn.setName("resetBtn");
-                resetBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-                resetBtn.setPosition(Constants.BAR_BTN3+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
-                resetBtn.addListener(new InputListener() {
-                    @Override
-                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                        EventBus.getInstance().dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-                        setPlaying(!isPlaying());
-                        return true;
-                    }
-
-                    @Override
-                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                    }
-                });
-
-                this.addActor(resetBtn);
                 break;
         }
     }
