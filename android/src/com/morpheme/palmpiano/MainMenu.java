@@ -66,6 +66,9 @@ public class MainMenu extends Activity {
 
         FailNoteListener failNoteListener = new FailNoteListener();
         eventBus.register(failNoteListener);
+
+        ScoreSystem scoreSystem = new ScoreSystem();
+        eventBus.register(scoreSystem);
     }
 
     private void configureButtonComposition() {

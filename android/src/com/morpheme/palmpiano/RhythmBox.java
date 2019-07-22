@@ -9,8 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
 import com.morpheme.palmpiano.util.Constants;
 
 public class RhythmBox extends Actor {
-    // FIXME: currently some random number that (kinda) works
-    private static long time_by_height_factor = 5000000L;
     private static boolean isRunning = true;
     private final float VELOCITY = 250.0F;
 
@@ -28,7 +26,7 @@ public class RhythmBox extends Actor {
     private float viewHeight;
     private float groupHeight;
 
-    private float delay;
+    private static long delay = 0L;
 
     public RhythmBox(boolean bk, int midi_note, long duration) {
         this.bk = bk;
@@ -37,10 +35,14 @@ public class RhythmBox extends Actor {
         this.duration = duration;
         this.viewWidth = Gdx.graphics.getWidth();
         this.viewHeight = Gdx.graphics.getHeight();
-        this.actorY = this.viewHeight;
         this.groupHeight = this.viewHeight - Constants.WK_HEIGHT;
-        this.delay = this.groupHeight / VELOCITY;
-        this.boxHeight = (int) (duration / 1000000000.0f * VELOCITY);
+        this.actorY = this.groupHeight;
+        delay = (long) (this.groupHeight / VELOCITY * 1000000000L);
+        this.boxHeight = (int) (duration / 1000000000.0F * VELOCITY);
+    }
+
+    public static long getDelay() {
+        return delay;
     }
 
     public static void setTextures() {
@@ -78,7 +80,8 @@ public class RhythmBox extends Actor {
     public void act(float dt){
         if(isRunning) {
             actorY -= VELOCITY * dt;
-            if (actorY + boxHeight < 0) this.remove();
+            // Negative value to have box persist longer in case it might still be used elsewhere
+            if (actorY + boxHeight < -50) this.remove();
         }
     }
 }

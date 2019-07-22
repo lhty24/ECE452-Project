@@ -15,7 +15,7 @@ public class FailNoteListener implements EventListener {
     public FailNoteListener() {
         this.monitoredEvents = new HashSet<>();
         monitoredEvents.add(Event.EventType.NEW_STAGE);
-        monitoredEvents.add(Event.EventType.PIANO_KEY_DOWN);
+        monitoredEvents.add(Event.EventType.FAIL_NOTE);
     }
 
     private void createFailNote(byte note) {
@@ -31,8 +31,7 @@ public class FailNoteListener implements EventListener {
                 this.stage = (Stage) event.getData();
                 this.group = stage.getRoot().findActor("gameGroup");
                 break;
-            // TODO: currently X's on every piano key press; change to event from score system
-            case PIANO_KEY_DOWN:
+            case FAIL_NOTE:
                 createFailNote((Byte) event.getData());
                 break;
             default:
