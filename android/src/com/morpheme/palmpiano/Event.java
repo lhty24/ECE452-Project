@@ -17,6 +17,7 @@ public class Event<D> {
         MIDI_RECORD_STOP,
         EXPIRED_NOTE,
         FAIL_NOTE,
+        UPDATE_SCORE,
     }
 
     private long timestamp;

@@ -9,6 +9,7 @@ public class GameVisualsGroup extends Group {
 
     public GameVisualsGroup() {
         this.gameVisualsMutex = new Semaphore(1);
+        addActor(new ScoreLabelActor());
     }
 
     public Semaphore getGameVisualsMutex() {
