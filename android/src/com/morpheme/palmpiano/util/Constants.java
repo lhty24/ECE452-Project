@@ -12,7 +12,7 @@ public final class Constants {
     public static final int BAR_BTN1 = 50;
     public static final int BAR_BTN2 = 150;
     public static final int BAR_BTN3 = 250;
-//    public static final int BAR_BTN_RIGHT = Gdx.graphics.getWidth()-1;
+
     public static final int BAR_HEIGHT = 0;
 
     public static final byte MIDI_NOTE_OFF          = (byte) 0x80;
@@ -26,6 +26,10 @@ public final class Constants {
         MODE_PLAYBACK,
         MODE_GAME
     }
+
+    // For intent destination via serializable extras
+    public static final String MENU_LEADERBOARD = "leaderboard";
+    public static final String MENU_SETTINGS = "settings";
 
     // Shift the camera X position on initialize so it is around C3/ C4 on the keyboard
     public static final int CAMERA_VIEWPORT_X_OFFSET = 2000;

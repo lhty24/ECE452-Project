@@ -33,6 +33,7 @@ import com.morpheme.palmpiano.util.Constants;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,10 +53,35 @@ public class MainMenu extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
         ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-        initializeModules();
-        configureMain();
+        Bundle bun = this.getIntent().getExtras();
+        if (bun != null) {
+            Serializable serial = bun.getSerializable("destination");
+            switch (serial.toString()) {
+                case Constants.MENU_LEADERBOARD:
+                    // TODO: actually go to leaderboard
+                    System.out.println("Going to leaderboard screen");
+                    break;
+                case Constants.MENU_SETTINGS:
+                    setContentView(R.layout.activity_settings_menu);
+                    configureTrackList();
+                    configureButtonImport();
+                    configureButtonExport();
+                    configureButtonShare();
+                    configureButtonDelete();
+                    configureButtonBack(false);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            setContentView(R.layout.activity_main_menu);
+
+            initializeModules();
+            configureMain();
+        }
+
+
     }
 
     private void configureMain() {
@@ -101,7 +127,7 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
-                configureButtonBack();
+                configureButtonBack(true);
                 configureTrackList();
                 System.out.println("Going to playback mode");
                 ModeTracker.setMode(Constants.PianoMode.MODE_PLAYBACK);
@@ -116,7 +142,7 @@ public class MainMenu extends Activity {
             public void onClick(View v) {
                 setContentView(R.layout.activity_track_menu);
                 configureButtonStart();
-                configureButtonBack();
+                configureButtonBack(true);
                 configureTrackList();
                 System.out.println("Going to game mode");
                 ModeTracker.setMode(Constants.PianoMode.MODE_GAME);
@@ -166,8 +192,7 @@ public class MainMenu extends Activity {
                 configureButtonExport();
                 configureButtonShare();
                 configureButtonDelete();
-                configureButtonBack();
-
+                configureButtonBack(true);
             }
         });
     }
@@ -197,11 +222,11 @@ public class MainMenu extends Activity {
                 File f = new File(Environment.getExternalStorageDirectory(), "midi/" + midiFileName);
                 Uri path = Uri.fromFile(f);
                 Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent .setType("vnd.android.cursor.dir/email");
-                emailIntent .putExtra(Intent.EXTRA_EMAIL, "");
-                emailIntent .putExtra(Intent.EXTRA_STREAM, path);
-                emailIntent .putExtra(Intent.EXTRA_SUBJECT, "PalmPiano: "+midiFileName);
-                startActivity(Intent.createChooser(emailIntent , "Send email..."));
+                emailIntent.setType("vnd.android.cursor.dir/email");
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, "");
+                emailIntent.putExtra(Intent.EXTRA_STREAM, path);
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "PalmPiano: " + midiFileName);
+                startActivity(Intent.createChooser(emailIntent, "Send email..."));
             }
         });
     }
@@ -216,12 +241,12 @@ public class MainMenu extends Activity {
 
                 // For now delete the matching file on both local and external dirs
                 File f1 = new File(Constants.localPath, midiFileName);
-                File f2 = new File(Environment.getExternalStorageDirectory(), "midi/"+midiFileName);
+                File f2 = new File(Environment.getExternalStorageDirectory(), "midi/" + midiFileName);
                 boolean deleted = f1.delete() || f2.delete();
                 if (deleted) {
-                    Toast.makeText(MainMenu.this, "Deleted "+ midiFileName + " from storage", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainMenu.this, "Deleted " + midiFileName + " from storage", Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(MainMenu.this, "Failed to delete "+ midiFileName + " from storage", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainMenu.this, "Failed to delete " + midiFileName + " from storage", Toast.LENGTH_LONG).show();
                 }
                 configureTrackList();
             }
@@ -241,16 +266,22 @@ public class MainMenu extends Activity {
         });
     }
 
-    private void configureButtonBack() {
+    // If toMenu = true, always return to Main Menu.
+    // Otherwise, returns to previous activity
+    private void configureButtonBack(boolean toMenu) {
         Button buttonBack = findViewById(R.id.buttonBack);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Going back to menu screen");
-                setContentView(R.layout.activity_main_menu);
-                ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-                initializeModules();
-                configureMain();
+                if (toMenu) {
+                    System.out.println("Going back to menu screen");
+                    setContentView(R.layout.activity_main_menu);
+                    ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
+                    initializeModules();
+                    configureMain();
+                } else {
+                    onBackPressed();
+                }
             }
         });
     }
@@ -304,6 +335,7 @@ public class MainMenu extends Activity {
 
         }
     }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
@@ -355,7 +387,7 @@ public class MainMenu extends Activity {
                         }
                         fos.close();
                         configureTrackList();
-                        Toast.makeText(MainMenu.this, "Imported "+displayName + " successfully", Toast.LENGTH_LONG).show();
+                        Toast.makeText(MainMenu.this, "Imported " + displayName + " successfully", Toast.LENGTH_LONG).show();
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -402,7 +434,7 @@ public class MainMenu extends Activity {
         return fileNames;
     }
 
-    public void writeExternal(String midiFileName){
+    public void writeExternal(String midiFileName) {
         hasWritePerms = ContextCompat.checkSelfPermission(MainMenu.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
         // Check write permissions
         if (hasWritePerms) {
@@ -434,7 +466,7 @@ public class MainMenu extends Activity {
                 FileOutputStream fos = new FileOutputStream(f);
                 fos.write(data);
                 fos.close();
-                Toast.makeText(MainMenu.this, "Saved to external storage at ~/midi/"+midiFileName, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainMenu.this, "Saved to external storage at ~/midi/" + midiFileName, Toast.LENGTH_LONG).show();
             } catch (Exception ex) {
                 Toast.makeText(MainMenu.this, "Failed to write to external storage", Toast.LENGTH_LONG).show();
                 ex.printStackTrace();

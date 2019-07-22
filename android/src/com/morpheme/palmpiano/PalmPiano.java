@@ -13,14 +13,27 @@ public class PalmPiano implements ApplicationListener {
     private PianoStage stage;
     private Context context;
 
-    public PalmPiano(Context context) {
+	public interface PalmPianoCallback {
+		public void onMenuPressed();
+		public void onReturnPressed();
+		public void onGameEnd();
+	}
+
+	private PalmPianoCallback ppCallback;
+
+
+	public PalmPiano(Context context) {
     	super();
 		this.context = context;
 	}
 
+	public void setCallback(PalmPianoCallback ppCallback) {
+		this.ppCallback = ppCallback;
+	}
+
 	@Override
 	public void create() {
-		stage = new PianoStage();
+		stage = new PianoStage(ppCallback);
 		Gdx.input.setInputProcessor(stage);
 
 		Intent intent = ((Activity) context).getIntent();
