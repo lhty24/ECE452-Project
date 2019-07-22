@@ -3,96 +3,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="#FFFFFF"
-    tools:context=".MainMenu" >
+    android:orientation="vertical"
+    tools:context="MainMenu">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/trackSpinner"
+            style="@android:style/Widget.Holo.Light.Spinner"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="100dp"
-            android:src="@drawable/palmpiano" />
+            android:spinnerMode="dropdown" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
         android:orientation="horizontal">
 
-
         <Button
-            android:id="@+id/buttonGame"
+            android:id="@+id/buttonExport"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/game_mode" />
+            android:background="#FCFCFC"
+            android:text="@string/export_string" />
 
         <Button
-            android:id="@+id/buttonPlayback"
+            android:id="@+id/buttonShare"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/playback_mode" />
+            android:background="#FCFCFC"
+            android:text="@string/share" />
 
         <Button
-            android:id="@+id/buttonComposition"
+            android:id="@+id/buttonImport"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/composition_mode" />
+            android:background="#FCFCFC"
+            android:text="@string/import_string" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginVertical="20dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonLeaderboard"
+            android:id="@+id/buttonDelete"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="@string/leaderboard" />
+            android:background="#FCFCFC"
+            android:text="@string/delete" />
 
         <Button
-            android:id="@+id/buttonDummy"
-            android:visibility="invisible"
+            android:id="@+id/buttonBack"
             android:layout_width="0dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="20dp"
-            android:background="#FCFCFC"
             android:layout_weight="1"
-            android:text="" />
-
-        <Button
-            android:id="@+id/buttonSettings"
-            android:layout_width="0dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="20dp"
             android:background="#FCFCFC"
-            android:layout_weight="1"
-            android:text="@string/settings" />
-
+            android:text="@string/back" />
     </LinearLayout>
 
 </LinearLayout>

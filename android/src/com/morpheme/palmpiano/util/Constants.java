@@ -1,7 +1,5 @@
 package com.morpheme.palmpiano.util;
 
-import com.badlogic.gdx.Gdx;
-
 public final class Constants {
     public static final int BK_WIDTH = 90;
     public static final int BK_HEIGHT = 320;
@@ -28,4 +26,8 @@ public final class Constants {
         MODE_PLAYBACK,
         MODE_GAME
     }
+
+    // Shift the camera X position on initialize so it is around C3/ C4 on the keyboard
+    public static final int CAMERA_VIEWPORT_X_OFFSET = 2000;
+    public static final String localPath = "/data/user/0/com.morpheme.palmpiano/files/midi/";
 }
