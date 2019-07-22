@@ -1,9 +1,7 @@
 package com.morpheme.palmpiano.midi;
 
 import android.content.Context;
-import android.view.Display;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.morpheme.palmpiano.Event;
 import com.morpheme.palmpiano.EventListener;
 import com.morpheme.palmpiano.ModeTracker;
