@@ -39,7 +39,7 @@ public class ToolbarGroup extends Group {
         returnBtn = new Button(drawableReturn);
         returnBtn.setName("returnBtn");
         returnBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-        returnBtn.setPosition(Constants.BAR_BTN1, Constants.BAR_HEIGHT);
+        returnBtn.setPosition(Constants.BAR_BTN1+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
         returnBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -55,7 +55,7 @@ public class ToolbarGroup extends Group {
         menuBtn = new Button(drawableMenu);
         menuBtn.setName("menuBtn");
         menuBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-        menuBtn.setPosition(xLeft + width - 100, Constants.BAR_HEIGHT);
+        menuBtn.setPosition(xLeft + width - 100+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
 
         menuBtn.addListener(new ClickListener() {
               @Override
@@ -82,7 +82,7 @@ public class ToolbarGroup extends Group {
                 recordStopBtn = new Button(drawableRecordStop, drawableRecordStop, drawableRecordStopChecked);
                 recordStopBtn.setName("recordStopBtn");
                 recordStopBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-                recordStopBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
+                recordStopBtn.setPosition(Constants.BAR_BTN2+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
                 recordStopBtn.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -118,7 +118,7 @@ public class ToolbarGroup extends Group {
                 playPauseBtn = new Button(drawablePlayPause, drawablePlayPause, drawablePlayPauseChecked);
                 playPauseBtn.setName("playPauseBtn");
                 playPauseBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-                playPauseBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
+                playPauseBtn.setPosition(Constants.BAR_BTN2+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
 
                 playPauseBtn.addListener(new InputListener() {
                     @Override
@@ -143,7 +143,7 @@ public class ToolbarGroup extends Group {
                 resetBtn = new Button(drawableReset);
                 resetBtn.setName("resetBtn");
                 resetBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
-                resetBtn.setPosition(Constants.BAR_BTN3, Constants.BAR_HEIGHT);
+                resetBtn.setPosition(Constants.BAR_BTN3+ Constants.CAMERA_VIEWPORT_X_OFFSET, Constants.BAR_HEIGHT);
                 resetBtn.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {

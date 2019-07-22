@@ -25,6 +25,8 @@ public class PianoStage extends Stage {
 
         Event newStageEvent = new Event<>(Event.EventType.NEW_STAGE, this);
         EventBus.getInstance().dispatch(newStageEvent);
+        OrthographicCamera cam = ((OrthographicCamera)this.getCamera());
+        cam.position.set(cam.position.x + Constants.CAMERA_VIEWPORT_X_OFFSET, cam.position.y, 0);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class PianoStage extends Stage {
                     Actor menuBtn_game = this.getRoot().findActor("menuBtn");
                     playPauseBtn.setPosition(playPauseBtn.getX() - x, playPauseBtn.getY());
                     resetBtn.setPosition(resetBtn.getX() - x, resetBtn.getY());
-                    returnBtn.setPosition(returnBtn.getX()-x, returnBtn.getY());
+                    returnBtn.setPosition(returnBtn.getX() - x, returnBtn.getY());
                     menuBtn_game.setPosition(menuBtn_game.getX()-x, menuBtn_game.getY());
                     break;
             }
