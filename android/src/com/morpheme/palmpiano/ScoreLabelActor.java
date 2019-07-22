@@ -2,6 +2,7 @@ package com.morpheme.palmpiano;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -19,6 +20,9 @@ public class ScoreLabelActor extends Actor implements EventListener {
     private BitmapFont bmFont;
     OrthographicCamera camera;
 
+    private static Texture perfectLine;
+    private static Texture goodLine;
+
     public ScoreLabelActor() {
 //        this.score = 0;
         this.accuracy = 1.0f;
@@ -33,6 +37,11 @@ public class ScoreLabelActor extends Actor implements EventListener {
         monitoredEvents.add(Event.EventType.UPDATE_SCORE);
     }
 
+    public static void setTextures() {
+        perfectLine = new Texture(Gdx.files.internal("t1.png"));
+        goodLine = new Texture(Gdx.files.internal("t2.png"));
+    }
+
     @Override
     public void draw(Batch batch, float alpha) {
         camera = (OrthographicCamera) this.getParent().getStage().getCamera();
@@ -40,6 +49,8 @@ public class ScoreLabelActor extends Actor implements EventListener {
         String accuracyString = String.format("Accuracy: %.2f", accuracy * 100.0);
         // 100 is for the ToolbarGroup height, 48 is for the font size
         bmFont.draw(batch, accuracyString, 10 + posX, Gdx.graphics.getHeight() - Constants.WK_HEIGHT - 100 - 48);
+        batch.draw(goodLine, 0, ScoreSystem.difficulty * 2, 15000, 3);
+        batch.draw(perfectLine, 0, ScoreSystem.difficulty, 15000, 3);
     }
 
     @Override

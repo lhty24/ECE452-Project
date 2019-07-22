@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.concurrent.Semaphore;
 
 public class ScoreSystem implements EventListener {
-    public static final int EASY_DIFFICULTY = 75;
+    public static final int EASY_DIFFICULTY = 60;
     public static final int MEDIUM_DIFFICULTY = 40;
     public static final int HARD_DIFFICULTY = 20;
 
@@ -20,8 +20,8 @@ public class ScoreSystem implements EventListener {
     private boolean isRunning;
     private boolean areEventsIncoming;
 
-    private int difficulty;
-    private long difficultyTime;
+    public static int difficulty;
+    public static long difficultyTime;
     private long numerator;
     private long denominator;
     private List<Note> onGameNotes;
@@ -33,7 +33,7 @@ public class ScoreSystem implements EventListener {
     public ScoreSystem () {
         isRunning = false;
         areEventsIncoming = true;
-        this.difficulty = EASY_DIFFICULTY;
+        this.difficulty = MEDIUM_DIFFICULTY;
         this.difficultyTime = (long) (difficulty / RhythmBox.getVelocity() * 1000000000L);
         this.numerator = 1;
         this.denominator = 1;
@@ -53,6 +53,11 @@ public class ScoreSystem implements EventListener {
         monitoredEvents.add(Event.EventType.MIDI_DATA_GAMEPLAY);
         monitoredEvents.add(Event.EventType.EXPIRED_NOTE);
         monitoredEvents.add(Event.EventType.END_OF_SONG);
+    }
+
+    public static void setDifficulty(int difficulty) {
+        ScoreSystem.difficulty = difficulty;
+        ScoreSystem.difficultyTime = (long) (difficulty / RhythmBox.getVelocity() * 1000000000L);
     }
 
     private void storeGameNotes(byte midiNote, long timestamp, long duration) {
@@ -92,8 +97,7 @@ public class ScoreSystem implements EventListener {
             gameNotesMutex.acquire();
             for (Note note : gameNotesList) {
                 if ((int) midiNote == note.getNoteValue()) {
-                    // FIXME: midline currently at border between groups; should fix once new line is drawn
-                    long midline = note.getTimestamp()/* - difficultyTime*/;
+                    long midline = note.getTimestamp() - difficultyTime;
                     long difference = Math.abs(midline - timestamp);
                     if (difference <= difficultyTime) {
                         // Accuracy is at least 50% if within difficultyTime

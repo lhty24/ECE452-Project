@@ -14,6 +14,7 @@ public class GameVisualsGroup extends Group {
             ScoreLabelActor scoreLabel = new ScoreLabelActor();
             EventBus.getInstance().register(scoreLabel);
             addActor(scoreLabel);
+            ScoreLabelActor.setTextures();
         }
     }
 
