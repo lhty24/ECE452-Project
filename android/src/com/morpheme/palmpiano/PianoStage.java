@@ -18,10 +18,11 @@ public class PianoStage extends Stage {
     public PianoStage() {
         super();
 
-        int posX = this.getViewport().getScreenX();
+        int xLeft = this.getViewport().getScreenX();
+        int width = this.getViewport().getScreenWidth();
 
         KeyboardGroup keyboardGroup = new KeyboardGroup();
-        ToolbarGroup toolbarGroup = new ToolbarGroup(posX);
+        ToolbarGroup toolbarGroup = new ToolbarGroup(xLeft, width);
         this.addActor(keyboardGroup);
         this.addActor(toolbarGroup);
 
@@ -44,16 +45,22 @@ public class PianoStage extends Stage {
             switch (ModeTracker.getMode()) {
                 case MODE_COMPOSITION:
 //                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
-                    Actor btn_comp = this.getRoot().findActor("recordStopBtn");
-                    btn_comp.setPosition(btn_comp.getX() - x, btn_comp.getY());
+                    Actor recordStopBtn = this.getRoot().findActor("recordStopBtn");
+                    Actor returnBtn_comp = this.getRoot().findActor("returnBtn");
+                    Actor menuBtn_comp = this.getRoot().findActor("menuBtn");
+                    recordStopBtn.setPosition(recordStopBtn.getX() - x, recordStopBtn.getY());
+                    returnBtn_comp.setPosition(returnBtn_comp.getX()-x, returnBtn_comp.getY());
+                    menuBtn_comp.setPosition(menuBtn_comp.getX()-x, menuBtn_comp.getY());
                     break;
                 case MODE_GAME:
                     Actor playPauseBtn = this.getRoot().findActor("playPauseBtn");
                     Actor resetBtn = this.getRoot().findActor("resetBtn");
                     Actor returnBtn = this.getRoot().findActor("returnBtn");
+                    Actor menuBtn_game = this.getRoot().findActor("menuBtn");
                     playPauseBtn.setPosition(playPauseBtn.getX() - x, playPauseBtn.getY());
                     resetBtn.setPosition(resetBtn.getX() - x, resetBtn.getY());
                     returnBtn.setPosition(returnBtn.getX()-x, returnBtn.getY());
+                    menuBtn_game.setPosition(menuBtn_game.getX()-x, menuBtn_game.getY());
                     break;
             }
         }

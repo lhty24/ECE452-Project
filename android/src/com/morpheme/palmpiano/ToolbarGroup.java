@@ -18,25 +18,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.morpheme.palmpiano.util.Constants;
 
 public class ToolbarGroup extends Group {
-    private Button returnBtn, playPauseBtn, resetBtn, recordStopBtn;
+    private Button returnBtn, playPauseBtn, resetBtn, recordStopBtn, menuBtn;
     private boolean playing, recording;
 
 
-    public ToolbarGroup(int posX) {
+    public ToolbarGroup(int xLeft, int width) {
         super();
-
         this.setPosition(0, 0);
-
         this.playing = false;
         this.recording = false;
 
         Skin uiSkin = new Skin(Gdx.files.internal("uiskin.json"));
-        this.setPosition(posX, Gdx.graphics.getHeight()-100);
+        this.setPosition(xLeft, Gdx.graphics.getHeight()-100);
 
-        // Prep res for buttons
-        Texture textureReturn, textureRecordStop, texturePlayPause, textureReset;
-        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionReset;
-        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableReset;
+        Texture textureReturn, textureRecordStop, texturePlayPause, textureReset, textureMenu;
+        TextureRegion regionReturn, regionRecordStop, regionPlayPause, regionReset, regionMenu;
+        TextureRegionDrawable drawableReturn, drawableRecordStop, drawablePlayPause, drawableReset, drawableMenu;
         TextureRegionDrawable drawableRecordStopChecked, drawablePlayPauseChecked;
 
         textureReturn = new Texture(Gdx.files.internal("btn_return.png"));
@@ -45,36 +42,36 @@ public class ToolbarGroup extends Group {
 
         returnBtn = new Button(drawableReturn);
         returnBtn.setName("returnBtn");
-        returnBtn.setSize(50, 50);
+        returnBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
         returnBtn.setPosition(Constants.BAR_BTN1, Constants.BAR_HEIGHT);
         returnBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("returnBtn clicked");
-                // TBD
+                Gdx.app.exit();
                 }
             }
         );
 
-//        //returnBtn.addListener() {};
-//        private void configureButtonBack() {
-//            android.widget.Button buttonBack = findViewById(R.id.buttonBack);
-//            buttonBack.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    System.out.println("Going back to menu screen");
-//                    setContentView(R.layout.activity_main_menu);
-//                    ModeTracker.setMode(Constants.PianoMode.MODE_MENU);
-//                    initializeModules();
-//                    configureButtonComposition();
-//                    configureButtonPlayback();
-//                    configureButtonGame();
-//                }
-//            });
-//        }
+        textureMenu = new Texture(Gdx.files.internal("btn_menu.png"));
+        regionMenu = new TextureRegion(textureMenu);
+        drawableMenu = new TextureRegionDrawable(regionMenu);
 
+        menuBtn = new Button(drawableMenu);
+        menuBtn.setName("menuBtn");
+        menuBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
+        menuBtn.setPosition(xLeft + width - 100, Constants.BAR_HEIGHT);
+
+        menuBtn.addListener(new ClickListener() {
+              @Override
+              public void clicked(InputEvent event, float x, float y) {
+                  System.out.println("returnBtn clicked");
+                  // TBD
+              }
+          }
+        );
 
         this.addActor(returnBtn);
+        this.addActor(menuBtn);
 
         switch (ModeTracker.getMode()) {
             case MODE_COMPOSITION:
@@ -88,7 +85,7 @@ public class ToolbarGroup extends Group {
 
                 recordStopBtn = new Button(drawableRecordStop, drawableRecordStop, drawableRecordStopChecked);
                 recordStopBtn.setName("recordStopBtn");
-                recordStopBtn.setSize(50, 50);
+                recordStopBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
                 recordStopBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
                 recordStopBtn.addListener(new InputListener() {
                     @Override
@@ -124,22 +121,10 @@ public class ToolbarGroup extends Group {
 
                 playPauseBtn = new Button(drawablePlayPause, drawablePlayPause, drawablePlayPauseChecked);
                 playPauseBtn.setName("playPauseBtn");
-                playPauseBtn.setSize(50, 50);
+                playPauseBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
                 playPauseBtn.setPosition(Constants.BAR_BTN2, Constants.BAR_HEIGHT);
 
-
-//                playPauseBtn = new TextButton("Start", uiSkin, "default");
-//                playPauseBtn.setSize(300, 100);
-//                playPauseBtn.setPosition(Constants.BAR_BTN1, 0);
                 playPauseBtn.addListener(new InputListener() {
-//                    @Override
-//                    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-////                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
-//                        EventBus.getInstance().dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
-//                        setPlaying(!isPlaying());
-//                        return true;
-//                    }
-
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                         if (isPlaying()) {
@@ -151,10 +136,6 @@ public class ToolbarGroup extends Group {
                         setPlaying(!isPlaying());
                         return true;
                     }
-
-//                    @Override
-//                    public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-//                    }
                 });
 
                 this.addActor(playPauseBtn);
@@ -165,12 +146,11 @@ public class ToolbarGroup extends Group {
 
                 resetBtn = new Button(drawableReset);
                 resetBtn.setName("resetBtn");
-                resetBtn.setSize(50, 50);
+                resetBtn.setSize(Constants.BAR_BTN_SIZE, Constants.BAR_BTN_SIZE);
                 resetBtn.setPosition(Constants.BAR_BTN3, Constants.BAR_HEIGHT);
                 resetBtn.addListener(new InputListener() {
                     @Override
                     public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-//                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Pause" : "Play");
                         EventBus.getInstance().dispatch(isPlaying() ? new Event<>(Event.EventType.MIDI_FILE_PAUSE, null) : new Event<>(Event.EventType.MIDI_FILE_PLAY, null));
                         setPlaying(!isPlaying());
                         return true;
@@ -178,7 +158,6 @@ public class ToolbarGroup extends Group {
 
                     @Override
                     public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-//                        ((TextButton) playPauseBtn).getLabel().setText(isPlaying() ? "Playing" : "Paused");
                     }
                 });
 
@@ -203,34 +182,11 @@ public class ToolbarGroup extends Group {
         this.recording = recording;
     }
 
-//    public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {}
-//    @Override
-//    public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        super.touchDragged(screenX, screenY, pointer);
-//        OrthographicCamera cam = ((OrthographicCamera)this.getCamera());
-//        float x = Gdx.input.getDeltaX();
-//        if (cam.position.x - x > getViewport().getScreenWidth() / 2 && cam.position.x - x < Constants.WK_WIDTH * 49 - getViewport().getScreenWidth() / 2) {
-//            cam.position.set(cam.position.x - x, cam.position.y, 0);
-//            switch (ModeTracker.getMode()) {
-//                case MODE_COMPOSITION:
-//                    recordStopBtn.setPosition(recordStopBtn.getX() - x, Gdx.graphics.getHeight() - 200);
-//                    break;
-//                case MODE_GAME:
-//                    playPauseBtn.setPosition(playPauseBtn.getX() - x, Gdx.graphics.getHeight() - 200);
-//                    resetBtn.setPosition(resetBtn.getX() - x, Gdx.graphics.getHeight() - 320);
-//                    break;
-//            }
-//        }
-//        this.getCamera().update();
-//        return true;
-//    }
-
     public class FileDialog implements Input.TextInputListener {
         @Override
         public void input(String fileName) {
             if (!fileName.isEmpty()) {
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.MIDI_RECORD_START, fileName));
-//                ((TextButton) recordStopBtn).getLabel().setText("Stop");
                 setRecording(true);
             }
         }
