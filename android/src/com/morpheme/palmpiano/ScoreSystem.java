@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 
-public class ScoreSystem implements EventListener {
+public class ScoreSystem implements EventListener, Runnable {
     public static final int EASY_DIFFICULTY = 60;
     public static final int MEDIUM_DIFFICULTY = 40;
     public static final int HARD_DIFFICULTY = 20;
 
     private HashSet<Event.EventType> monitoredEvents;
     private boolean isRunning;
-    private boolean areEventsIncoming;
 
     public static int difficulty;
     public static long difficultyTime;
@@ -32,7 +31,6 @@ public class ScoreSystem implements EventListener {
 
     public ScoreSystem () {
         isRunning = false;
-        areEventsIncoming = true;
         this.difficulty = MEDIUM_DIFFICULTY;
         this.difficultyTime = (long) (difficulty / RhythmBox.getVelocity() * 1000000000L);
         this.numerator = 1;
@@ -119,7 +117,7 @@ public class ScoreSystem implements EventListener {
 
                 EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, midiNote));
             }
-            EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
+            EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, calculateScore()));
         }
         catch (InterruptedException e) {
             System.err.println(e.toString());
@@ -150,6 +148,7 @@ public class ScoreSystem implements EventListener {
                 if (n == note) {
                     EventBus.getInstance().dispatch(new Event<>(Event.EventType.FAIL_NOTE, (byte) note.getNoteValue()));
                     numerator += 0;
+                    denominator += 2;
 
                     System.out.println("numerator: " + numerator + ", denominator: " + denominator);
                     offGameNotes.remove(note);
@@ -161,7 +160,7 @@ public class ScoreSystem implements EventListener {
             System.err.println(e.toString());
         }
 
-        EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, (float) numerator / (float) denominator));
+        EventBus.getInstance().dispatch(new Event<>(Event.EventType.UPDATE_SCORE, calculateScore()));
     }
 
     private void clearNotes() {
@@ -178,21 +177,11 @@ public class ScoreSystem implements EventListener {
         }
     }
 
-    private void checkEndOfNotes() {
-        try {
-            onGameNotesMutex.acquire();
-            offGameNotesMutex.acquire();
-            if (!areEventsIncoming && onGameNotes.isEmpty() && offGameNotes.isEmpty()) {
-//                System.out.println("FINAL SCORE: " + (float) numerator / (float) denominator);
-                EventBus.getInstance().dispatch(new Event<>(Event.EventType.FINAL_SCORE, (float) numerator / (float) denominator));
-                areEventsIncoming = true;
-            }
-            offGameNotesMutex.release();
-            onGameNotesMutex.release();
+    private float calculateScore() {
+        if (numerator == 1 && denominator == 1) {
+            return 0.0F;
         }
-        catch (InterruptedException e) {
-            System.err.println(e.toString());
-        }
+        return (float) (numerator - 1) / (float) (denominator - 1);
     }
 
     @Override
@@ -202,7 +191,6 @@ public class ScoreSystem implements EventListener {
         switch (event.getEventType()) {
             case NEW_MIDI_FILE:
                 if (ModeTracker.getMode() == Constants.PianoMode.MODE_GAME) {
-                    areEventsIncoming = true;
                     numerator = 1;
                     denominator = 1;
                 }
@@ -250,18 +238,46 @@ public class ScoreSystem implements EventListener {
                 checkNoteExpired((Note) event.getData());
                 break;
             case END_OF_SONG:
-                areEventsIncoming = false;
+                new Thread(this).start();
                 break;
             default:
                 break;
-        }
-        if (isRunning) {
-            checkEndOfNotes();
         }
     }
 
     @Override
     public Set<Event.EventType> getMonitoredEvents() {
         return monitoredEvents;
+    }
+
+    @Override
+    public void run() {
+        boolean sentFinalScore = false;
+        while (!sentFinalScore) {
+            try {
+                Thread.sleep(1000);
+                onGameNotesMutex.acquire();
+                offGameNotesMutex.acquire();
+//                for (Note note : onGameNotes) {
+//                    System.out.println("(" + System.nanoTime() + ") Found onNote: " + note.getNoteValue() + " @ time " + note.getTimestamp());
+////                        long difference = System.nanoTime() - note.getTimestamp();
+//                }
+//                for (Note note : offGameNotes) {
+//                    System.out.println("(" + System.nanoTime() + ") Found offNote: " + note.getNoteValue() + " @ time " + note.getTimestamp());
+//                }
+                if (onGameNotes.isEmpty() && offGameNotes.isEmpty()) {
+//                    System.out.println("FINAL SCORE: " + calculateScore());
+                    EventBus.getInstance().dispatch(new Event<>(Event.EventType.FINAL_SCORE, calculateScore()));
+                    numerator = 1;
+                    denominator = 1;
+                    sentFinalScore = true;
+                }
+            } catch (InterruptedException e) {
+                System.err.println(e.toString());
+            } finally {
+                offGameNotesMutex.release();
+                onGameNotesMutex.release();
+            }
+        }
     }
 }
